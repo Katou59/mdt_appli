@@ -1,7 +1,6 @@
-import Image from "next/image";
 import {signIn} from "@/auth";
 
-export default function Home() {
+export default function PublicHome() {
     return (
         <form
             action={async () => {
@@ -9,7 +8,7 @@ export default function Home() {
                 await signIn("discord")
             }}
         >
-            <button type="submit" className="btn btn-primary">Signin with Discord</button>
+            <button type="submit">Signin with Discord</button>
         </form>
-    );
+    )
 }
