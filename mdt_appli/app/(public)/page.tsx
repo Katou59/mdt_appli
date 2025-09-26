@@ -5,10 +5,10 @@ export default function PublicHome() {
         <form
             action={async () => {
                 "use server"
-                await signIn("discord")
+                await signIn("discord", {redirectTo: "/police/dashboard"})
             }}
         >
-            <button type="submit">Signin with Discord</button>
+            <button type="submit" className="btn btn-primary rounded-xl">Se connecter avec discord</button>
         </form>
     )
 }
