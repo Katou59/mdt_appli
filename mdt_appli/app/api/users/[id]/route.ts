@@ -8,7 +8,7 @@ const db = drizzle(process.env.DATABASE_URL!);
 export async function GET(request: NextRequest, context: { params: Promise<{ id: string }> }) {
     try {
         const session = await auth();
-        console.log(session);
+        
         if(!session?.user?.discordId) return NextResponse.json({ error: "Unauthorized" }, {status: 401});
         
         const {id} = await context.params;
