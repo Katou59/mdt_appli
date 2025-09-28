@@ -12,3 +12,12 @@ export type UserType = {
     lastName: string | null;
     rank: RankType | null
 }
+
+export type UserToUpdate = {
+    id: string;
+    number: number | null;
+    firstName: string | null;
+    lastName: string | null;
+    rankId: number | null;
+    jobId: number | null;
+}

@@ -2,9 +2,7 @@ import {usersTable} from "@/db/schema";
 import NextAuth from "next-auth";
 import Discord from "next-auth/providers/discord";
 import {drizzle} from "drizzle-orm/node-postgres";
-import {eq} from "drizzle-orm";
-import {timestamp} from "drizzle-orm/pg-core/columns/timestamp";
-import {UserRepository} from "@/repositories/userRepositories";
+import {UserRepository} from "@/repositories/userRepository";
 
 const db = drizzle(process.env.DATABASE_URL!);
 

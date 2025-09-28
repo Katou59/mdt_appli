@@ -1,6 +1,6 @@
 import {auth} from "@/auth";
-import { drizzle } from "drizzle-orm/node-postgres";
-import {UserType} from "@/types/db/user";
+import {drizzle} from "drizzle-orm/node-postgres";
+import {UserToUpdate, UserType} from "@/types/db/user";
 import {jobsTable, ranksTable, usersTable} from "@/db/schema";
 import {eq} from "drizzle-orm";
 import {JobType} from "@/types/db/job";
@@ -8,8 +8,8 @@ import {RankType} from "@/types/db/rank";
 
 const db = drizzle(process.env.DATABASE_URL!);
 
-export class UserRepository {    
-    public static async get(discordId: string): Promise<UserType | null> {        
+export class UserRepository {
+    public static async get(discordId: string): Promise<UserType | null> {
         const users = await db
             .select()
             .from(usersTable)
@@ -18,7 +18,7 @@ export class UserRepository {
             .where(eq(usersTable.id, discordId));
 
         const userDb = users[0]?.users;
-        
+
         if (!userDb) return null;
 
         const jobDb = users[0]?.jobs;
@@ -47,5 +47,15 @@ export class UserRepository {
             id: userDb.id,
             rank: rank,
         }
+    }
+
+    public static async update(user: UserToUpdate): Promise<UserType | null> {
+        await db
+            .update(usersTable)
+            .set(user)
+            .where(eq(usersTable.id, user.id));
+
+        
+        return await UserRepository.get(user.id);
     }
 }

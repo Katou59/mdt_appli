@@ -1,6 +1,6 @@
 import {drizzle} from "drizzle-orm/node-postgres";
 import {NextRequest, NextResponse} from "next/server";
-import {UserRepository} from "@/repositories/userRepositories";
+import {UserRepository} from "@/repositories/userRepository";
 import {auth} from "@/auth";
 
 const db = drizzle(process.env.DATABASE_URL!);

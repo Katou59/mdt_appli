@@ -1,6 +1,7 @@
 import type {Metadata} from "next";
 import {Roboto} from "next/font/google";
 import "./globals.css";
+import {SessionProvider} from "next-auth/react";
 
 const robotoSans = Roboto({
     variable: "--font-geist-sans",
@@ -18,7 +19,9 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
         <body
             className={`${robotoSans.variable} antialiased min-h-screen h-screen`}
         >
-        {children}
+        <SessionProvider>
+            {children}
+        </SessionProvider>
         </body>
         </html>
     );

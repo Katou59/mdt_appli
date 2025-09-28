@@ -1,11 +1,17 @@
 import {auth, signOut} from "@/auth";
 import {redirect} from "next/navigation";
 import Link from "next/link";
+import {UserType} from "@/types/db/user";
+import {createAxiosServer} from "@/lib/axiosServer";
 
 export default async function ProtectedLayout({children,}: Readonly<{ children: React.ReactNode; }>) {
     const session = await auth();
 
-    if (!session) redirect("/");
+    if (!session?.user) redirect("/");
+
+    const axiosServer = await createAxiosServer();
+    const res = await axiosServer.get(`/users/${session?.user?.discordId}`);
+    const user: UserType = await res.data;
 
     const topItems = [
         {name: "Accueil", link: "/police/dashboard"},
@@ -46,14 +52,17 @@ export default async function ProtectedLayout({children,}: Readonly<{ children: 
                     <form action={logoutAction} className="w-full">
                         <button
                             type="submit"
-                            className="link link-hover text-error mb-2 ml-4"
+                            className="link link-hover text-error mb-2 ml-4 text-sm"
                         >
                             Déconnexion
                         </button>
                     </form>
+                    {user.firstName && user.lastName && user.number && (
+                        <div className="text-xs text-center">{user.number} | {user.firstName} {user.lastName}</div>)
+                    }
                 </div>
             </div>
-            <div className="grow">
+            <div className="grow h-full p-4">
                 {children}
             </div>
         </div>
