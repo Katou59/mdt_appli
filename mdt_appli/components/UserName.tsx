@@ -2,11 +2,14 @@
 
 import {useUser} from "@/lib/Contexts/UserContext";
 
-export function UserName(){
+export function UserName() {
     const {user} = useUser();
-    
-    if(!user) return <></>;
+
+    if (!user) return null;
+
     return (
-        <div className="text-center text-xs">{user.number} | {user.lastName} {user.firstName}</div>
+        <div className="text-center text-xs">
+            {user.number} | {user.lastName} {user.firstName}
+        </div>
     );
 }

@@ -10,7 +10,9 @@ export type UserType = {
     number: number | null;
     firstName: string | null;
     lastName: string | null;
-    rank: RankType | null
+    rank: RankType | null;
+    phoneNumber: string | null;
+    isDisable: boolean;
 }
 
 export type UserToUpdateType = {
@@ -18,6 +20,7 @@ export type UserToUpdateType = {
     number: number | null;
     firstName: string | null;
     lastName: string | null;
+    phoneNumber: string | null;
     rankId: number | null;
     jobId: number | null;
 }

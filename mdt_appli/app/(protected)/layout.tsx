@@ -5,6 +5,7 @@ import {UserType} from "@/types/db/user";
 import {createAxiosServer} from "@/lib/axiosServer";
 import {UserProvider} from "@/lib/Contexts/UserContext";
 import {UserName} from "@/components/UserName";
+import Image from "next/image";
 
 export default async function ProtectedLayout({children,}: Readonly<{ children: React.ReactNode; }>) {
     const session = await auth();
@@ -31,10 +32,10 @@ export default async function ProtectedLayout({children,}: Readonly<{ children: 
     return (
         <UserProvider initialUser={user}>
             <div className="flex flex-row w-full h-full min-h-full">
-                <div className="h-full min-h-full w-56 flex flex-col bg-base-200 rounded-box pb-2">
+                <div className="h-full min-h-full w-56 flex flex-col bg-base-200 pt-2 pb-2">
                     <div className="w-full">
-                        <h1 className="text-4xl font-bold text-center mt-4">Police</h1>
-                        <ul className="menu w-full">
+                        <Image src="/logolspd.webp" alt="Logo police" width={100} height={100} className="m-auto"/>
+                        <ul className="menu w-full mt-4">
                             {/*<li className="menu-title">Title</li>*/}
                             {topItems.map((item, index) => (
                                 <li key={index}>

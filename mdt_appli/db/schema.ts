@@ -1,4 +1,4 @@
-import {bigint, integer, pgTable, varchar} from "drizzle-orm/pg-core";
+import {bigint, boolean, integer, pgTable, varchar} from "drizzle-orm/pg-core";
 import {timestamp} from "drizzle-orm/pg-core/columns/timestamp";
 
 export const usersTable = pgTable("users", {
@@ -11,6 +11,8 @@ export const usersTable = pgTable("users", {
     number: integer(),
     firstName: varchar("first_name", {length: 50}),
     lastName: varchar("last_name", {length: 50}),
+    phoneNumber: varchar("phone_number", {length: 50}),
+    isDisable: boolean("is_disable").default(false),
     jobId: integer("job_id").references(() => jobsTable.id),
     rankId: integer("rank_id").references(() => ranksTable.id),
 });

@@ -13,8 +13,8 @@ const auth = NextAuth({
             if (!profile?.id) return false;
             
             const userDb = await UserRepository.get(profile.id);
-
-            if(!userDb) return false;
+            
+            if(!userDb || userDb.isDisable) return false;
 
             if(!userDb.email || !userDb.email){
                 userDb.email = user.email!;

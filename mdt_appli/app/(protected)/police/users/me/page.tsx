@@ -24,7 +24,8 @@ export default function Me() {
             number: user.number,
             id: user.id,
             jobId: user.rank?.Job?.id ?? null,
-            rankId: user.rank?.id ?? null
+            rankId: user.rank?.id ?? null,
+            phoneNumber: user.phoneNumber ?? null,
         });
     }, [user]);
 
@@ -35,6 +36,7 @@ export default function Me() {
             firstName: userUpdated?.firstName,
             lastName: userUpdated?.lastName,
             number: userUpdated?.number,
+            phoneNumber: userUpdated?.phoneNumber,
         });
 
         setIsSuccess(true);
@@ -70,6 +72,7 @@ export default function Me() {
                                 setIsSuccess(false);
                                 setUserUpdated({...userUpdated!, lastName: e.target.value});
                             }}
+                            autoComplete="off"
                             required={true}/>
                     </fieldset>
                     <fieldset className="fieldset">
@@ -83,6 +86,7 @@ export default function Me() {
                                    setIsSuccess(false);
                                    setUserUpdated({...userUpdated!, firstName: e.target.value});
                                }}
+                               autoComplete="off"
                                required={true}/>
                     </fieldset>
                     <fieldset className="fieldset">
@@ -98,6 +102,23 @@ export default function Me() {
                                    setIsSuccess(false);
                                    setUserUpdated({...userUpdated!, number: Number(e.target.value)});
                                }}
+                               autoComplete="off"
+                               required={true}/>
+                    </fieldset>
+                    <fieldset className="fieldset">
+                        <legend className="fieldset-legend">Téléphone</legend>
+                        <input type="text"
+                               name="phoneNumber"
+                               className="input w-full"
+                               placeholder="Numéro de téléphone"
+                               min={1}
+                               max={5000}
+                               value={userUpdated.phoneNumber ?? ""}
+                               onChange={e => {
+                                   setIsSuccess(false);
+                                   setUserUpdated({...userUpdated!, phoneNumber: e.target.value});
+                               }}
+                               autoComplete="off"
                                required={true}/>
                     </fieldset>
                 </div>

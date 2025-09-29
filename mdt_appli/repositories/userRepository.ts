@@ -46,6 +46,8 @@ export class UserRepository {
             number: userDb.number,
             id: userDb.id,
             rank: rank,
+            isDisable: userDb.isDisable ?? false,
+            phoneNumber: userDb.phoneNumber,
         }
     }
 
