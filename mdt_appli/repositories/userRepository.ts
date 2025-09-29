@@ -54,7 +54,6 @@ export class UserRepository {
             .update(usersTable)
             .set(user)
             .where(eq(usersTable.id, user.id));
-
         
         return await UserRepository.get(user.id);
     }

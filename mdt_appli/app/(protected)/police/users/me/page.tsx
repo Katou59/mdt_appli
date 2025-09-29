@@ -4,49 +4,50 @@ import {UserToUpdate, UserType} from "@/types/db/user";
 import {useSession} from "next-auth/react";
 import axiosClient from "@/lib/axiosClient";
 import {useEffect, useState} from "react";
-import {redirect} from "next/navigation";
+import {useSearchParams} from "next/navigation";
 import {useRouter} from "next/navigation";
+import Toast from "@/components/Toast";
 
 export default function Me() {
     const {data, status} = useSession();
-    const [user, setUser] = useState<UserType>();
+    const [user, setUser] = useState<UserType | null>(null);
+    const [isSuccess, setIsSuccess] = useState<boolean>(false);
     const router = useRouter();
-
-    if(status == "loading") return <></>
-    if(status == "unauthenticated") return redirect("/");
+    const searchParams = useSearchParams();
 
     useEffect(() => {
         if (!data?.user?.discordId) return;
+        axiosClient.get(`/users/${data.user.discordId}`).then(res => setUser(res.data));
+    }, [data]);
 
-        axiosClient.get(`/users/${data.user.discordId}`).then((res) => {
-            setUser(res.data);
-        });
-    }, [data])
-
-    function onSubmit(e: any) {
+    async function onSubmit(e: React.FormEvent) {
         e.preventDefault();
-
-        const res = axiosClient.put(`/users`, {
+        await axiosClient.put(`/users`, {
             id: user?.id,
             firstName: user?.firstName,
             lastName: user?.lastName,
-            number: user?.number
-        } as UserToUpdate).then((res) => {
-            setUser(res.data);
-        });
-        
-        router.refresh();
+            number: user?.number,
+        } as UserToUpdate);
+
+        setIsSuccess(true);
     }
 
-    function onReset(e: any) {
+    async function onReset(e: React.FormEvent) {
         e.preventDefault();
-
-        axiosClient.get(`/users/${data!.user.discordId}`).then((res) => {
+        setIsSuccess(false);
+        if (data?.user?.discordId) {
+            const res = await axiosClient.get(`/users/${data.user.discordId}`);
             setUser(res.data);
-        });
+        }
     }
 
-    if (!user) return <></>;
+    if (status === "loading") return <p>Chargement…</p>;
+    if (status === "unauthenticated") {
+        router.push("/");
+        return null;
+    }
+
+    if (!user) return <p>Chargement du profil…</p>;
 
     return (
         <div className="w-full h-full">
@@ -61,12 +62,13 @@ export default function Me() {
                             className="input w-full"
                             placeholder="Nom"
                             value={user.lastName ?? ""}
-                            onChange={e =>
+                            onChange={e => {
+                                setIsSuccess(false);
                                 setUser({
                                     ...user,
                                     lastName: e.target.value,
                                 })
-                            }
+                            }}
                             required={true}/>
                     </fieldset>
                     <fieldset className="fieldset">
@@ -76,12 +78,13 @@ export default function Me() {
                                className="input w-full"
                                placeholder="Prénom"
                                value={user.firstName ?? ""}
-                               onChange={e =>
+                               onChange={e => {
+                                   setIsSuccess(false);
                                    setUser({
                                        ...user,
                                        firstName: e.target.value,
                                    })
-                               }
+                               }}
                                required={true}/>
                     </fieldset>
                     <fieldset className="fieldset">
@@ -93,12 +96,13 @@ export default function Me() {
                                min={1}
                                max={5000}
                                value={user.number ?? ""}
-                               onChange={e =>
+                               onChange={e => {
+                                   setIsSuccess(false);
                                    setUser({
                                        ...user,
                                        number: Number(e.target.value),
                                    })
-                               }
+                               }}
                                required={true}/>
                     </fieldset>
                 </div>
@@ -107,6 +111,9 @@ export default function Me() {
                     <button type="submit" className="btn btn-success rounded-r-xl w-32">Valider</button>
                 </div>
             </form>
+            {isSuccess && (
+                <Toast message="Mise à jour effectuée" type="success"/>
+            )}
         </div>
     )
 } 

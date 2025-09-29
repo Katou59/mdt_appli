@@ -57,9 +57,6 @@ export default async function ProtectedLayout({children,}: Readonly<{ children: 
                             Déconnexion
                         </button>
                     </form>
-                    {user.firstName && user.lastName && user.number && (
-                        <div className="text-xs text-center">{user.number} | {user.firstName} {user.lastName}</div>)
-                    }
                 </div>
             </div>
             <div className="grow h-full p-4">
