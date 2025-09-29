@@ -5,6 +5,7 @@ import {jobsTable, ranksTable, usersTable} from "@/db/schema";
 import {eq} from "drizzle-orm";
 import {JobType} from "@/types/db/job";
 import {RankType} from "@/types/db/rank";
+import {RoleType} from "@/types/enums/roleType";
 
 const db = drizzle(process.env.DATABASE_URL!);
 
@@ -48,6 +49,7 @@ export class UserRepository {
             rank: rank,
             isDisable: userDb.isDisable ?? false,
             phoneNumber: userDb.phoneNumber,
+            role: userDb?.role as RoleType,
         }
     }
 

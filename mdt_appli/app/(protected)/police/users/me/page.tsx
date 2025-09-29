@@ -8,6 +8,7 @@ import {useSearchParams} from "next/navigation";
 import {useRouter} from "next/navigation";
 import Toast from "@/components/Toast";
 import {useUser} from "@/lib/Contexts/UserContext";
+import {RoleType} from "@/types/enums/roleType";
 
 export default function Me() {
     const [isSuccess, setIsSuccess] = useState<boolean>(false);
