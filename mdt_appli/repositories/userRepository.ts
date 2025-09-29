@@ -1,6 +1,6 @@
 import {auth} from "@/auth";
 import {drizzle} from "drizzle-orm/node-postgres";
-import {UserToUpdate, UserType} from "@/types/db/user";
+import {UserToUpdateType, UserType} from "@/types/db/user";
 import {jobsTable, ranksTable, usersTable} from "@/db/schema";
 import {eq} from "drizzle-orm";
 import {JobType} from "@/types/db/job";
@@ -49,7 +49,7 @@ export class UserRepository {
         }
     }
 
-    public static async update(user: UserToUpdate): Promise<UserType | null> {
+    public static async update(user: UserToUpdateType): Promise<UserType | null> {
         await db
             .update(usersTable)
             .set(user)

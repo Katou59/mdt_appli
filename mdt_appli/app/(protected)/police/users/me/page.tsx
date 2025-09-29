@@ -1,53 +1,57 @@
 "use client";
 
-import {UserToUpdate, UserType} from "@/types/db/user";
+import {UserToUpdateType, UserType} from "@/types/db/user";
 import {useSession} from "next-auth/react";
 import axiosClient from "@/lib/axiosClient";
 import {useEffect, useState} from "react";
 import {useSearchParams} from "next/navigation";
 import {useRouter} from "next/navigation";
 import Toast from "@/components/Toast";
+import {useUser} from "@/lib/Contexts/UserContext";
 
 export default function Me() {
-    const {data, status} = useSession();
-    const [user, setUser] = useState<UserType | null>(null);
     const [isSuccess, setIsSuccess] = useState<boolean>(false);
+    const [userUpdated, setUserUpdated] = useState<UserToUpdateType>();
     const router = useRouter();
-    const searchParams = useSearchParams();
+    const {user, setUser} = useUser();
 
     useEffect(() => {
-        if (!data?.user?.discordId) return;
-        axiosClient.get(`/users/${data.user.discordId}`).then(res => setUser(res.data));
-    }, [data]);
+        if(!user) return;
+        
+        setUserUpdated({
+            lastName: user.lastName,
+            firstName: user.firstName,
+            number: user.number,
+            id: user.id,
+            jobId: user.rank?.Job?.id ?? null,
+            rankId: user.rank?.id ?? null
+        });
+    }, [user]);
 
     async function onSubmit(e: React.FormEvent) {
         e.preventDefault();
-        await axiosClient.put(`/users`, {
-            id: user?.id,
-            firstName: user?.firstName,
-            lastName: user?.lastName,
-            number: user?.number,
-        } as UserToUpdate);
+        const userUpdatedResult = await axiosClient.put(`/users`, {
+            id: userUpdated?.id,
+            firstName: userUpdated?.firstName,
+            lastName: userUpdated?.lastName,
+            number: userUpdated?.number,
+        });
 
         setIsSuccess(true);
+        setUser(userUpdatedResult.data as UserType);
     }
 
     async function onReset(e: React.FormEvent) {
         e.preventDefault();
         setIsSuccess(false);
-        if (data?.user?.discordId) {
-            const res = await axiosClient.get(`/users/${data.user.discordId}`);
+        
+        if (user?.id) {
+            const res = await axiosClient.get(`/users/${user.id}`);
             setUser(res.data);
         }
     }
 
-    if (status === "loading") return <p>Chargement…</p>;
-    if (status === "unauthenticated") {
-        router.push("/");
-        return null;
-    }
-
-    if (!user) return <p>Chargement du profil…</p>;
+    if (!userUpdated) return <p>Chargement du profil…</p>;
 
     return (
         <div className="w-full h-full">
@@ -61,13 +65,10 @@ export default function Me() {
                             name="lastName"
                             className="input w-full"
                             placeholder="Nom"
-                            value={user.lastName ?? ""}
+                            value={userUpdated!.lastName ?? ""}
                             onChange={e => {
                                 setIsSuccess(false);
-                                setUser({
-                                    ...user,
-                                    lastName: e.target.value,
-                                })
+                                setUserUpdated({...userUpdated!, lastName: e.target.value});
                             }}
                             required={true}/>
                     </fieldset>
@@ -77,13 +78,10 @@ export default function Me() {
                                name="firstName"
                                className="input w-full"
                                placeholder="Prénom"
-                               value={user.firstName ?? ""}
+                               value={userUpdated.firstName ?? ""}
                                onChange={e => {
                                    setIsSuccess(false);
-                                   setUser({
-                                       ...user,
-                                       firstName: e.target.value,
-                                   })
+                                   setUserUpdated({...userUpdated!, firstName: e.target.value});
                                }}
                                required={true}/>
                     </fieldset>
@@ -95,13 +93,10 @@ export default function Me() {
                                placeholder="Matricule"
                                min={1}
                                max={5000}
-                               value={user.number ?? ""}
+                               value={userUpdated.number ?? ""}
                                onChange={e => {
                                    setIsSuccess(false);
-                                   setUser({
-                                       ...user,
-                                       number: Number(e.target.value),
-                                   })
+                                   setUserUpdated({...userUpdated!, number: Number(e.target.value)});
                                }}
                                required={true}/>
                     </fieldset>
@@ -116,4 +111,4 @@ export default function Me() {
             )}
         </div>
     )
-} 
+}

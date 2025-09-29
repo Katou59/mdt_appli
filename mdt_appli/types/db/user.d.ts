@@ -13,7 +13,7 @@ export type UserType = {
     rank: RankType | null
 }
 
-export type UserToUpdate = {
+export type UserToUpdateType = {
     id: string;
     number: number | null;
     firstName: string | null;
