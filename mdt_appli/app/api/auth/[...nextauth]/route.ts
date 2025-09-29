@@ -39,7 +39,6 @@ const auth = NextAuth({
         },
         async session({session, token}) {
             session.user.discordId = token.discordId as string;
-            console.log('session:', session);
             return session;
         },
     },
