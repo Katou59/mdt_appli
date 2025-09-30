@@ -1,14 +1,11 @@
 "use client";
 
 import {UserToUpdateType, UserType} from "@/types/db/user";
-import {useSession} from "next-auth/react";
 import axiosClient from "@/lib/axiosClient";
 import {useEffect, useState} from "react";
-import {useSearchParams} from "next/navigation";
 import {useRouter} from "next/navigation";
 import Toast from "@/components/Toast";
 import {useUser} from "@/lib/Contexts/UserContext";
-import {RoleType} from "@/types/enums/roleType";
 
 export default function Me() {
     const [isSuccess, setIsSuccess] = useState<boolean>(false);
@@ -20,13 +17,13 @@ export default function Me() {
         if(!user) return;
         
         setUserUpdated({
-            lastName: user.lastName,
-            firstName: user.firstName,
-            number: user.number,
+            lastName: user.lastName ?? undefined,
+            firstName: user.firstName ?? undefined,
+            number: user.number ?? undefined,
             id: user.id,
-            jobId: user.rank?.Job?.id ?? null,
-            rankId: user.rank?.id ?? null,
-            phoneNumber: user.phoneNumber ?? null,
+            jobId: user.rank?.Job?.id ?? undefined,
+            rankId: user.rank?.id ?? undefined,
+            phoneNumber: user.phoneNumber ?? undefined,
         });
     }, [user]);
 
@@ -58,8 +55,8 @@ export default function Me() {
 
     return (
         <div className="w-full h-full">
-            <h1 className="text-4xl font-bold text-primary text-center">Mon profil</h1>
-            <form onSubmit={onSubmit} onReset={onReset} className="mt-4">
+            <h1 className="text-4xl font-bold text-primary text-center mb-4">Mon profil</h1>
+            <form onSubmit={onSubmit} onReset={onReset}>
                 <div className="grid grid-cols-2 gap-4">
                     <fieldset className="fieldset w-full">
                         <legend className="fieldset-legend">Nom</legend>

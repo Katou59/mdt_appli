@@ -19,10 +19,14 @@ export type UserType = {
 
 export type UserToUpdateType = {
     id: string;
-    number: number | null;
-    firstName: string | null;
-    lastName: string | null;
-    phoneNumber: string | null;
-    rankId: number | null;
-    jobId: number | null;
+    number?: number;
+    firstName?: string;
+    lastName?: string;
+    phoneNumber?: string;
+    rankId?: number;
+    jobId?: number;
+    lastLogin?: Date,
+    email?: string,
+    name?: string,
+    firstLogin?: Date
 }

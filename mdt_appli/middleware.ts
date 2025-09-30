@@ -1,5 +1,5 @@
 export const config = {
-    matcher: ["/police/:path*", "/api/:path*"], // tes routes protégées
+    matcher: ["/police/:path*"], // tes routes protégées
     runtime: "nodejs",           // <-- force Node runtime
 };
 

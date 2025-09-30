@@ -53,12 +53,53 @@ export class UserRepository {
         }
     }
 
+    public static async getList(): Promise<UserType[] | null> {
+        const users = await db
+            .select()
+            .from(usersTable)
+            .leftJoin(jobsTable, eq(jobsTable.id, usersTable.jobId))
+            .leftJoin(ranksTable, eq(ranksTable.id, usersTable.rankId));
+
+        return users.map(u => {
+            const jobDb = u.jobs;
+            const rankDb = u.ranks;
+
+            const job: JobType | null = jobDb == null ? null : {
+                id: jobDb?.id ?? null,
+                name: jobDb?.name ?? null,
+            }
+
+            const rank: RankType | null = rankDb == null ? null : {
+                id: rankDb?.id ?? null,
+                name: rankDb?.name ?? null,
+                Job: job
+            }
+
+            return {
+                createdAt: u.users.createdAt,
+                email: u.users.email,
+                firstLogin: u.users.firstLogin,
+                firstName: u.users.firstName,
+                lastLogin: u.users.lastLogin,
+                lastName: u.users.lastName,
+                name: u.users.name,
+                number: u.users.number,
+                id: u.users.id,
+                rank: rank,
+                isDisable: u.users.isDisable ?? false,
+                phoneNumber: u.users.phoneNumber,
+                role: u.users.role as RoleType,
+            }
+        });
+    }
+
     public static async update(user: UserToUpdateType): Promise<UserType | null> {
+        console.log(user);
         await db
             .update(usersTable)
             .set(user)
             .where(eq(usersTable.id, user.id));
-        
+
         return await UserRepository.get(user.id);
     }
 }

@@ -1,10 +1,6 @@
-import {usersTable} from "@/db/schema";
 import NextAuth from "next-auth";
 import Discord from "next-auth/providers/discord";
-import {drizzle} from "drizzle-orm/node-postgres";
 import {UserRepository} from "@/repositories/userRepository";
-
-const db = drizzle(process.env.DATABASE_URL!);
 
 const auth = NextAuth({
     providers: [Discord],
@@ -16,7 +12,7 @@ const auth = NextAuth({
             
             if(!userDb || userDb.isDisable) return false;
 
-            if(!userDb.email || !userDb.email){
+            if(!userDb.email || !userDb.name || userDb.firstLogin){
                 userDb.email = user.email!;
                 userDb.name = user.name!;
                 userDb.firstLogin = new Date();
@@ -24,7 +20,13 @@ const auth = NextAuth({
 
             userDb.lastLogin = new Date();
 
-            await db.update(usersTable).set(userDb);
+            await UserRepository.update({
+                id: userDb.id,
+                email: userDb.email,
+                name: userDb.name!,
+                firstLogin: userDb.firstLogin!,
+                lastLogin: userDb.lastLogin
+            });
 
             return true;
         },
