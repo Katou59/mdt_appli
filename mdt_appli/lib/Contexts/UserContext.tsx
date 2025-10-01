@@ -10,8 +10,8 @@ type UserContextValue = {
 
 const UserContext = createContext<UserContextValue | undefined>(undefined);
 
-export function UserProvider({initialUser, children,}: { initialUser: User | null; children: React.ReactNode; }) {
-    const [user, setUser] = useState<User | null>(initialUser);
+export function UserProvider({initialUser, children,}: { initialUser: UserType | null; children: React.ReactNode; }) {
+    const [user, setUser] = useState<User | null>(initialUser ? new User(initialUser) : null);
 
     return (
         <UserContext.Provider value={{user, setUser}}>

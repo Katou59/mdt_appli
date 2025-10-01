@@ -16,6 +16,7 @@ export default class User {
     phoneNumber: string | null;
     isDisable: boolean;
     role: RoleType;
+    isAdmin: boolean;
 
     constructor(data: UserType) {
         this.id = data.id;
@@ -31,6 +32,7 @@ export default class User {
         this.phoneNumber = data.phoneNumber;
         this.isDisable = data.isDisable;
         this.role = data.role;
+        this.isAdmin = data.role === RoleType.Admin || data.role === RoleType.SuperAdmin;
     }
 
     update(user: UserToUpdateType){
@@ -58,5 +60,23 @@ export default class User {
         if (user.firstLogin !== undefined) {
             this.firstLogin = user.firstLogin ? new Date(user.firstLogin) : null;
         }
+    }
+    
+    toUserType(): UserType{
+        return {
+            id: this.id,
+            name: this.name,
+            email: this.email,
+            createdAt: this.createdAt,
+            firstLogin: this.firstLogin,
+            lastLogin: this.lastLogin,
+            number: this.number,
+            firstName: this.firstName,
+            lastName: this.lastName,
+            rank: this.rank,
+            phoneNumber: this.phoneNumber,
+            isDisable: this.isDisable,
+            role: this.role,
+        };
     }
 }

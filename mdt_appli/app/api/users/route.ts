@@ -22,10 +22,9 @@ export async function PUT(request: NextRequest) {
         userToAdd.update(userToAddRequest);
         
         const currentUser = await UserRepository.get(session.user.discordId);
-        const isAdmin = currentUser?.role === RoleType.Admin;
         const isSelf = session.user.discordId === userToAdd.id;
         
-        if (currentUser?.isDisable || (!isAdmin && !isSelf)) {
+        if (currentUser?.isDisable || (!currentUser?.isAdmin && !isSelf)) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
         
@@ -43,6 +42,7 @@ export async function GET(request: NextRequest) {
         const session = await auth();
 
         if(!session?.user?.discordId) return NextResponse.json({ error: "Unauthorized" }, {status: 401});
+        
         const currentUser = await UserRepository.get(session.user.discordId);
         if(currentUser?.role != RoleType.Admin || currentUser.isDisable)
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

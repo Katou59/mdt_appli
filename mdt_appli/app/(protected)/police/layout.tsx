@@ -7,15 +7,16 @@ import {UserProvider} from "@/lib/Contexts/UserContext";
 import {UserName} from "@/components/UserName";
 import Image from "next/image";
 import {RoleType} from "@/types/enums/roleType";
+import User from "@/types/class/User";
+import {UserRepository} from "@/repositories/userRepository";
 
 export default async function ProtectedLayout({children,}: Readonly<{ children: React.ReactNode; }>) {
     const session = await auth();
 
-    if (!session?.user) redirect("/");
+    if (!session?.user?.discordId) return redirect("/");
 
-    const axiosServer = await createAxiosServer();
-    const res = await axiosServer.get(`/users/${session?.user?.discordId}`);
-    const user = await res.data as UserType;
+    const user = await UserRepository.get(session.user.discordId);
+    if (!user) return  redirect("/");
 
     const topItems = [
         {name: "Accueil", link: "/police/dashboard"},
@@ -35,7 +36,7 @@ export default async function ProtectedLayout({children,}: Readonly<{ children: 
     }
 
     return (
-        <UserProvider initialUser={user}>
+        <UserProvider initialUser={user.toUserType()}>
             <div className="flex flex-row w-full h-full min-h-full">
                 <div className="w-56">
                     <div className="fixed h-full min-h-full w-56 flex flex-col bg-base-200 pt-2 pb-2">
@@ -53,7 +54,7 @@ export default async function ProtectedLayout({children,}: Readonly<{ children: 
                         <div className="grow"></div>
                         <div className="w-full">
                             <ul className="menu bg-base-200 rounded-box w-56">
-                                {user.role == RoleType.Admin && (
+                                {user.isAdmin && (
                                     <li>
                                         <details>
                                             <summary>Admin</summary>
