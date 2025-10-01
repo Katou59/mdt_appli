@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
         if(!session?.user?.discordId) return NextResponse.json({ error: "Unauthorized" }, {status: 401});
         
         const currentUser = await UserRepository.get(session.user.discordId);
-        if(currentUser?.role != RoleType.Admin || currentUser.isDisable)
+        if(!currentUser?.isAdmin || currentUser.isDisable)
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
         const users = await UserRepository.getList();

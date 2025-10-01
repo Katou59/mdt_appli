@@ -21,7 +21,7 @@ export default function Users() {
         max: 20
     });
 
-    if (!user || user.role != RoleType.Admin) return redirect('/police/dashboard');
+    if (!user?.isAdmin) return redirect('/police/dashboard');
 
     useEffect(() => {
         axiosClient.get(`/users`).then(u => {
