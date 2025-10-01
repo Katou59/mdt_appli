@@ -1,16 +1,18 @@
 "use client";
 
-import {redirect} from "next/navigation";
+import {redirect, useRouter} from "next/navigation";
 import {UserType} from "@/types/db/user";
 import {RoleType} from "@/types/enums/roleType";
 import {useUser} from "@/lib/Contexts/UserContext";
 import {useEffect, useState} from "react";
 import axiosClient from "@/lib/axiosClient";
+import User from "@/types/class/User";
 
 export default function Users() {
     const {user} = useUser();
-    const [users, setUsers] = useState<UserType[]>([]);
-    const [originalUsers, setOriginUsers] = useState<UserType[]>([]);
+    const router = useRouter();
+    const [users, setUsers] = useState<User[]>([]);
+    const [originalUsers, setOriginUsers] = useState<User[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [pager, setPager] = useState<{ current: number, total: number, max: number }>({
@@ -23,7 +25,8 @@ export default function Users() {
 
     useEffect(() => {
         axiosClient.get(`/users`).then(u => {
-            const allUsers = u.data as UserType[];
+            const results = u.data as UserType[];
+            const allUsers = results.map(u => new User(u));
             setOriginUsers(allUsers);
 
             const totalPages = Math.ceil(allUsers.length / pager.max);
@@ -38,10 +41,11 @@ export default function Users() {
             setIsLoading(false);
         });
     }, []);
+
     function handleTh(e: React.MouseEvent<HTMLTableHeaderCellElement>, type: "name" | "email" | "number" | "lastName" | "rank" | "role" | "isDisable") {
         e.preventDefault();
 
-        let results: UserType[] = [];
+        let results: User[] = [];
 
         switch (type) {
             case "name":
@@ -73,15 +77,15 @@ export default function Users() {
         e.preventDefault();
 
         let value = searchTerm.trim().toLowerCase();
-        
-        if(e.type === "reset"){
+
+        if (e.type === "reset") {
             value = "";
             setSearchTerm(value);
-        } 
+        }
 
         if (!value) {
             const totalPages = Math.ceil(originalUsers.length / pager.max);
-            setPager(prev => ({ ...prev, current: 1, total: totalPages }));
+            setPager(prev => ({...prev, current: 1, total: totalPages}));
             setUsers([...originalUsers].slice(0, pager.max));
             return;
         }
@@ -99,7 +103,7 @@ export default function Users() {
         });
 
         const totalPages = Math.ceil(results.length / pager.max);
-        setPager(prev => ({ ...prev, current: 1, total: totalPages }));
+        setPager(prev => ({...prev, current: 1, total: totalPages}));
         setUsers(results.slice(0, pager.max));
     }
 
@@ -115,8 +119,8 @@ export default function Users() {
         setPager(prev => ({...prev, current: safePage}));
         setUsers(originalUsers.slice(start, end));
     }
-    
-    if(isLoading) return <div>Chargement...</div>
+
+    if (isLoading) return <div>Chargement...</div>
 
     return (
         <div className="">
@@ -148,8 +152,11 @@ export default function Users() {
                 </tr>
                 </thead>
                 <tbody>
-                {users.map((user: UserType) => (
-                    <tr key={user.id} className="hover:bg-base-300 hover:cursor-pointer">
+                {users.map((user: User) => (
+                    <tr 
+                        key={user.id} 
+                        className="hover:bg-base-300 hover:cursor-pointer"
+                        onClick={(e) => router.push(`/police/users/${user.id}`)}>
                         <th>{user.id}</th>
                         <th>{user.name}</th>
                         <td>{user.email}</td>

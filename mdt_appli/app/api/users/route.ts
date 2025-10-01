@@ -13,8 +13,13 @@ export async function PUT(request: NextRequest) {
 
         if(!session?.user?.discordId) return NextResponse.json({ error: "Unauthorized" }, {status: 401});
         
-        const userToAdd = await request.json() as UserToUpdateType;
-        if(!userToAdd) return NextResponse.json({error: "Bad Request"}, {status: 400})
+        const userToAddRequest = await request.json() as UserToUpdateType;
+        if(!userToAddRequest?.id) return NextResponse.json({error: "Bad Request"}, {status: 400})
+        
+        let userToAdd = await UserRepository.get(userToAddRequest.id);
+        if(!userToAdd?.id) return NextResponse.json({error: "Bad Request"}, {status: 400})
+        
+        userToAdd.update(userToAddRequest);
         
         const currentUser = await UserRepository.get(session.user.discordId);
         const isAdmin = currentUser?.role === RoleType.Admin;
@@ -46,6 +51,7 @@ export async function GET(request: NextRequest) {
         
         return NextResponse.json(users);
     } catch (e) {
+        console.error(e);
         return NextResponse.json({error: e}, {status: 500});
     }
 }

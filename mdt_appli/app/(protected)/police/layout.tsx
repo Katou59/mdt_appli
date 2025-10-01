@@ -15,15 +15,18 @@ export default async function ProtectedLayout({children,}: Readonly<{ children: 
 
     const axiosServer = await createAxiosServer();
     const res = await axiosServer.get(`/users/${session?.user?.discordId}`);
-    const user: UserType = await res.data;
+    const user = await res.data as UserType;
 
     const topItems = [
         {name: "Accueil", link: "/police/dashboard"},
     ];
 
     const botItems = [
-        {name: "Utilisateurs", link: "/police/users", role: RoleType.Admin},
         {name: "Profil", link: "/police/users/me"},
+    ]
+
+    const adminItems = [
+        {name: "Utilisateurs", link: "/police/users", role: RoleType.Admin},
     ]
 
     async function logoutAction() {
@@ -49,9 +52,23 @@ export default async function ProtectedLayout({children,}: Readonly<{ children: 
                         </div>
                         <div className="grow"></div>
                         <div className="w-full">
-                            <ul className="menu w-full">
+                            <ul className="menu bg-base-200 rounded-box w-56">
+                                {user.role == RoleType.Admin && (
+                                    <li>
+                                        <details>
+                                            <summary>Admin</summary>
+                                            <ul>
+                                                {adminItems.map((item, index) => (
+                                                    <li key={index}>
+                                                        <Link href={item.link}>{item.name}</Link>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </details>
+                                    </li>
+                                )}
+
                                 {botItems.map((item, index) => {
-                                    if (item.role && item.role !== user.role) return null;
                                     return (
                                         <li key={index}>
                                             <Link href={item.link}>{item.name}</Link>

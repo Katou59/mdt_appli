@@ -6,11 +6,12 @@ import {eq} from "drizzle-orm";
 import {JobType} from "@/types/db/job";
 import {RankType} from "@/types/db/rank";
 import {RoleType} from "@/types/enums/roleType";
+import User from "@/types/class/User";
 
 const db = drizzle(process.env.DATABASE_URL!);
 
 export class UserRepository {
-    public static async get(discordId: string): Promise<UserType | null> {
+    public static async get(discordId: string): Promise<User | null> {
         const users = await db
             .select()
             .from(usersTable)
@@ -36,8 +37,8 @@ export class UserRepository {
             Job: job
         }
 
-        return {
-            createdAt: userDb.createdAt,
+        return new User({
+            createdAt: new Date(userDb.createdAt),
             email: userDb.email,
             firstLogin: userDb.firstLogin,
             firstName: userDb.firstName,
@@ -50,10 +51,10 @@ export class UserRepository {
             isDisable: userDb.isDisable ?? false,
             phoneNumber: userDb.phoneNumber,
             role: userDb?.role as RoleType,
-        }
+        });
     }
 
-    public static async getList(): Promise<UserType[] | null> {
+    public static async getList(): Promise<User[] | null> {
         const users = await db
             .select()
             .from(usersTable)
@@ -75,7 +76,7 @@ export class UserRepository {
                 Job: job
             }
 
-            return {
+            return new User({
                 createdAt: u.users.createdAt,
                 email: u.users.email,
                 firstLogin: u.users.firstLogin,
@@ -89,12 +90,11 @@ export class UserRepository {
                 isDisable: u.users.isDisable ?? false,
                 phoneNumber: u.users.phoneNumber,
                 role: u.users.role as RoleType,
-            }
+            });
         });
     }
 
-    public static async update(user: UserToUpdateType): Promise<UserType | null> {
-        console.log(user);
+    public static async update(user: User): Promise<User | null> {
         await db
             .update(usersTable)
             .set(user)

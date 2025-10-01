@@ -1,16 +1,17 @@
 "use client";
 import {createContext, useContext, useState} from "react";
 import type {UserType} from "@/types/db/user";
+import User from "@/types/class/User";
 
 type UserContextValue = {
-    user: UserType | null;
-    setUser: (user: UserType | null) => void;
+    user: User | null;
+    setUser: (user: User | null) => void;
 };
 
 const UserContext = createContext<UserContextValue | undefined>(undefined);
 
-export function UserProvider({initialUser, children,}: { initialUser: UserType | null; children: React.ReactNode; }) {
-    const [user, setUser] = useState<UserType | null>(initialUser);
+export function UserProvider({initialUser, children,}: { initialUser: User | null; children: React.ReactNode; }) {
+    const [user, setUser] = useState<User | null>(initialUser);
 
     return (
         <UserContext.Provider value={{user, setUser}}>

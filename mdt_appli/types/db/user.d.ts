@@ -1,13 +1,13 @@
 import {RankType} from "@/types/db/rank";
 import {RoleType} from "@/types/db/enums/roleType";
 
-export type UserType = {
+export interface UserType {
     id: string;
     name: string | null;
     email: string | null;
-    createdAt: Date;
-    firstLogin: Date | null,
-    lastLogin: Date | null,
+    createdAt: Date | string;
+    firstLogin: string | Date | null,
+    lastLogin: string | Date | null,
     number: number | null;
     firstName: string | null;
     lastName: string | null;
@@ -17,7 +17,7 @@ export type UserType = {
     role: RoleType;
 }
 
-export type UserToUpdateType = {
+export interface UserToUpdateType {
     id: string;
     number?: number;
     firstName?: string;
@@ -25,8 +25,8 @@ export type UserToUpdateType = {
     phoneNumber?: string;
     rankId?: number;
     jobId?: number;
-    lastLogin?: Date,
+    lastLogin?: Date | string,
     email?: string,
     name?: string,
-    firstLogin?: Date
+    firstLogin?: Date | string
 }
