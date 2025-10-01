@@ -7,14 +7,17 @@ import Toast from "@/components/Toast";
 import {useUser} from "@/lib/Contexts/UserContext";
 import dayjs from "dayjs";
 import User from "@/types/class/User";
+import {RoleType} from "@/types/enums/roleType";
 
-export default function UserComponent(props: { user: User, isConsult: boolean }) {
+export default function UserComponent(props: { user: UserType, isConsult: boolean }) {
     const [isSuccess, setIsSuccess] = useState<boolean>(false);
-    const [userUpdated, setUserUpdated] = useState<User>(props.user);
+    const [userUpdated, setUserUpdated] = useState<User>(new User(props.user));
+    const [isConsult, setIsConsult] = useState(props.isConsult);
     const {user, setUser} = useUser();
-    
+
     async function onSubmit(e: React.FormEvent) {
         e.preventDefault();
+
         const userUpdatedResult = await axiosClient.put(`/users`, {
             id: userUpdated?.id,
             firstName: userUpdated?.firstName,
@@ -22,23 +25,19 @@ export default function UserComponent(props: { user: User, isConsult: boolean })
             number: userUpdated?.number,
             phoneNumber: userUpdated?.phoneNumber,
         } as UserToUpdateType);
-        
+
         setIsSuccess(true);
         setUserUpdated(new User(userUpdatedResult.data as UserType));
 
-        if (userUpdated?.id == props.user.id) {
-            setUser(userUpdatedResult.data as UserType);
+        if (userUpdated?.id == user!.id) {
+            setUser(new User(userUpdatedResult.data as UserType));
         }
     }
 
     async function onReset(e: React.FormEvent) {
         e.preventDefault();
         setIsSuccess(false);
-
-        if (user?.id) {
-            const res = await axiosClient.get(`/users/${user.id}`);
-            setUser(res.data);
-        }
+        setIsConsult(true);
     }
 
     if (!userUpdated) return <p>Chargement du profil…</p>;
@@ -49,9 +48,16 @@ export default function UserComponent(props: { user: User, isConsult: boolean })
                 {user?.id == userUpdated.id && "Mon profil"}
                 {user?.id != userUpdated.id && `Profil de ${userUpdated?.firstName} ${userUpdated?.lastName}`}
             </h1>
+            {(isConsult && user?.isAdmin || user?.id == userUpdated.id) && (
+                <div className="flex justify-end">
+                    <button type="button" onClick={e => setIsConsult(!isConsult)}
+                            className="btn btn-info rounded-xl">Modifier
+                    </button>
+                </div>
+            )}
             <form onSubmit={onSubmit} onReset={onReset}>
                 <div className="grid grid-cols-2 gap-4">
-                    {props.isConsult && (
+                    {isConsult && (
                         <>
                             <fieldset className="fieldset w-full">
                                 <legend className="fieldset-legend">Id Discord</legend>
@@ -65,12 +71,33 @@ export default function UserComponent(props: { user: User, isConsult: boolean })
                                     className="w-full p-2 rounded-md bg-base-200 text-xl font-bold h-10">{userUpdated.name}
                                 </div>
                             </fieldset>
-                            <fieldset className="fieldset w-full">
-                                <legend className="fieldset-legend">Email</legend>
-                                <div
-                                    className="w-full p-2 rounded-md bg-base-200 text-xl font-bold h-10">{userUpdated.email}
-                                </div>
-                            </fieldset>
+                            {(user?.isAdmin || user?.id == userUpdated.id) && (
+                                <>
+                                    <fieldset className="fieldset col-span-2 w-1/2 pr-2">
+                                        <legend className="fieldset-legend">Email</legend>
+                                        <div
+                                            className="w-full p-2 rounded-md bg-base-200 text-xl font-bold h-10">{userUpdated.email}
+                                        </div>
+                                    </fieldset>
+                                    
+                                </>
+                            )}
+                            {user?.isAdmin && (
+                                <>
+                                    <fieldset className="fieldset w-full">
+                                        <legend className="fieldset-legend">Rôle</legend>
+                                        <div
+                                            className="w-full p-2 rounded-md bg-base-200 text-xl font-bold h-10">{RoleType[userUpdated.role]}
+                                        </div>
+                                    </fieldset>
+                                    <fieldset className="fieldset w-full">
+                                        <legend className="fieldset-legend">Compte désactivé</legend>
+                                        <div
+                                            className="w-full p-2 rounded-md bg-base-200 text-xl font-bold h-10">{userUpdated.isDisable ? "Oui" : "Non"}
+                                        </div>
+                                    </fieldset>
+                                </>
+                            )}
                             <div className="divider col-span-2"></div>
                             <fieldset className="fieldset w-full">
                                 <legend className="fieldset-legend">Date de création</legend>
@@ -107,12 +134,12 @@ export default function UserComponent(props: { user: User, isConsult: boolean })
                     )}
                     <fieldset className="fieldset w-full">
                         <legend className="fieldset-legend">Nom</legend>
-                        {props.isConsult && (
+                        {isConsult && (
                             <div
                                 className="w-full p-2 rounded-md bg-base-200 text-xl font-bold">{userUpdated.lastName}
                             </div>
                         )}
-                        {!props.isConsult && (
+                        {!isConsult && (
                             <input
                                 type="text"
                                 name="lastName"
@@ -121,7 +148,7 @@ export default function UserComponent(props: { user: User, isConsult: boolean })
                                 value={userUpdated!.lastName ?? ""}
                                 onChange={e => {
                                     setIsSuccess(false);
-                                    setUserUpdated({...userUpdated!, lastName: e.target.value});
+                                    setUserUpdated(new User({...userUpdated.toUserType(), lastName: e.target.value}));
                                 }}
                                 autoComplete="off"
                                 required={true}/>
@@ -129,11 +156,11 @@ export default function UserComponent(props: { user: User, isConsult: boolean })
                     </fieldset>
                     <fieldset className="fieldset">
                         <legend className="fieldset-legend">Prénom</legend>
-                        {props.isConsult && (
+                        {isConsult && (
                             <div
                                 className="w-full p-2 rounded-md bg-base-200 text-xl font-bold">{userUpdated.firstName}</div>
                         )}
-                        {!props.isConsult && (
+                        {!isConsult && (
                             <input type="text"
                                    name="firstName"
                                    className="input w-full"
@@ -141,20 +168,23 @@ export default function UserComponent(props: { user: User, isConsult: boolean })
                                    value={userUpdated.firstName ?? ""}
                                    onChange={e => {
                                        setIsSuccess(false);
-                                       setUserUpdated({...userUpdated!, firstName: e.target.value});
+                                       setUserUpdated(new User({
+                                           ...userUpdated.toUserType(),
+                                           firstName: e.target.value
+                                       }));
                                    }}
                                    autoComplete="off"
-                                   disabled={props.isConsult}
+                                   disabled={isConsult}
                                    required={true}/>
                         )}
                     </fieldset>
                     <fieldset className="fieldset">
                         <legend className="fieldset-legend">Matricule</legend>
-                        {props.isConsult && (
+                        {isConsult && (
                             <div
                                 className="w-full p-2 rounded-md bg-base-200 text-xl font-bold">{userUpdated.number}</div>
                         )}
-                        {!props.isConsult && (
+                        {!isConsult && (
                             <input type="number"
                                    name="number"
                                    className="input w-full"
@@ -164,20 +194,23 @@ export default function UserComponent(props: { user: User, isConsult: boolean })
                                    value={userUpdated.number ?? ""}
                                    onChange={e => {
                                        setIsSuccess(false);
-                                       setUserUpdated({...userUpdated!, number: Number(e.target.value)});
+                                       setUserUpdated(new User({
+                                           ...userUpdated.toUserType(),
+                                           number: Number(e.target.value)
+                                       }));
                                    }}
                                    autoComplete="off"
-                                   disabled={props.isConsult}
+                                   disabled={isConsult}
                                    required={true}/>
                         )}
                     </fieldset>
                     <fieldset className="fieldset">
                         <legend className="fieldset-legend">Téléphone</legend>
-                        {props.isConsult && (
+                        {isConsult && (
                             <div
                                 className="w-full p-2 rounded-md bg-base-200 text-xl font-bold">{userUpdated.phoneNumber}</div>
                         )}
-                        {!props.isConsult && (
+                        {!isConsult && (
                             <input type="text"
                                    name="phoneNumber"
                                    className="input w-full"
@@ -187,16 +220,19 @@ export default function UserComponent(props: { user: User, isConsult: boolean })
                                    value={userUpdated.phoneNumber ?? ""}
                                    onChange={e => {
                                        setIsSuccess(false);
-                                       setUserUpdated({...userUpdated!, phoneNumber: e.target.value});
+                                       setUserUpdated(new User({
+                                           ...userUpdated.toUserType(),
+                                           phoneNumber: e.target.value
+                                       }));
                                    }}
                                    autoComplete="off"
-                                   disabled={props.isConsult}
+                                   disabled={isConsult}
                                    required={true}/>
                         )}
                     </fieldset>
                 </div>
                 {
-                    !props.isConsult && (
+                    !isConsult && (
                         <div className="flex flex-row justify-center mt-4">
                             <button type="reset" className="btn btn-error rounded-l-xl w-32">Annuler</button>
                             <button type="submit" className="btn btn-success rounded-r-xl w-32">Valider</button>

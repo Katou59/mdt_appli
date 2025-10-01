@@ -10,6 +10,8 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
         const session = await auth();
         
         if(!session?.user?.discordId) return NextResponse.json({ error: "Unauthorized" }, {status: 401});
+        const currentUser = await UserRepository.get(session.user.discordId);
+        if(!currentUser) return NextResponse.json({ error: "Unauthorized" }, {status: 401});
         
         const {id} = await context.params;
 
@@ -17,6 +19,10 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
 
         if (!userResult) {
             return NextResponse.json({error: "User not found"}, {status: 404});
+        }
+        
+        if(!currentUser.isAdmin && currentUser.id !== userResult.id) {
+            userResult.email = null;
         }
 
         return NextResponse.json(userResult);

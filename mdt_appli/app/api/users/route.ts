@@ -49,6 +49,12 @@ export async function GET(request: NextRequest) {
 
         const users = await UserRepository.getList();
         
+        if(!currentUser.isAdmin){
+            users?.forEach((user) => {
+                user.email = null
+            })
+        }
+        
         return NextResponse.json(users);
     } catch (e) {
         console.error(e);

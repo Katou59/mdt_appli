@@ -23,11 +23,11 @@ export default async function ProtectedLayout({children,}: Readonly<{ children: 
     ];
 
     const botItems = [
-        {name: "Profil", link: "/police/users/me"},
+        {name: "Mon profil", link: "/police/users/me"},
     ]
 
     const adminItems = [
-        {name: "Utilisateurs", link: "/police/users", role: RoleType.Admin},
+        {name: "Utilisateurs", link: "/police/users"},
     ]
 
     async function logoutAction() {
@@ -77,10 +77,10 @@ export default async function ProtectedLayout({children,}: Readonly<{ children: 
                                     );
                                 })}
                             </ul>
-                            <form action={logoutAction} className="w-full">
+                            <form action={logoutAction} className="flex justify-center">
                                 <button
                                     type="submit"
-                                    className="link link-hover text-error mb-2 ml-4 text-sm"
+                                    className="link link-hover text-error mb-2 text-sm"
                                 >
                                     Déconnexion
                                 </button>
