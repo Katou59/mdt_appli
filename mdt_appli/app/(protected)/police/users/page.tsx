@@ -21,9 +21,9 @@ export default function Users() {
         max: 20
     });
 
+    useEffect(() => {
     if (!user?.isAdmin) return redirect('/police/dashboard');
 
-    useEffect(() => {
         axiosClient.get(`/users`).then(u => {
             const results = u.data as UserType[];
             const allUsers = results.map(u => new User(u));
@@ -40,7 +40,7 @@ export default function Users() {
             setUsers(allUsers.slice(0, pager.max));
             setIsLoading(false);
         });
-    }, []);
+    }, [pager.max, user?.isAdmin]);
 
     function handleTh(e: React.MouseEvent<HTMLTableHeaderCellElement>, type: "name" | "email" | "number" | "lastName" | "rank" | "role" | "isDisable") {
         e.preventDefault();

@@ -16,7 +16,7 @@ export async function PUT(request: NextRequest) {
         const userToAddRequest = await request.json() as UserToUpdateType;
         if(!userToAddRequest?.id) return NextResponse.json({error: "Bad Request"}, {status: 400})
         
-        let userToAdd = await UserRepository.get(userToAddRequest.id);
+        const userToAdd = await UserRepository.get(userToAddRequest.id);
         if(!userToAdd?.id) return NextResponse.json({error: "Bad Request"}, {status: 400})
         
         userToAdd.update(userToAddRequest);

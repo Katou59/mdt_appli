@@ -1,6 +1,7 @@
 import {UserToUpdateType, UserType} from "@/types/db/user";
 import { RankType } from "../db/rank";
 import {RoleType} from "@/types/enums/roleType";
+import Rank from "@/types/class/Rank";
 
 export default class User {
     id: string;
@@ -12,7 +13,7 @@ export default class User {
     number: number | null;
     firstName: string | null;
     lastName: string | null;
-    rank: RankType | null;
+    rank: Rank | null;
     phoneNumber: string | null;
     isDisable: boolean;
     role: RoleType;
@@ -28,7 +29,7 @@ export default class User {
         this.number = data.number;
         this.firstName = data.firstName;
         this.lastName = data.lastName;
-        this.rank = data.rank;
+        this.rank = data.rank ? new Rank(data.rank) : null;
         this.phoneNumber = data.phoneNumber;
         this.isDisable = data.isDisable;
         this.role = data.role;
@@ -73,7 +74,7 @@ export default class User {
             number: this.number,
             firstName: this.firstName,
             lastName: this.lastName,
-            rank: this.rank,
+            rank: this.rank?.toRankType() ?? null,
             phoneNumber: this.phoneNumber,
             isDisable: this.isDisable,
             role: this.role,

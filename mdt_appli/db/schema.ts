@@ -1,4 +1,4 @@
-import {bigint, boolean, integer, pgTable, varchar} from "drizzle-orm/pg-core";
+import {boolean, integer, pgTable, varchar} from "drizzle-orm/pg-core";
 import {timestamp} from "drizzle-orm/pg-core/columns/timestamp";
 
 export const usersTable = pgTable("users", {
@@ -26,5 +26,6 @@ export const jobsTable = pgTable("jobs", {
 export const ranksTable = pgTable("ranks", {
     id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
     name: varchar({length: 50}).notNull(),
-    jobId: integer("job_id").references(() => jobsTable.id).notNull().default(1)
+    jobId: integer("job_id").references(() => jobsTable.id).notNull().default(1),
+	order: integer("order").notNull()
 });

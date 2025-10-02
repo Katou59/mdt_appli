@@ -121,7 +121,7 @@ export default function UserComponent(props: { user: UserType, isConsult: boolea
                             <fieldset className="fieldset w-full">
                                 <legend className="fieldset-legend">Rôle</legend>
                                 <div
-                                    className="w-full p-2 rounded-md bg-base-200 text-xl font-bold h-10">{userUpdated.rank?.Job?.name}
+                                    className="w-full p-2 rounded-md bg-base-200 text-xl font-bold h-10">{userUpdated.rank?.job?.name}
                                 </div>
                             </fieldset>
                             <fieldset className="fieldset w-full">

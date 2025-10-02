@@ -1,7 +1,8 @@
 import {JobType} from "@/types/db/job";
 
-export type RankType = {
+export interface RankType {
     id: number | null;
     name: string | null;
-    Job: JobType | null
+    job: JobType | null;
+	order: number | null;
 }

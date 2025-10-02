@@ -28,6 +28,7 @@ export default async function ProtectedLayout({children,}: Readonly<{ children: 
 
     const adminItems = [
         {name: "Utilisateurs", link: "/police/users"},
+        {name: "Grades", link: "/police/ranks"},
     ]
 
     async function logoutAction() {

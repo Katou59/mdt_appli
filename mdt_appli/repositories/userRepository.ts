@@ -1,12 +1,11 @@
-import {auth} from "@/auth";
 import {drizzle} from "drizzle-orm/node-postgres";
-import {UserToUpdateType, UserType} from "@/types/db/user";
 import {jobsTable, ranksTable, usersTable} from "@/db/schema";
 import {eq} from "drizzle-orm";
 import {JobType} from "@/types/db/job";
 import {RankType} from "@/types/db/rank";
 import {RoleType} from "@/types/enums/roleType";
 import User from "@/types/class/User";
+import Rank from "@/types/class/Rank";
 
 const db = drizzle(process.env.DATABASE_URL!);
 
@@ -34,7 +33,8 @@ export class UserRepository {
         const rank: RankType | null = rankDb == null ? null : {
             id: rankDb?.id ?? null,
             name: rankDb?.name ?? null,
-            Job: job
+            job: job,
+			order: rankDb.order
         }
 
         return new User({
@@ -73,8 +73,9 @@ export class UserRepository {
             const rank: RankType | null = rankDb == null ? null : {
                 id: rankDb?.id ?? null,
                 name: rankDb?.name ?? null,
-                Job: job
-            }
+                job: job,
+				order: rankDb?.order
+            };
 
             return new User({
                 createdAt: u.users.createdAt,
@@ -86,7 +87,7 @@ export class UserRepository {
                 name: u.users.name,
                 number: u.users.number,
                 id: u.users.id,
-                rank: rank,
+                rank: rank ? new Rank(rank) : null,
                 isDisable: u.users.isDisable ?? false,
                 phoneNumber: u.users.phoneNumber,
                 role: u.users.role as RoleType,
