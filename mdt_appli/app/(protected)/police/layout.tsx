@@ -1,99 +1,97 @@
-import {auth, signOut} from "@/auth";
-import {redirect} from "next/navigation";
+import { auth, signOut } from "@/auth";
+import { redirect } from "next/navigation";
 import Link from "next/link";
-import {UserType} from "@/types/db/user";
-import {createAxiosServer} from "@/lib/axiosServer";
-import {UserProvider} from "@/lib/Contexts/UserContext";
-import {UserName} from "@/components/UserName";
+import { UserProvider } from "@/lib/Contexts/UserContext";
+import { UserName } from "@/components/UserName";
 import Image from "next/image";
-import {RoleType} from "@/types/enums/roleType";
-import User from "@/types/class/User";
-import {UserRepository} from "@/repositories/userRepository";
+import { UserRepository } from "@/repositories/userRepository";
 
-export default async function ProtectedLayout({children,}: Readonly<{ children: React.ReactNode; }>) {
-    const session = await auth();
+export default async function ProtectedLayout({
+	children,
+}: Readonly<{ children: React.ReactNode }>) {
+	const session = await auth();
 
-    if (!session?.user?.discordId) return redirect("/");
+	if (!session?.user?.discordId) return redirect("/");
 
-    const user = await UserRepository.get(session.user.discordId);
-    if (!user) return  redirect("/");
+	const user = await UserRepository.get(session.user.discordId);
+	if (!user) return redirect("/");
 
-    const topItems = [
-        {name: "Accueil", link: "/police/dashboard"},
-    ];
+	const topItems = [{ name: "Accueil", link: "/police/dashboard" }];
 
-    const botItems = [
-        {name: "Mon profil", link: "/police/users/me"},
-    ]
+	const botItems = [{ name: "Mon profil", link: "/police/users/me" }];
 
-    const adminItems = [
-        {name: "Utilisateurs", link: "/police/users"},
-        {name: "Grades", link: "/police/ranks"},
-    ]
+	const adminItems = [
+		{ name: "Utilisateurs", link: "/police/users" },
+		{ name: "Grades", link: "/police/ranks" },
+	];
 
-    async function logoutAction() {
-        "use server";
-        await signOut({redirectTo: "/"});
-    }
+	async function logoutAction() {
+		"use server";
+		await signOut({ redirectTo: "/" });
+	}
 
-    return (
-        <UserProvider initialUser={user.toUserType()}>
-            <div className="flex flex-row w-full h-full min-h-full">
-                <div className="w-56">
-                    <div className="fixed h-full min-h-full w-56 flex flex-col bg-base-200 pt-2 pb-2">
-                        <div className="w-full">
-                            <Image src="/logolspd.webp" alt="Logo police" width={100} height={100} className="m-auto"/>
-                            <ul className="menu w-full mt-4">
-                                {/*<li className="menu-title">Title</li>*/}
-                                {topItems.map((item, index) => (
-                                    <li key={index}>
-                                        <Link href={item.link}>{item.name}</Link>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                        <div className="grow"></div>
-                        <div className="w-full">
-                            <ul className="menu bg-base-200 rounded-box w-56">
-                                {user.isAdmin && (
-                                    <li>
-                                        <details>
-                                            <summary>Admin</summary>
-                                            <ul>
-                                                {adminItems.map((item, index) => (
-                                                    <li key={index}>
-                                                        <Link href={item.link}>{item.name}</Link>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </details>
-                                    </li>
-                                )}
+	return (
+		<UserProvider initialUser={user.toUserType()}>
+			<div className="flex flex-row w-full h-full min-h-full">
+				<div className="flex w-[250px]">
+					<div className="fixed h-full min-h-full flex flex-col bg-base-200 pt-2 pb-2 w-[250px]">
+						<div className="w-full">
+							<Image
+								src="/logolspd.webp"
+								alt="Logo police"
+								width={100}
+								height={100}
+								className="m-auto"
+							/>
+							<ul className="menu w-full mt-4">
+								{/*<li className="menu-title">Title</li>*/}
+								{topItems.map((item, index) => (
+									<li key={index}>
+										<Link href={item.link}>{item.name}</Link>
+									</li>
+								))}
+							</ul>
+						</div>
+						<div className="grow"></div>
+						<div className="w-full">
+							<ul className="menu bg-base-200 rounded-box w-full">
+								{user.isAdmin && (
+									<li>
+										<details>
+											<summary>Admin</summary>
+											<ul className="menu w-full mt-4">
+												{adminItems.map((item, index) => (
+													<li key={index}>
+														<Link href={item.link}>{item.name}</Link>
+													</li>
+												))}
+											</ul>
+										</details>
+									</li>
+								)}
 
-                                {botItems.map((item, index) => {
-                                    return (
-                                        <li key={index}>
-                                            <Link href={item.link}>{item.name}</Link>
-                                        </li>
-                                    );
-                                })}
-                            </ul>
-                            <form action={logoutAction} className="flex justify-center">
-                                <button
-                                    type="submit"
-                                    className="link link-hover text-error mb-2 text-sm"
-                                >
-                                    Déconnexion
-                                </button>
-                            </form>
-                            <UserName/>
-                        </div>
-                    </div>
-                </div>
-                <div className="grow h-full p-4">
-                    {children}
-                </div>
-            </div>
-        </UserProvider>
-    );
+								{botItems.map((item, index) => {
+									return (
+										<li key={index}>
+											<Link href={item.link}>{item.name}</Link>
+										</li>
+									);
+								})}
+							</ul>
+							<form action={logoutAction} className="flex justify-center">
+								<button
+									type="submit"
+									className="link link-hover text-error mb-2 text-sm"
+								>
+									Déconnexion
+								</button>
+							</form>
+							<UserName />
+						</div>
+					</div>
+				</div>
+				<div className="grow h-full p-4">{children}</div>
+			</div>
+		</UserProvider>
+	);
 }

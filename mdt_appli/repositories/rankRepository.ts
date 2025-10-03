@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/node-postgres";
-import { jobsTable, ranksTable } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { jobsTable, ranksTable, usersTable } from "@/db/schema";
+import { eq, sql } from "drizzle-orm";
 import { RankType } from "@/types/db/rank";
 import Rank from "@/types/class/Rank";
 
@@ -9,16 +9,33 @@ const db = drizzle(process.env.DATABASE_URL!);
 export default class RankRepository {
 	static async GetList(): Promise<Rank[]> {
 		const ranks = await db
-			.select()
+			.select({
+				id: ranksTable.id,
+				name: ranksTable.name,
+				order: ranksTable.order,
+				jobId: ranksTable.jobId,
+				jobName: jobsTable.name,
+				userCount: sql<number>`count(${usersTable.id})`,
+			})
 			.from(ranksTable)
-			.leftJoin(jobsTable, eq(jobsTable.id, ranksTable.jobId));
+			.leftJoin(jobsTable, eq(jobsTable.id, ranksTable.jobId))
+			.leftJoin(usersTable, eq(usersTable.rankId, ranksTable.id))
+			.groupBy(
+				ranksTable.id,
+				ranksTable.name,
+				ranksTable.order,
+				ranksTable.jobId,
+				jobsTable.name
+			)
+			.orderBy(ranksTable.order);
 
 		return ranks.map((rank) => {
 			return new Rank({
-				id: rank.ranks.id ?? null,
-				name: rank.ranks.name,
-				job: { id: rank.jobs?.id, name: rank.jobs?.name },
-				order: rank.ranks.order,
+				id: rank.id,
+				name: rank.name,
+				job: rank.jobId ? { id: rank.jobId, name: rank.jobName } : null,
+				order: rank.order,
+				userCount: rank.userCount, // 👈 tu peux l’ajouter dans RankType
 			} as RankType);
 		});
 	}
@@ -46,5 +63,9 @@ export default class RankRepository {
 				}
 			})
 		);
+	}
+
+	public static async delete(id: number) {
+		await db.delete(ranksTable).where(eq(ranksTable.id, id));
 	}
 }

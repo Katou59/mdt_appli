@@ -1,106 +1,128 @@
-import {drizzle} from "drizzle-orm/node-postgres";
-import {jobsTable, ranksTable, usersTable} from "@/db/schema";
-import {eq} from "drizzle-orm";
-import {JobType} from "@/types/db/job";
-import {RankType} from "@/types/db/rank";
-import {RoleType} from "@/types/enums/roleType";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { jobsTable, ranksTable, usersTable } from "@/db/schema";
+import { and, eq } from "drizzle-orm";
+import { JobType } from "@/types/db/job";
+import { RankType } from "@/types/db/rank";
+import { RoleType } from "@/types/enums/roleType";
 import User from "@/types/class/User";
 import Rank from "@/types/class/Rank";
 
 const db = drizzle(process.env.DATABASE_URL!);
 
 export class UserRepository {
-    public static async get(discordId: string): Promise<User | null> {
-        const users = await db
-            .select()
-            .from(usersTable)
-            .leftJoin(jobsTable, eq(jobsTable.id, usersTable.jobId))
-            .leftJoin(ranksTable, eq(ranksTable.id, usersTable.rankId))
-            .where(eq(usersTable.id, discordId));
+	public static async get(discordId: string): Promise<User | null> {
+		const users = await db
+			.select()
+			.from(usersTable)
+			.leftJoin(jobsTable, eq(jobsTable.id, usersTable.jobId))
+			.leftJoin(ranksTable, eq(ranksTable.id, usersTable.rankId))
+			.where(eq(usersTable.id, discordId));
 
-        const userDb = users[0]?.users;
+		const userDb = users[0]?.users;
 
-        if (!userDb) return null;
+		if (!userDb) return null;
 
-        const jobDb = users[0]?.jobs;
-        const rankDb = users[0]?.ranks;
+		const jobDb = users[0]?.jobs;
+		const rankDb = users[0]?.ranks;
 
-        const job: JobType | null = jobDb == null ? null : {
-            id: jobDb?.id ?? null,
-            name: jobDb?.name ?? null,
-        }
+		const job: JobType | null =
+			jobDb == null
+				? null
+				: {
+						id: jobDb?.id ?? null,
+						name: jobDb?.name ?? null,
+				  };
 
-        const rank: RankType | null = rankDb == null ? null : {
-            id: rankDb?.id ?? null,
-            name: rankDb?.name ?? null,
-            job: job,
-			order: rankDb.order
-        }
+		const rank: RankType | null =
+			rankDb == null
+				? null
+				: {
+						id: rankDb?.id ?? null,
+						name: rankDb?.name ?? null,
+						job: job,
+						order: rankDb.order,
+						userCount: undefined,
+				  };
 
-        return new User({
-            createdAt: new Date(userDb.createdAt),
-            email: userDb.email,
-            firstLogin: userDb.firstLogin,
-            firstName: userDb.firstName,
-            lastLogin: userDb.lastLogin,
-            lastName: userDb.lastName,
-            name: userDb.name,
-            number: userDb.number,
-            id: userDb.id,
-            rank: rank,
-            isDisable: userDb.isDisable ?? false,
-            phoneNumber: userDb.phoneNumber,
-            role: userDb?.role as RoleType,
-        });
-    }
+		return new User({
+			createdAt: new Date(userDb.createdAt),
+			email: userDb.email,
+			firstLogin: userDb.firstLogin,
+			firstName: userDb.firstName,
+			lastLogin: userDb.lastLogin,
+			lastName: userDb.lastName,
+			name: userDb.name,
+			number: userDb.number,
+			id: userDb.id,
+			rank: rank,
+			isDisable: userDb.isDisable ?? false,
+			phoneNumber: userDb.phoneNumber,
+			role: userDb?.role as RoleType,
+		});
+	}
 
-    public static async getList(): Promise<User[] | null> {
-        const users = await db
-            .select()
-            .from(usersTable)
-            .leftJoin(jobsTable, eq(jobsTable.id, usersTable.jobId))
-            .leftJoin(ranksTable, eq(ranksTable.id, usersTable.rankId));
+	public static async getList(params?: { rankId?: number }): Promise<User[] | null> {
+		const conditions = [];
 
-        return users.map(u => {
-            const jobDb = u.jobs;
-            const rankDb = u.ranks;
+		if (params?.rankId !== undefined) {
+			conditions.push(eq(usersTable.rankId, params.rankId));
+		}
 
-            const job: JobType | null = jobDb == null ? null : {
-                id: jobDb?.id ?? null,
-                name: jobDb?.name ?? null,
-            }
+		let query = db
+			.select()
+			.from(usersTable)
+			.leftJoin(jobsTable, eq(jobsTable.id, usersTable.jobId))
+			.leftJoin(ranksTable, eq(ranksTable.id, usersTable.rankId));
 
-            const rank: RankType | null = rankDb == null ? null : {
-                id: rankDb?.id ?? null,
-                name: rankDb?.name ?? null,
-                job: job,
-				order: rankDb?.order
-            };
+		if (conditions.length > 0) {
+			// ici, query est encore un QueryBuilder
+			query = query.where(and(...conditions)) as typeof query;
+		}
 
-            return new User({
-                createdAt: u.users.createdAt,
-                email: u.users.email,
-                firstLogin: u.users.firstLogin,
-                firstName: u.users.firstName,
-                lastLogin: u.users.lastLogin,
-                lastName: u.users.lastName,
-                name: u.users.name,
-                number: u.users.number,
-                id: u.users.id,
-                rank: rank ? new Rank(rank) : null,
-                isDisable: u.users.isDisable ?? false,
-                phoneNumber: u.users.phoneNumber,
-                role: u.users.role as RoleType,
-            });
-        });
-    }
+		return (await query).map((u) => {
+			const jobDb = u.jobs;
+			const rankDb = u.ranks;
 
-    public static async update(user: User): Promise<User | null> {
-        await db
-            .update(usersTable)
-            .set(user)
-            .where(eq(usersTable.id, user.id));
+			const job: JobType | null =
+				jobDb == null
+					? null
+					: {
+							id: jobDb?.id ?? null,
+							name: jobDb?.name ?? null,
+					  };
 
-        return await UserRepository.get(user.id);
-    }
+			const rank: RankType | null =
+				rankDb == null
+					? null
+					: {
+							id: rankDb?.id ?? null,
+							name: rankDb?.name ?? null,
+							job: job,
+							order: rankDb?.order,
+							userCount: undefined,
+					  };
+
+			return new User({
+				createdAt: u.users.createdAt,
+				email: u.users.email,
+				firstLogin: u.users.firstLogin,
+				firstName: u.users.firstName,
+				lastLogin: u.users.lastLogin,
+				lastName: u.users.lastName,
+				name: u.users.name,
+				number: u.users.number,
+				id: u.users.id,
+				rank: rank ? new Rank(rank) : null,
+				isDisable: u.users.isDisable ?? false,
+				phoneNumber: u.users.phoneNumber,
+				role: u.users.role as RoleType,
+			});
+		});
+	}
+
+	public static async update(user: User): Promise<User | null> {
+		await db.update(usersTable).set(user).where(eq(usersTable.id, user.id));
+
+		return await UserRepository.get(user.id);
+	}
 }

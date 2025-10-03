@@ -1,18 +1,13 @@
-import {drizzle} from "drizzle-orm/node-postgres";
 import {NextRequest, NextResponse} from "next/server";
-import {UserToUpdateType, UserType} from "@/types/db/user";
+import {UserToUpdateType} from "@/types/db/user";
 import {auth} from "@/auth";
 import {UserRepository} from "@/repositories/userRepository";
-import {RoleType} from "@/types/enums/roleType";
 
-const db = drizzle(process.env.DATABASE_URL!);
 
 export async function PUT(request: NextRequest) {
     try {
         const session = await auth();
 
-        if(!session?.user?.discordId) return NextResponse.json({ error: "Unauthorized" }, {status: 401});
-        
         const userToAddRequest = await request.json() as UserToUpdateType;
         if(!userToAddRequest?.id) return NextResponse.json({error: "Bad Request"}, {status: 400})
         
@@ -21,8 +16,8 @@ export async function PUT(request: NextRequest) {
         
         userToAdd.update(userToAddRequest);
         
-        const currentUser = await UserRepository.get(session.user.discordId);
-        const isSelf = session.user.discordId === userToAdd.id;
+        const currentUser = await UserRepository.get(session!.user.discordId!);
+        const isSelf = session!.user.discordId === userToAdd.id;
         
         if (currentUser?.isDisable || (!currentUser?.isAdmin && !isSelf)) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -37,19 +32,14 @@ export async function PUT(request: NextRequest) {
     }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
     try {
         const session = await auth();
-
-        if(!session?.user?.discordId) return NextResponse.json({ error: "Unauthorized" }, {status: 401});
-        
-        const currentUser = await UserRepository.get(session.user.discordId);
-        if(!currentUser?.isAdmin || currentUser.isDisable)
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        const currentUser = await UserRepository.get(session!.user.discordId!);
 
         const users = await UserRepository.getList();
         
-        if(!currentUser.isAdmin){
+        if(!currentUser!.isAdmin){
             users?.forEach((user) => {
                 user.email = null
             })

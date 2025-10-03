@@ -6,11 +6,12 @@ import { UserRepository } from "@/repositories/userRepository";
 import Rank from "@/types/class/Rank";
 
 export async function GET() {
-	const session = await auth();
-	if (!session?.user?.discordId)
-		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-	return NextResponse.json(await RankRepository.GetList());
+	try {
+		return NextResponse.json(await RankRepository.GetList());
+	} catch (e) {
+		console.error(e);
+		return NextResponse.json({ error: e }, { status: 500 });
+	}
 }
 
 export async function PUT(request: NextRequest) {
@@ -21,7 +22,7 @@ export async function PUT(request: NextRequest) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
 		const currentUser = await UserRepository.get(session.user.discordId);
-		if (currentUser?.isDisable) {
+		if (currentUser?.isDisable || !currentUser?.isAdmin) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 		}
 

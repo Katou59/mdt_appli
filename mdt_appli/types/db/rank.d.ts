@@ -5,4 +5,5 @@ export interface RankType {
     name: string | null;
     job: JobType | null;
 	order: number | null;
+	userCount: number |undefined;
 }
