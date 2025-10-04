@@ -17,6 +17,7 @@ export default class User {
 	isDisable: boolean;
 	role: RoleType;
 	isAdmin: boolean;
+	fullName: string | null;
 
 	constructor(data: UserType) {
 		this.id = data.id;
@@ -32,7 +33,10 @@ export default class User {
 		this.phoneNumber = data.phoneNumber;
 		this.isDisable = data.isDisable;
 		this.role = data.role;
+
 		this.isAdmin = data.role === RoleType.Admin || data.role === RoleType.SuperAdmin;
+		this.fullName =
+			this.firstName && this.lastName ? `${this.firstName} ${this.lastName}` : null;
 	}
 
 	update(user: UserToUpdateType) {

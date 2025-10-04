@@ -79,8 +79,7 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
 			<div className="w-full h-full">
 				<h1 className="text-4xl font-bold text-primary text-center mb-4">
 					{user?.id == userToUpdate.id && "Mon profil"}
-					{user?.id != userToUpdate.id &&
-						`Profil de ${userToUpdate?.firstName} ${userToUpdate?.lastName}`}
+					{user?.id != userToUpdate.id && `Profil de ${userToUpdate?.fullName ?? userToUpdate?.id}`}
 				</h1>
 				{isConsult && (user?.isAdmin || user?.id === userToUpdate.id) && (
 					<div className="flex justify-end">
