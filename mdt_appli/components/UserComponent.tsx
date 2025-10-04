@@ -24,7 +24,7 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
 		async function init() {
 			if (!props.user.rank?.id) return;
 
-			const result = await getData(axiosClient.get(`/ranks/${props.user.rank!.id}`));
+			const result = await getData(axiosClient.get(`/ranks/${props.user.rank!.job?.id}`));
 			if (result.errorMessage) {
 				setErrorMessage(result.errorMessage);
 				return;
@@ -37,7 +37,7 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
 		if (user?.isAdmin) {
 			init();
 		}
-	}, [user?.isAdmin]);
+	}, [props.user.rank, user?.isAdmin]);
 
 	async function onSubmit(e: React.FormEvent) {
 		e.preventDefault();

@@ -57,41 +57,39 @@ export default async function ProtectedLayout({
 							</ul>
 						</div>
 						<div className="grow"></div>
-						<div className="w-full">
-							<ul className="menu bg-base-200 rounded-box w-full">
-								{user.isAdmin && (
-									<li>
-										<details>
-											<summary>Admin</summary>
-											<ul className="menu w-full mt-4">
-												{adminItems.map((item, index) => (
-													<li key={index}>
-														<Link href={item.link}>{item.name}</Link>
-													</li>
-												))}
-											</ul>
-										</details>
-									</li>
-								)}
+						<ul className="menu bg-base-200 rounded-box w-full">
+							{user.isAdmin && (
+								<li>
+									<details open>
+										<summary>Admin</summary>
+										<ul className="">
+											{adminItems.map((item, index) => (
+												<li key={index}>
+													<Link href={item.link}>{item.name}</Link>
+												</li>
+											))}
+										</ul>
+									</details>
+								</li>
+							)}
 
-								{botItems.map((item, index) => {
-									return (
-										<li key={index}>
-											<Link href={item.link}>{item.name}</Link>
-										</li>
-									);
-								})}
-							</ul>
-							<form action={logoutAction} className="flex justify-center">
-								<button
-									type="submit"
-									className="link link-hover text-error mb-2 text-sm"
-								>
-									Déconnexion
-								</button>
-							</form>
-							<UserName />
-						</div>
+							{botItems.map((item, index) => {
+								return (
+									<li key={index}>
+										<Link href={item.link}>{item.name}</Link>
+									</li>
+								);
+							})}
+						</ul>
+						<form action={logoutAction} className="flex justify-center">
+							<button
+								type="submit"
+								className="link link-hover text-error mb-2 text-sm"
+							>
+								Déconnexion
+							</button>
+						</form>
+						<UserName />
 					</div>
 				</div>
 				<div className="grow h-auto p-4 pb-10 ml-[250px]">{children}</div>
