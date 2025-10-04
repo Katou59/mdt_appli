@@ -21,6 +21,7 @@ export default async function ProtectedLayout({
 	const botItems = [{ name: "Mon profil", link: "/police/users/me" }];
 
 	const adminItems = [
+		{ name: "Ajouter un nouvel utilisateur", link: "/police/users/add" },
 		{ name: "Utilisateurs", link: "/police/users" },
 		{ name: "Grades", link: "/police/ranks" },
 	];

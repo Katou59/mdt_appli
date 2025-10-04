@@ -6,15 +6,18 @@ import { MouseEvent, useEffect, useState } from "react";
 import axiosClient, { getData } from "@/lib/axiosClient";
 import Rank from "@/types/class/Rank";
 import { RankType } from "@/types/db/rank";
-import { AxiosError } from "axios";
 import Alert from "@/components/Alert";
+import Job from "@/types/class/Job";
+import { JobType } from "@/types/db/job";
 
 export default function Ranks() {
 	const { user } = useUser();
 	const router = useRouter();
 	const [ranks, setRanks] = useState<Rank[]>([]);
+	const [jobs, setJobs] = useState<Job[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [errorMessage, setErrorMessage] = useState("");
+	const [selectedJobId, setSelectedJobId] = useState(0);
 
 	useEffect(() => {
 		if (!user?.isAdmin) {
@@ -22,21 +25,38 @@ export default function Ranks() {
 		}
 
 		const fetchRanks = async () => {
-			try {
-				const { data } = await axiosClient.get<RankType[]>("/ranks");
-				const results = data
+			const jobsResponse = await getData(axiosClient.get<JobType[]>("/jobs"));
+			if (jobsResponse.errorMessage) {
+				setErrorMessage(jobsResponse.errorMessage);
+			}
+
+			if (jobsResponse.data) {
+				setJobs(jobsResponse.data.map((x) => new Job(x)));
+			}
+
+			if (!jobsResponse.data) {
+				setIsLoading(false);
+				return;
+			}
+
+			setSelectedJobId(jobsResponse.data[0].id!);
+
+			const ranksResponse = await getData(
+				axiosClient.get<RankType[]>(`/ranks/${jobsResponse.data[0].id!}`)
+			);
+			if (ranksResponse.errorMessage) {
+				setErrorMessage(ranksResponse.errorMessage);
+			}
+
+			if (ranksResponse.data) {
+				const results = ranksResponse.data
 					.map((x) => new Rank(x))
 					.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-
 				setRanks(results);
-			} catch {
-				setErrorMessage("Erreur lors de la récupération des grades");
-			} finally {
-				setIsLoading(false);
 			}
+			setIsLoading(false);
 		};
 
-		setErrorMessage("");
 		fetchRanks();
 	}, [router, user]);
 
@@ -85,11 +105,13 @@ export default function Ranks() {
 		const data = new FormData(event.currentTarget);
 		const newRankName = data.get("newRankName");
 
+		const job = jobs.find((j) => j.id == selectedJobId)?.toJobType();
+
 		const updated = [
 			...ranks,
 			new Rank({
 				id: null,
-				job: null,
+				job: job ?? null,
 				order: getLastOrder(ranks) + 1,
 				name: newRankName as string,
 				userCount: undefined,
@@ -113,6 +135,7 @@ export default function Ranks() {
 			.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
 		setRanks(ranksUpdated);
+		
 
 		const modal = document.getElementById("addRank") as HTMLDialogElement | null;
 		if (modal) {
@@ -142,8 +165,41 @@ export default function Ranks() {
 					Liste des Rangs
 				</h1>
 
+				<select
+					className="select"
+					value={selectedJobId}
+					onChange={async (e) => {
+						setSelectedJobId(Number(e.target.value));
+						const ranksResponse = await getData(
+							axiosClient.get<RankType[]>(`/ranks/${Number(e.target.value)}`)
+						);
+
+						if (ranksResponse.errorMessage) {
+							setErrorMessage(ranksResponse.errorMessage);
+							return;
+						}
+
+						if (ranksResponse.data) {
+							const results = ranksResponse.data
+								.map((x) => new Rank(x))
+								.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+							setRanks(results);
+						}
+					}}
+				>
+					{jobs.map((x) => (
+						<option key={x.id} value={x.id!}>
+							{x.id!} {x.name}
+						</option>
+					))}
+				</select>
+
 				{/* Liste des rangs */}
-				<p className="text-xs text-center w-96">Drag & drop pour changer l&apos;ordre</p>
+				<p className="text-xs text-center w-96 mt-4">
+					{ranks.length > 0
+						? "Drag & drop pour changer l&apos;ordre"
+						: "La liste est vide"}
+				</p>
 				<ul className="list bg-base-200 rounded-box shadow-md mt-2 w-96">
 					{ranks.map((rank, index) => (
 						<li

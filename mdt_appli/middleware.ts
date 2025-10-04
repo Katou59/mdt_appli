@@ -6,10 +6,10 @@ export const config = {
 import { auth } from "@/auth";
 import { NextRequest, NextResponse } from "next/server";
 import { UserRepository } from "@/repositories/userRepository";
-import { UserType } from "@/types/db/user";
 
 const apiAdmins = [
 	{ path: "/api/users", method: "GET" },
+	{ path: "/api/users", method: "POST" },
 	{ path: "/api/ranks", method: "PUT" },
 	{ path: "/api/ranks", method: "DELETE" },
 ];
@@ -29,8 +29,12 @@ export async function middleware(req: NextRequest) {
 		return NextResponse.redirect("/");
 	}
 
-	const userDb: UserType | null = await UserRepository.get(session.user.discordId);
-	if (!userDb || userDb.isDisable) {
+	const userDb = await UserRepository.get(session.user.discordId);
+	if (userDb?.isDisable) {
+		return NextResponse.redirect("/");
+	}
+
+	if (userDb?.isDisable) {
 		return NextResponse.redirect(new URL("/", req.url));
 	}
 

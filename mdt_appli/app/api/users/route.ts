@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { UserToUpdateType } from "@/types/db/user";
+import { UserToCreateType, UserToUpdateType } from "@/types/db/user";
 import { auth } from "@/auth";
 import { UserRepository } from "@/repositories/userRepository";
 import Rank from "@/types/class/Rank";
@@ -52,6 +52,18 @@ export async function GET() {
 		}
 
 		return NextResponse.json(users);
+	} catch (e) {
+		console.error(e);
+		return NextResponse.json({ error: e }, { status: 500 });
+	}
+}
+
+export async function POST(request: NextRequest) {
+	try {
+		const userToAddRequest = (await request.json()) as UserToCreateType;
+		await UserRepository.add(userToAddRequest);
+
+		return NextResponse.json((await UserRepository.get(userToAddRequest.id))?.toUserType());
 	} catch (e) {
 		console.error(e);
 		return NextResponse.json({ error: e }, { status: 500 });

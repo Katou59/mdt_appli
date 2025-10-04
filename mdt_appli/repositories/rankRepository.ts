@@ -7,7 +7,7 @@ import Rank from "@/types/class/Rank";
 const db = drizzle(process.env.DATABASE_URL!);
 
 export default class RankRepository {
-	static async GetList(): Promise<Rank[]> {
+	static async GetList(jobId: number): Promise<Rank[]> {
 		const ranks = await db
 			.select({
 				id: ranksTable.id,
@@ -27,7 +27,8 @@ export default class RankRepository {
 				ranksTable.jobId,
 				jobsTable.name
 			)
-			.orderBy(ranksTable.order);
+			.orderBy(ranksTable.order)
+			.where(eq(ranksTable.jobId, jobId));
 
 		return ranks.map((rank) => {
 			return new Rank({

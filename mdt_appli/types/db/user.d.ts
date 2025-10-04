@@ -29,3 +29,9 @@ export interface UserToUpdateType {
     name?: string,
     firstLogin?: Date | string
 }
+
+export interface UserToCreateType {
+	id: string;
+	jobId: number | null;
+	rankId : number | null;
+}

@@ -6,6 +6,7 @@ import { RankType } from "@/types/db/rank";
 import { RoleType } from "@/types/enums/roleType";
 import User from "@/types/class/User";
 import Rank from "@/types/class/Rank";
+import { UserToCreateType } from "@/types/db/user";
 
 const db = drizzle(process.env.DATABASE_URL!);
 
@@ -125,5 +126,13 @@ export class UserRepository {
 			.update(usersTable)
 			.set({ ...user, jobId: user.rank?.job?.id, rankId: user.rank?.id })
 			.where(eq(usersTable.id, user.id));
+	}
+
+	public static async add(userToCreate: UserToCreateType): Promise<void> {
+		await db.insert(usersTable).values({
+			id: userToCreate.id,
+			jobId: userToCreate.jobId,
+			rankId: userToCreate.jobId,
+		});
 	}
 }
