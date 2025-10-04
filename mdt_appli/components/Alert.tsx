@@ -1,6 +1,17 @@
 export default function Alert(props: { message?: string }) {
-	if (!props.message) return <></>;
-	
+	if (!props.message) return null;
+
+	let message = "";
+
+	switch (props.message) {
+		case "AccessDenied":
+			message = "Vous n'êtes pas authorisé";
+			break;
+		default:
+			message = props.message;
+			break;
+	}
+
 	return (
 		<div role="alert" className="alert alert-error">
 			<svg
@@ -16,7 +27,7 @@ export default function Alert(props: { message?: string }) {
 					d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
 				/>
 			</svg>
-			<span>{props.message}</span>
+			<span>{message}</span>
 		</div>
 	);
 }

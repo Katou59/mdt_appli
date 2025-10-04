@@ -14,7 +14,10 @@ export default async function ProtectedLayout({
 	if (!session?.user?.discordId) return redirect("/");
 
 	const user = await UserRepository.get(session.user.discordId);
-	if (!user) return redirect("/");
+
+	if (user?.isDisable || (user?.rank?.job?.id !== 1 && !user?.isAdmin)) {
+		return redirect("/");
+	}
 
 	const topItems = [{ name: "Accueil", link: "/police/dashboard" }];
 
