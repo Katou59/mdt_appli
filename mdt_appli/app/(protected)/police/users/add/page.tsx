@@ -52,6 +52,11 @@ export default function AddUser() {
 		event.preventDefault();
 
 		const userCreated = await getData(axiosClient.post("/users", userToCreate));
+
+		if (userCreated.status === 409) {
+			setErrorMessage("Un utilisateur avec cet id éxiste déjà");
+			return;
+		}
 		if (userCreated.errorMessage) {
 			setErrorMessage(userCreated.errorMessage);
 			return;

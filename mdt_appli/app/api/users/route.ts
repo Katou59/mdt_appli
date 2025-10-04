@@ -65,7 +65,17 @@ export async function POST(request: NextRequest) {
 
 		return NextResponse.json((await UserRepository.get(userToAddRequest.id))?.toUserType());
 	} catch (e) {
-		console.error(e);
+		if (e instanceof Error) {
+			const pgError = e.cause as { code?: string; detail?: string; message?: string };
+
+			if (pgError.code === "23505") {
+				// 23505 = unique_violation (duplicate key)
+				return NextResponse.json(
+					{ error: "A user with this ID already exists." },
+					{ status: 409 }
+				);
+			}
+		}
 		return NextResponse.json({ error: e }, { status: 500 });
 	}
 }

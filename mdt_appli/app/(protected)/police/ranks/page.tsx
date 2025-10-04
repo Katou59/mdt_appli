@@ -135,7 +135,6 @@ export default function Ranks() {
 			.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
 		setRanks(ranksUpdated);
-		
 
 		const modal = document.getElementById("addRank") as HTMLDialogElement | null;
 		if (modal) {
@@ -189,7 +188,7 @@ export default function Ranks() {
 				>
 					{jobs.map((x) => (
 						<option key={x.id} value={x.id!}>
-							{x.id!} {x.name}
+							{x.name}
 						</option>
 					))}
 				</select>
