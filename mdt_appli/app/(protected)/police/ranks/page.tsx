@@ -3,7 +3,7 @@
 import { useUser } from "@/lib/Contexts/UserContext";
 import { useRouter } from "next/navigation";
 import { MouseEvent, useEffect, useState } from "react";
-import axiosClient from "@/lib/axiosClient";
+import axiosClient, { getData } from "@/lib/axiosClient";
 import Rank from "@/types/class/Rank";
 import { RankType } from "@/types/db/rank";
 import { AxiosError } from "axios";
@@ -96,39 +96,42 @@ export default function Ranks() {
 			}),
 		];
 
-		try {
-			const results = await axiosClient.put<RankType[]>(
+		const result = await getData(
+			axiosClient.put<RankType[]>(
 				"/ranks",
 				updated.map((r) => r.toRankType())
-			);
+			)
+		);
 
-			const ranksUpdated = results.data
-				.map((x) => new Rank(x))
-				.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+		if (result.errorMessage) {
+			setErrorMessage(result.errorMessage);
+			return;
+		}
 
-			setRanks(ranksUpdated);
+		const ranksUpdated = (result.data as RankType[])
+			.map((x) => new Rank(x))
+			.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
-			const modal = document.getElementById("addRank") as HTMLDialogElement | null;
-			if (modal) {
-				modal.close();
-			}
-		} catch {
-			setErrorMessage("Erreur lors de la récupération des grades");
+		setRanks(ranksUpdated);
+
+		const modal = document.getElementById("addRank") as HTMLDialogElement | null;
+		if (modal) {
+			modal.close();
 		}
 	}
 
 	async function handleDeleteRank(e: MouseEvent<HTMLButtonElement>, id: number): Promise<void> {
 		e.preventDefault();
-		try {
-			await axiosClient.delete(`/ranks/${id}`);
-			setRanks((prev) => prev.filter((r) => r.id !== id));
-		} catch (e) {
-			if (e instanceof AxiosError && e.status === 409) {
-				setErrorMessage("Il y a des utilisateurs qui ont ce grade");
-			}
-
-			setErrorMessage("Une erreur est survenue");
+		const result = await getData(axiosClient.delete(`/ranks/${id}`));
+		if (result.status === 409) {
+			setErrorMessage("Il y a des utilisateurs qui ont ce grade");
+			return;
+		} else if (result.errorMessage) {
+			setErrorMessage(result.errorMessage);
+			return;
 		}
+
+		setRanks((prev) => prev.filter((r) => r.id !== id));
 	}
 
 	return (
@@ -207,13 +210,10 @@ export default function Ranks() {
 								required
 							/>
 						</fieldset>
-						<div className="modal-action">
-							<button type="submit" className="btn btn-success">
-								Valider
-							</button>
+						<div className="modal-action join gap-0 flex">
 							<button
 								type="reset"
-								className="btn btn-error"
+								className="btn btn-error join-item"
 								onClick={() => {
 									const modal = document.getElementById(
 										"addRank"
@@ -224,6 +224,9 @@ export default function Ranks() {
 								}}
 							>
 								Annuler
+							</button>
+							<button type="submit" className="btn btn-success join-item">
+								Valider
 							</button>
 						</div>
 					</form>

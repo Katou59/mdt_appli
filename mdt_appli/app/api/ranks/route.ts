@@ -7,7 +7,8 @@ import Rank from "@/types/class/Rank";
 
 export async function GET() {
 	try {
-		return NextResponse.json(await RankRepository.GetList());
+		const results = await RankRepository.GetList();
+		return NextResponse.json(results.map((r) => r.toRankType()));
 	} catch (e) {
 		console.error(e);
 		return NextResponse.json({ error: e }, { status: 500 });
@@ -30,7 +31,8 @@ export async function PUT(request: NextRequest) {
 
 		await RankRepository.AddOrUpdateList(ranks);
 
-		return NextResponse.json(await RankRepository.GetList());
+		const results = await RankRepository.GetList();
+		return NextResponse.json(results.map((r) => r.toRankType()));
 	} catch (e) {
 		console.error(e);
 		return NextResponse.json({ error: e }, { status: 500 });

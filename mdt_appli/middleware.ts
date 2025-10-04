@@ -17,7 +17,7 @@ const apiAdmins = [
 export async function middleware(req: NextRequest) {
 	const session = await auth();
 
-	if (req.nextUrl.pathname.startsWith("/api/auth/callback")) return NextResponse.next();
+	if (req.nextUrl.pathname.startsWith("/api/auth/")) return NextResponse.next();
 
 	if (apiAdmins.some((x) => req.nextUrl.pathname.startsWith(x.path) && x.method === req.method)) {
 		const user = await UserRepository.get(session!.user.discordId!);

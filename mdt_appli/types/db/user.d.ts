@@ -23,8 +23,7 @@ export interface UserToUpdateType {
     firstName?: string;
     lastName?: string;
     phoneNumber?: string;
-    rankId?: number;
-    jobId?: number;
+    rank?: RankType;
     lastLogin?: Date | string,
     email?: string,
     name?: string,

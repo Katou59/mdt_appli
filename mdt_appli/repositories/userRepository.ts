@@ -120,9 +120,10 @@ export class UserRepository {
 		});
 	}
 
-	public static async update(user: User): Promise<User | null> {
-		await db.update(usersTable).set(user).where(eq(usersTable.id, user.id));
-
-		return await UserRepository.get(user.id);
+	public static async update(user: User): Promise<void> {
+		await db
+			.update(usersTable)
+			.set({ ...user, jobId: user.rank?.job?.id, rankId: user.rank?.id })
+			.where(eq(usersTable.id, user.id));
 	}
 }

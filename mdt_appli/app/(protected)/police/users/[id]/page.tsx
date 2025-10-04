@@ -1,25 +1,40 @@
 "use client";
 
-import {useParams} from "next/navigation";
-import {useEffect, useState} from "react";
-import {UserType} from "@/types/db/user";
-import axiosClient from "@/lib/axiosClient";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import axiosClient, { getData } from "@/lib/axiosClient";
 import UserComponent from "@/components/UserComponent";
+import User from "@/types/class/User";
+import Alert from "@/components/Alert";
 
-export default function User() {
-    const params = useParams<{ id: string }>();
-    const [user, setUser] = useState<UserType>();
+export default function UserId() {
+	const params = useParams<{ id: string }>();
+	const [user, setUser] = useState<User>();
+	const [isLoaded, setIsLoaded] = useState(false);
+	const [errorMessage, setErrorMessage] = useState("");
 
-    useEffect(() => {
-        axiosClient.get(`/users/${params.id}`).then(user => {
-            const result = user.data as UserType;
-            setUser(result);
-        })
-    }, [])
+	useEffect(() => {
+		async function init() {
+			const result = await getData(axiosClient.get(`/users/${params.id}`));
+			if (result.errorMessage) {
+				setErrorMessage(result.errorMessage);
+				setIsLoaded(true);
+				return;
+			}
 
-    if (!user) return <div>Chargement...</div>
+			setUser(new User(result.data));
+			setIsLoaded(true);
+		}
 
-    return (
-        <UserComponent user={user} isConsult={true}/>
-    )
+		init();
+	}, [params.id]);
+
+	if (!isLoaded) return <div>Chargement du profil...</div>;
+
+	return (
+		<>
+			<Alert message={errorMessage} />
+			{user && <UserComponent user={user!.toUserType()} isConsult={true} />}
+		</>
+	);
 }

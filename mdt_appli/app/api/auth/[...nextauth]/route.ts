@@ -12,7 +12,7 @@ const auth = NextAuth({
 
 			if (!userDb || userDb.isDisable) return false;
 
-			if (!userDb.email || !userDb.name || userDb.firstLogin) {
+			if (!userDb.email || !userDb.name || !userDb.firstLogin) {
 				userDb.email = user.email!;
 				userDb.name = user.name!;
 				userDb.firstLogin = new Date();
