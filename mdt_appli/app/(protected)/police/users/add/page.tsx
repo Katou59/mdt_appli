@@ -57,6 +57,8 @@ export default function AddUser() {
 			return;
 		}
 
+		setErrorMessage("");
+		setUserToCreate({ id: "", jobId: null, rankId: null });
 		setSuccessMessage("Utilisateur créé");
 	}
 
@@ -64,7 +66,14 @@ export default function AddUser() {
 		<>
 			<Toast type="success" message={successMessage} />
 			<Alert message={errorMessage} />
-			<form className="flex flex-col justify-center" onSubmit={handleSubmit}>
+			<form
+				className="flex flex-col justify-center"
+				onSubmit={handleSubmit}
+				onReset={(e) => {
+					setErrorMessage("");
+					setUserToCreate({ id: "", jobId: null, rankId: null });
+				}}
+			>
 				<h1 className="text-4xl font-bold text-primary text-center mb-4">
 					Ajouter un nouvel utilisateur
 				</h1>
@@ -129,7 +138,7 @@ export default function AddUser() {
 						<legend className="fieldset-legend">Grade</legend>
 						<select
 							className="select w-full"
-							value={userToCreate.rankId ?? ""}
+							defaultValue={userToCreate.rankId ?? ""}
 							onChange={(e) => {
 								setUserToCreate({
 									...userToCreate,
