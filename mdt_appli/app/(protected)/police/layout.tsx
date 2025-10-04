@@ -33,9 +33,9 @@ export default async function ProtectedLayout({
 
 	return (
 		<UserProvider initialUser={user.toUserType()}>
-			<div className="flex flex-row w-full h-full min-h-full">
-				<div className="flex w-[250px]">
-					<div className="fixed h-full min-h-full flex flex-col bg-base-200 pt-2 pb-2 w-[250px]">
+			<div className="w-full h-full min-h-full">
+				<div className="w-[250px]">
+					<div className="fixed h-screen flex flex-col bg-base-200 pt-2 pb-2 w-[250px]">
 						<div className="w-full">
 							<Image
 								src="/logolspd.webp"
@@ -91,7 +91,7 @@ export default async function ProtectedLayout({
 						</div>
 					</div>
 				</div>
-				<div className="grow h-full p-4">{children}</div>
+				<div className="grow h-auto p-4 pb-10 ml-[250px]">{children}</div>
 			</div>
 		</UserProvider>
 	);

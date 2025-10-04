@@ -22,10 +22,11 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
 
 	useEffect(() => {
 		async function init() {
-			const result = await getData(axiosClient.get("/ranks"));
+			if (!props.user.rank?.id) return;
+
+			const result = await getData(axiosClient.get(`/ranks/${props.user.rank!.id}`));
 			if (result.errorMessage) {
 				setErrorMessage(result.errorMessage);
-				console.log(result);
 				return;
 			}
 
@@ -150,9 +151,11 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
 										Date première connexion
 									</legend>
 									<div className="w-full p-2 rounded-md bg-base-200 text-xl font-bold h-10">
-										{dayjs(userToUpdate.firstLogin).format(
-											"DD/MM/YYYY HH:mm:ss"
-										)}
+										{userToUpdate.firstLogin
+											? dayjs(userToUpdate.firstLogin).format(
+													"DD/MM/YYYY HH:mm:ss"
+											  )
+											: "Jamais"}
 									</div>
 								</fieldset>
 								<fieldset className="fieldset w-full">
@@ -160,9 +163,11 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
 										Date dernière connexion
 									</legend>
 									<div className="w-full p-2 rounded-md bg-base-200 text-xl font-bold h-10">
-										{dayjs(userToUpdate.lastLogin).format(
-											"DD/MM/YYYY HH:mm:ss"
-										)}
+										{userToUpdate.lastLogin
+											? dayjs(userToUpdate.lastLogin).format(
+													"DD/MM/YYYY HH:mm:ss"
+											  )
+											: "Jamais"}
 									</div>
 								</fieldset>
 								<div className="divider col-span-2"></div>
