@@ -132,7 +132,7 @@ export class UserRepository {
 		await db.insert(usersTable).values({
 			id: userToCreate.id,
 			jobId: userToCreate.jobId,
-			rankId: userToCreate.jobId,
+			rankId: userToCreate.rankId,
 		});
 	}
 }

@@ -60,7 +60,7 @@ export default async function ProtectedLayout({
 						<ul className="menu bg-base-200 rounded-box w-full">
 							{user.isAdmin && (
 								<li>
-									<details open>
+									<details>
 										<summary>Admin</summary>
 										<ul className="">
 											{adminItems.map((item, index) => (

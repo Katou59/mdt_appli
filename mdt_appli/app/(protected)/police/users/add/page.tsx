@@ -13,167 +13,169 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 export default function AddUser() {
-	const { user } = useUser();
-	const router = useRouter();
-	const [isLoaded, setIsLoaded] = useState(false);
-	const [jobs, setJobs] = useState<Job[]>([]);
-	const [ranks, setRanks] = useState<Rank[]>([]);
-	const [errorMessage, setErrorMessage] = useState("");
-	const [successMessage, setSuccessMessage] = useState("");
-	const [userToCreate, setUserToCreate] = useState<UserToCreateType>({
-		id: "",
-		jobId: null,
-		rankId: null,
-	});
+    const { user } = useUser();
+    const router = useRouter();
+    const [isLoaded, setIsLoaded] = useState(false);
+    const [jobs, setJobs] = useState<Job[]>([]);
+    const [ranks, setRanks] = useState<Rank[]>([]);
+    const [errorMessage, setErrorMessage] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
+    const [userToCreate, setUserToCreate] = useState<UserToCreateType>({
+        id: "",
+        jobId: null,
+        rankId: null,
+    });
 
-	useEffect(() => {
-		async function init() {
-			if (!user?.isAdmin) {
-				router.push("/police/dashboard");
-				return;
-			}
+    useEffect(() => {
+        async function init() {
+            if (!user?.isAdmin) {
+                router.push("/police/dashboard");
+                return;
+            }
 
-			const jobsResponse = await getData(axiosClient.get("/jobs"));
-			if (jobsResponse.errorMessage) {
-				setErrorMessage(jobsResponse.errorMessage);
-				setIsLoaded(true);
-			}
+            const jobsResponse = await getData(axiosClient.get("/jobs"));
+            if (jobsResponse.errorMessage) {
+                setErrorMessage(jobsResponse.errorMessage);
+                setIsLoaded(true);
+            }
 
-			setJobs((jobsResponse.data as JobType[]).map((x) => new Job(x)));
-			setIsLoaded(true);
-		}
+            setJobs((jobsResponse.data as JobType[]).map((x) => new Job(x)));
+            setIsLoaded(true);
+        }
 
-		init();
-	}, [router, user]);
+        init();
+    }, [router, user]);
 
-	if (!isLoaded) return <div>Chargement...</div>;
+    if (!isLoaded) return <div>Chargement...</div>;
 
-	async function handleSubmit(event: React.FormEvent<HTMLFormElement>): Promise<void> {
-		event.preventDefault();
+    async function handleSubmit(event: React.FormEvent<HTMLFormElement>): Promise<void> {
+        event.preventDefault();
 
-		const userCreated = await getData(axiosClient.post("/users", userToCreate));
+        const userCreated = await getData(axiosClient.post("/users", userToCreate));
 
-		if (userCreated.status === 409) {
-			setErrorMessage("Un utilisateur avec cet id éxiste déjà");
-			return;
-		}
-		if (userCreated.errorMessage) {
-			setErrorMessage(userCreated.errorMessage);
-			return;
-		}
+        if (userCreated.status === 409) {
+            setErrorMessage("Un utilisateur avec cet id éxiste déjà");
+            return;
+        }
+        if (userCreated.errorMessage) {
+            setErrorMessage(userCreated.errorMessage);
+            return;
+        }
 
-		setErrorMessage("");
-		setUserToCreate({ id: "", jobId: null, rankId: null });
-		setSuccessMessage("Utilisateur créé");
-	}
+        setErrorMessage("");
+        setUserToCreate({ id: "", jobId: null, rankId: null });
+        setSuccessMessage("Utilisateur créé");
+    }
 
-	return (
-		<>
-			<Toast type="success" message={successMessage} />
-			<Alert message={errorMessage} />
-			<form
-				className="flex flex-col justify-center"
-				onSubmit={handleSubmit}
-				onReset={(e) => {
-					setErrorMessage("");
-					setUserToCreate({ id: "", jobId: null, rankId: null });
-				}}
-			>
-				<h1 className="text-4xl font-bold text-primary text-center mb-4">
-					Ajouter un nouvel utilisateur
-				</h1>
-				<div className="grid grid-cols-2 gap-2">
-					<fieldset className="fieldset col-span-2 w-1/2 pr-1">
-						<legend className="fieldset-legend">Id Discord</legend>
-						<input
-							type="text"
-							name="discordId"
-							className="input w-full"
-							placeholder="Id Discord"
-							value={userToCreate.id}
-							onChange={(e) => {
-								setUserToCreate({ ...userToCreate, id: e.target.value });
-							}}
-							autoComplete="off"
-							required={true}
-						/>
-					</fieldset>
-					<fieldset className="fieldset">
-						<legend className="fieldset-legend">Rôle</legend>
-						<select
-							className="select w-full"
-							defaultValue={userToCreate?.jobId ?? ""}
-							onChange={async (e) => {
-								e.preventDefault();
-								const ranksResponse = await getData(
-									axiosClient.get(`/ranks/${e.target.value}`)
-								);
-								if (ranksResponse.errorMessage) {
-									setErrorMessage(ranksResponse.errorMessage);
-									return;
-								}
+    return (
+        <>
+            <Toast type="success" message={successMessage} />
+            <Alert message={errorMessage} />
+            <form
+                className="flex flex-col justify-center"
+                onSubmit={handleSubmit}
+                onReset={(e) => {
+                    setErrorMessage("");
+                    setUserToCreate({ id: "", jobId: null, rankId: null });
+                }}
+            >
+                <h1 className="text-4xl font-bold text-primary text-center mb-4">
+                    Ajouter un nouvel utilisateur
+                </h1>
+                <div className="grid grid-cols-2 gap-2">
+                    <fieldset className="fieldset col-span-2 w-1/2 pr-1">
+                        <legend className="fieldset-legend">Id Discord</legend>
+                        <input
+                            type="text"
+                            name="discordId"
+                            className="input w-full"
+                            placeholder="Id Discord"
+                            value={userToCreate.id}
+                            onChange={(e) => {
+                                setUserToCreate({ ...userToCreate, id: e.target.value });
+                            }}
+                            autoComplete="off"
+                            required={true}
+                        />
+                    </fieldset>
+                    <fieldset className="fieldset">
+                        <legend className="fieldset-legend">Métier</legend>
+                        <select
+                            className="select w-full"
+                            value={userToCreate.jobId ?? ""}
+                            onChange={async (e) => {
+                                e.preventDefault();
+                                const value = Number(e.target.value);
 
-								const ranks = (ranksResponse.data as RankType[]).map(
-									(x) => new Rank(x)
-								);
+                                const ranksResponse = await getData(
+                                    axiosClient.get(`/ranks/${value}`)
+                                );
+                                if (ranksResponse.errorMessage) {
+                                    setErrorMessage(ranksResponse.errorMessage);
+                                    return;
+                                }
 
-								setUserToCreate({
-									...userToCreate,
-									jobId: Number(e.target.value),
-									rankId: null,
-								});
+                                const ranks = (ranksResponse.data as RankType[]).map(
+                                    (x) => new Rank(x)
+                                );
 
-								setRanks(ranks);
-							}}
-							required={true}
-						>
-							<option value="" disabled={true}>
-								Choisir
-							</option>
-							{jobs?.map((x) => {
-								return (
-									<option key={x.id} value={x.id!}>
-										{x.name}
-									</option>
-								);
-							})}
-						</select>
-					</fieldset>
-					<fieldset className="fieldset">
-						<legend className="fieldset-legend">Grade</legend>
-						<select
-							className="select w-full"
-							defaultValue={userToCreate.rankId ?? ""}
-							onChange={(e) => {
-								setUserToCreate({
-									...userToCreate,
-									rankId: Number(e.target.value),
-								});
-							}}
-							required={true}
-						>
-							<option value="" disabled={true}>
-								Choisir
-							</option>
-							{ranks?.map((x) => {
-								return (
-									<option key={x.id} value={x.id!}>
-										{x.name}
-									</option>
-								);
-							})}
-						</select>
-					</fieldset>
-				</div>
-				<div className="flex justify-center join mt-4">
-					<button type="reset" className="btn btn-error join-item w-30">
-						Annuler
-					</button>
-					<button type="submit" className="btn btn-success join-item w-30">
-						Valider
-					</button>
-				</div>
-			</form>
-		</>
-	);
+                                setUserToCreate((prev) => ({
+                                    ...prev,
+                                    jobId: Number(value),
+                                    rankId: null,
+                                }));
+
+                                setRanks(ranks);
+                            }}
+                            required={true}
+                        >
+                            <option value="" disabled={true}>
+                                Choisir
+                            </option>
+                            {jobs?.map((x) => {
+                                return (
+                                    <option key={x.id} value={x.id!}>
+                                        {x.name}
+                                    </option>
+                                );
+                            })}
+                        </select>
+                    </fieldset>
+                    <fieldset className="fieldset">
+                        <legend className="fieldset-legend">Grade</legend>
+                        <select
+                            className="select w-full"
+                            value={userToCreate.rankId ?? ""}
+                            onChange={(e) => {
+                                setUserToCreate({
+                                    ...userToCreate,
+                                    rankId: Number(e.target.value),
+                                });
+                            }}
+                            required={true}
+                        >
+                            <option value="" disabled={true}>
+                                Choisir
+                            </option>
+                            {ranks?.map((x) => {
+                                return (
+                                    <option key={x.id} value={x.id!}>
+                                        {x.name}
+                                    </option>
+                                );
+                            })}
+                        </select>
+                    </fieldset>
+                </div>
+                <div className="flex justify-center join mt-4">
+                    <button type="reset" className="btn btn-error join-item w-30">
+                        Annuler
+                    </button>
+                    <button type="submit" className="btn btn-success join-item w-30">
+                        Valider
+                    </button>
+                </div>
+            </form>
+        </>
+    );
 }

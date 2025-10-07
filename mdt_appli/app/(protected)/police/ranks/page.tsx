@@ -196,7 +196,7 @@ export default function Ranks() {
 				{/* Liste des rangs */}
 				<p className="text-xs text-center w-96 mt-4">
 					{ranks.length > 0
-						? "Drag & drop pour changer l&apos;ordre"
+						? "Drag & drop pour changer l'ordre"
 						: "La liste est vide"}
 				</p>
 				<ul className="list bg-base-200 rounded-box shadow-md mt-2 w-96">
