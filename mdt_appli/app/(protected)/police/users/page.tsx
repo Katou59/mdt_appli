@@ -139,6 +139,7 @@ export default function Users() {
         }
 
         const results = getFilteredUsers();
+        setTotalUser(results.length);
 
         const totalPages = Math.ceil(results.length / pager.max);
         setPager((prev) => ({ ...prev, current: 1, total: totalPages }));
@@ -438,8 +439,6 @@ export default function Users() {
                 f?.toLowerCase().includes(filter.searchTerm.toLocaleLowerCase())
             );
         });
-
-        setTotalUser(results.length);
 
         return results;
     }
