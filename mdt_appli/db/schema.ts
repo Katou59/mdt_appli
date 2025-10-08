@@ -38,7 +38,7 @@ export const citizensTable = pgTable("citizens", {
     birthDate: varchar("birth_date", { length: 20 }).notNull(),
     phoneNumber: varchar("phone_number", { length: 50 }),
     licenseId: varchar("license_id", { length: 50 }),
-    occupation: varchar("occupation", { length: 50 }),
+    job: varchar("job", { length: 50 }),
     note: varchar("note", { length: 255 }),
     isWanted: boolean("is_wanted").default(false),
     photoUrl: varchar("photo_url", { length: 255 }),

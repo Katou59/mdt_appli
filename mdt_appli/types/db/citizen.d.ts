@@ -1,3 +1,4 @@
+import { KeyValue } from "../utils/keyValue";
 import { UserType } from "./user";
 
 export interface CitizenType {
@@ -5,18 +6,17 @@ export interface CitizenType {
     firstName: string;
     lastName: string;
     birthDate: string;
-    gender: string;
-    nationality: string;
-    address: string;
+    gender: KeyValue<number, string>;
     phoneNumber: string;
     licenseId: string;
-    occupation: string;
+    job: string;
     note: string;
-    isWanted: string;
-    status: string;
-    bloodType: string;
+    isWanted: boolean;
+    status: KeyValue<number, string>;
+    bloodType: KeyValue<number, string>;
     photoUrl: string;
     createdBy: UserType;
     createdAt: Date;
-    updatedAt: string;
+    updatedAt: Date;
+    createdBy: UserType;
 }

@@ -15,6 +15,13 @@
       "when": 1759937812022,
       "tag": "0001_swift_shiver_man",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1759946803599,
+      "tag": "0002_brown_phantom_reporter",
+      "breakpoints": true
     }
   ]
 }

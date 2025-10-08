@@ -1,6 +1,10 @@
 import { UserToUpdateType, UserType } from "@/types/db/user";
 import { RoleType } from "@/types/enums/roleType";
 import Rank from "@/types/class/Rank";
+import { jobsTable, ranksTable, usersTable } from "@/db/schema";
+import { InferModel } from "drizzle-orm";
+import { JobType } from "../db/job";
+import { RankType } from "../db/rank";
 
 export default class User {
     id: string;
@@ -94,5 +98,49 @@ export default class User {
             isDisable: this.isDisable,
             role: this.role,
         };
+    }
+
+    static getFromDb(
+        userDb: typeof usersTable.$inferSelect | null,
+        rankDb: typeof ranksTable.$inferSelect | null,
+        jobDb: typeof jobsTable.$inferSelect | null
+    ): User | null {
+        if (!userDb) return null;
+
+        let rankType: RankType | null = null;
+        let jobType: JobType | null = null;
+        if (jobDb) {
+            jobType = {
+                id: jobDb.id,
+                name: jobDb.name,
+            };
+        }
+        if (rankDb) {
+            rankType = {
+                id: rankDb.id,
+                name: rankDb.name,
+                order: rankDb.order,
+                job: jobType,
+                userCount: undefined,
+            };
+        }
+
+        const userType: UserType = {
+            id: userDb.id,
+            name: userDb.name,
+            email: userDb.email,
+            createdAt: new Date(userDb.createdAt),
+            firstLogin: userDb.firstLogin ? new Date(userDb.firstLogin) : null,
+            lastLogin: userDb.lastLogin ? new Date(userDb.lastLogin) : null,
+            number: userDb.number,
+            firstName: userDb.firstName,
+            lastName: userDb.lastName,
+            rank: rankType,
+            phoneNumber: userDb.phoneNumber,
+            isDisable: userDb.isDisable ?? false,
+            role: userDb.role,
+        };
+
+        return new User(userType);
     }
 }

@@ -11,128 +11,58 @@ import { UserToCreateType } from "@/types/db/user";
 const db = drizzle(process.env.DATABASE_URL!);
 
 export class UserRepository {
-	public static async get(discordId: string): Promise<User | null> {
-		const users = await db
-			.select()
-			.from(usersTable)
-			.leftJoin(jobsTable, eq(jobsTable.id, usersTable.jobId))
-			.leftJoin(ranksTable, eq(ranksTable.id, usersTable.rankId))
-			.where(eq(usersTable.id, discordId));
+    public static async get(discordId: string): Promise<User | null> {
+        const users = await db
+            .select()
+            .from(usersTable)
+            .leftJoin(jobsTable, eq(jobsTable.id, usersTable.jobId))
+            .leftJoin(ranksTable, eq(ranksTable.id, usersTable.rankId))
+            .where(eq(usersTable.id, discordId));
 
-		const userDb = users[0]?.users;
+        const userDb = users[0]?.users;
 
-		if (!userDb) return null;
+        if (!userDb) return null;
 
-		const jobDb = users[0]?.jobs;
-		const rankDb = users[0]?.ranks;
+        return User.getFromDb(users[0].users, users[0].ranks, users[0].jobs);
+    }
 
-		const job: JobType | null =
-			jobDb == null
-				? null
-				: {
-						id: jobDb?.id ?? null,
-						name: jobDb?.name ?? null,
-				  };
+    public static async getList(params?: { rankId?: number }): Promise<User[] | null> {
+        const conditions = [];
 
-		const rank: RankType | null =
-			rankDb == null
-				? null
-				: {
-						id: rankDb?.id ?? null,
-						name: rankDb?.name ?? null,
-						job: job,
-						order: rankDb.order,
-						userCount: undefined,
-				  };
+        if (params?.rankId !== undefined) {
+            conditions.push(eq(usersTable.rankId, params.rankId));
+        }
 
-		return new User({
-			createdAt: new Date(userDb.createdAt),
-			email: userDb.email,
-			firstLogin: userDb.firstLogin,
-			firstName: userDb.firstName,
-			lastLogin: userDb.lastLogin,
-			lastName: userDb.lastName,
-			name: userDb.name,
-			number: userDb.number,
-			id: userDb.id,
-			rank: rank,
-			isDisable: userDb.isDisable ?? false,
-			phoneNumber: userDb.phoneNumber,
-			role: userDb?.role as RoleType,
-		});
-	}
+        let query = db
+            .select()
+            .from(usersTable)
+            .leftJoin(jobsTable, eq(jobsTable.id, usersTable.jobId))
+            .leftJoin(ranksTable, eq(ranksTable.id, usersTable.rankId));
 
-	public static async getList(params?: { rankId?: number }): Promise<User[] | null> {
-		const conditions = [];
+        if (conditions.length > 0) {
+            // ici, query est encore un QueryBuilder
+            query = query.where(and(...conditions)) as typeof query;
+        }
 
-		if (params?.rankId !== undefined) {
-			conditions.push(eq(usersTable.rankId, params.rankId));
-		}
+        return (await query)
+            .map((u) => {
+                return User.getFromDb(u.users, u.ranks, u.jobs);
+            })
+            .filter((x) => x !== null);
+    }
 
-		let query = db
-			.select()
-			.from(usersTable)
-			.leftJoin(jobsTable, eq(jobsTable.id, usersTable.jobId))
-			.leftJoin(ranksTable, eq(ranksTable.id, usersTable.rankId));
+    public static async update(user: User): Promise<void> {
+        await db
+            .update(usersTable)
+            .set({ ...user, jobId: user.rank?.job?.id, rankId: user.rank?.id })
+            .where(eq(usersTable.id, user.id));
+    }
 
-		if (conditions.length > 0) {
-			// ici, query est encore un QueryBuilder
-			query = query.where(and(...conditions)) as typeof query;
-		}
-
-		return (await query).map((u) => {
-			const jobDb = u.jobs;
-			const rankDb = u.ranks;
-
-			const job: JobType | null =
-				jobDb == null
-					? null
-					: {
-							id: jobDb?.id ?? null,
-							name: jobDb?.name ?? null,
-					  };
-
-			const rank: RankType | null =
-				rankDb == null
-					? null
-					: {
-							id: rankDb?.id ?? null,
-							name: rankDb?.name ?? null,
-							job: job,
-							order: rankDb?.order,
-							userCount: undefined,
-					  };
-
-			return new User({
-				createdAt: u.users.createdAt,
-				email: u.users.email,
-				firstLogin: u.users.firstLogin,
-				firstName: u.users.firstName,
-				lastLogin: u.users.lastLogin,
-				lastName: u.users.lastName,
-				name: u.users.name,
-				number: u.users.number,
-				id: u.users.id,
-				rank: rank ? new Rank(rank) : null,
-				isDisable: u.users.isDisable ?? false,
-				phoneNumber: u.users.phoneNumber,
-				role: u.users.role as RoleType,
-			});
-		});
-	}
-
-	public static async update(user: User): Promise<void> {
-		await db
-			.update(usersTable)
-			.set({ ...user, jobId: user.rank?.job?.id, rankId: user.rank?.id })
-			.where(eq(usersTable.id, user.id));
-	}
-
-	public static async add(userToCreate: UserToCreateType): Promise<void> {
-		await db.insert(usersTable).values({
-			id: userToCreate.id,
-			jobId: userToCreate.jobId,
-			rankId: userToCreate.rankId,
-		});
-	}
+    public static async add(userToCreate: UserToCreateType): Promise<void> {
+        await db.insert(usersTable).values({
+            id: userToCreate.id,
+            jobId: userToCreate.jobId,
+            rankId: userToCreate.rankId,
+        });
+    }
 }
