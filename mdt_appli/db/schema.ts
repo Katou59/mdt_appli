@@ -65,3 +65,8 @@ export const gendersTable = pgTable("genders", {
     id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
     name: varchar("name", { length: 20 }).notNull(),
 });
+
+export const rolesTable = pgTable("roles", {
+    id: integer("id").primaryKey(),
+    name: varchar("name", { length: 20 }).notNull(),
+});

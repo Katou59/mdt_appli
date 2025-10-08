@@ -1,6 +1,6 @@
 {
-  "id": "a769162a-52b4-4510-9b3e-366789679ada",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "dff46e4f-e80a-477f-b603-5eae7cc67d9f",
+  "prevId": "a769162a-52b4-4510-9b3e-366789679ada",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -349,18 +349,7 @@
           "name": "id",
           "type": "integer",
           "primaryKey": true,
-          "notNull": true,
-          "identity": {
-            "type": "always",
-            "name": "roles_id_seq",
-            "schema": "public",
-            "increment": "1",
-            "startWith": "1",
-            "minValue": "1",
-            "maxValue": "2147483647",
-            "cache": "1",
-            "cycle": false
-          }
+          "notNull": true
         },
         "name": {
           "name": "name",
