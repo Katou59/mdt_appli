@@ -29,3 +29,25 @@ export const ranksTable = pgTable("ranks", {
     jobId: integer("job_id").references(() => jobsTable.id).notNull().default(1),
 	order: integer("order").notNull()
 });
+// Relation: Un utilisateur (usersTable) peut créer plusieurs citoyens (citizensTable)
+
+export const citizensTable = pgTable("citizens", {
+    id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+    firstName: varchar("first_name", { length: 50 }).notNull(),
+    lastName: varchar("last_name", { length: 50 }).notNull(),
+    birthDate: varchar("birth_date", { length: 20 }).notNull(),
+    gender: varchar("gender", { length: 10 }),
+    nationality: varchar("nationality", { length: 50 }),
+    address: varchar("address", { length: 100 }),
+    phoneNumber: varchar("phone_number", { length: 50 }),
+    licenseId: varchar("license_id", { length: 50 }),
+    occupation: varchar("occupation", { length: 50 }),
+    note: varchar("note", { length: 255 }),
+    isWanted: boolean("is_wanted").default(false),
+    status: varchar("status", { length: 30 }),
+    bloodType: varchar("blood_type", { length: 10 }),
+    photoUrl: varchar("photo_url", { length: 255 }),
+    createdBy: varchar("created_by", { length: 50 }).references(() => usersTable.id).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
