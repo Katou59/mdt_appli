@@ -3,6 +3,7 @@ import { UserToCreateType, UserToUpdateType } from "@/types/db/user";
 import { auth } from "@/auth";
 import { UserRepository } from "@/repositories/userRepository";
 import Rank from "@/types/class/Rank";
+import { RoleType } from "@/types/enums/roleType";
 
 export async function PUT(request: NextRequest) {
     try {
@@ -16,10 +17,11 @@ export async function PUT(request: NextRequest) {
         const userToUpdate = await UserRepository.get(userToAddRequest.id);
         if (!userToUpdate?.id) return NextResponse.json({ error: "Bad Request" }, { status: 400 });
 
-        userToUpdate.update(userToAddRequest);
-        if (currentUser?.isAdmin && userToAddRequest !== undefined) {
-            userToUpdate.rank = new Rank(userToAddRequest.rank);
-        }
+        userToUpdate.update(
+            userToAddRequest,
+            currentUser?.isAdmin,
+            currentUser?.role === RoleType.SuperAdmin
+        );
 
         const isSelf = session!.user.discordId === userToUpdate.id;
 

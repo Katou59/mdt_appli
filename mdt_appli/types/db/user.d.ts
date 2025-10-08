@@ -1,13 +1,13 @@
-import {RankType} from "@/types/db/rank";
-import {RoleType} from "@/types/db/enums/roleType";
+import { RankType } from "@/types/db/rank";
+import { RoleType } from "@/types/db/enums/roleType";
 
 export interface UserType {
     id: string;
     name: string | null;
     email: string | null;
     createdAt: Date | string;
-    firstLogin: string | Date | null,
-    lastLogin: string | Date | null,
+    firstLogin: string | Date | null;
+    lastLogin: string | Date | null;
     number: number | null;
     firstName: string | null;
     lastName: string | null;
@@ -24,14 +24,15 @@ export interface UserToUpdateType {
     lastName?: string;
     phoneNumber?: string;
     rank?: RankType;
-    lastLogin?: Date | string,
-    email?: string,
-    name?: string,
-    firstLogin?: Date | string
+    lastLogin?: Date | string;
+    email?: string;
+    name?: string;
+    firstLogin?: Date | string;
+    role?: RoleType;
 }
 
 export interface UserToCreateType {
-	id: string;
-	jobId: number | null;
-	rankId : number | null;
+    id: string;
+    jobId: number | null;
+    rankId: number | null;
 }
