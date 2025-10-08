@@ -1,4 +1,4 @@
-import {boolean, integer, pgTable, varchar} from "drizzle-orm/pg-core";
+import {boolean, integer, pgTable, uuid, varchar} from "drizzle-orm/pg-core";
 import {timestamp} from "drizzle-orm/pg-core/columns/timestamp";
 
 export const usersTable = pgTable("users", {
@@ -32,22 +32,36 @@ export const ranksTable = pgTable("ranks", {
 // Relation: Un utilisateur (usersTable) peut créer plusieurs citoyens (citizensTable)
 
 export const citizensTable = pgTable("citizens", {
-    id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+    id: uuid("id").primaryKey().defaultRandom(),
     firstName: varchar("first_name", { length: 50 }).notNull(),
     lastName: varchar("last_name", { length: 50 }).notNull(),
     birthDate: varchar("birth_date", { length: 20 }).notNull(),
-    gender: varchar("gender", { length: 10 }),
-    nationality: varchar("nationality", { length: 50 }),
-    address: varchar("address", { length: 100 }),
     phoneNumber: varchar("phone_number", { length: 50 }),
     licenseId: varchar("license_id", { length: 50 }),
     occupation: varchar("occupation", { length: 50 }),
     note: varchar("note", { length: 255 }),
     isWanted: boolean("is_wanted").default(false),
-    status: varchar("status", { length: 30 }),
-    bloodType: varchar("blood_type", { length: 10 }),
     photoUrl: varchar("photo_url", { length: 255 }),
     createdBy: varchar("created_by", { length: 50 }).references(() => usersTable.id).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+    statusId: integer("status_id").references(() => statusesTable.id),
+    bloodTypeId: integer("blood_type_id").references(() => bloodTypesTable.id),
+    genderId: integer("gender_id").references(() => gendersTable.id),
+});
+
+// Tables de référence pour les citoyens
+export const statusesTable = pgTable("statuses", {
+    id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+    name: varchar("name", { length: 30 }).notNull(),
+});
+
+export const bloodTypesTable = pgTable("blood_types", {
+    id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+    type: varchar("type", { length: 10 }).notNull(),
+});
+
+export const gendersTable = pgTable("genders", {
+    id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+    name: varchar("name", { length: 20 }).notNull(),
 });
