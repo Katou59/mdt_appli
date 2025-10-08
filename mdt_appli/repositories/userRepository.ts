@@ -45,10 +45,10 @@ export class UserRepository {
         }
 
         return (await query)
-            .map((u) => {
-                return User.getFromDb(u.users, u.ranks, u.jobs);
+            .map((user) => {
+                return User.getFromDb(user.users, user.ranks, user.jobs);
             })
-            .filter((x) => x !== null);
+            .filter((user) => user !== null);
     }
 
     public static async update(user: User): Promise<void> {
