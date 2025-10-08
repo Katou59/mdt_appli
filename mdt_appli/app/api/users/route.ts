@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { UserToCreateType, UserToUpdateType } from "@/types/db/user";
 import { auth } from "@/auth";
 import { UserRepository } from "@/repositories/userRepository";
-import Rank from "@/types/class/Rank";
 import { RoleType } from "@/types/enums/roleType";
 
 export async function PUT(request: NextRequest) {

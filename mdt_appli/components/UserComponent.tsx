@@ -62,8 +62,6 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
             role: user?.role === RoleType.SuperAdmin ? userToUpdate.role : undefined,
         } as UserToUpdateType;
 
-        console.log(userType);
-
         const userUpdatedResult = await getData(axiosClient.put(`/users`, userType));
         if (userUpdatedResult.errorMessage) {
             setErrorMessage(userUpdatedResult.errorMessage);
@@ -101,7 +99,7 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
                     <div className="flex justify-end">
                         <button
                             type="button"
-                            onClick={(e) => setIsConsult(!isConsult)}
+                            onClick={() => setIsConsult(!isConsult)}
                             className="btn btn-info rounded-xl"
                         >
                             Modifier
