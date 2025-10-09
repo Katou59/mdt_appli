@@ -1,0 +1,1 @@
+ALTER TABLE "nationalities" ALTER COLUMN "name" SET DATA TYPE varchar(50);

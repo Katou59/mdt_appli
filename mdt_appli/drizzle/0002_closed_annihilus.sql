@@ -1,0 +1,1 @@
+ALTER TABLE "citizens" DROP COLUMN "wanted_level";

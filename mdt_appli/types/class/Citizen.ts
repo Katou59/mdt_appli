@@ -1,26 +1,38 @@
-import { bloodTypesTable, citizensTable, gendersTable, jobsTable, ranksTable, statusesTable, usersTable } from "@/db/schema";
+import {
+    bloodTypesTable,
+    citizensTable,
+    gendersTable,
+    jobsTable,
+    ranksTable,
+    statusesTable,
+    usersTable,
+} from "@/db/schema";
 import { CitizenType } from "../db/citizen";
-import { UserType } from "../db/user";
 import { KeyValue } from "../utils/keyValue";
 import User from "./User";
+import IConverter from "../interfaces/IConverter";
 
-export default class Citizen {
+export default class Citizen implements CitizenType, IConverter<CitizenType> {
     id: string;
     firstName: string;
     lastName: string;
-    birthDate: string;
-    gender: KeyValue<number, string>;
-    phoneNumber: string;
-    licenseId: string;
-    job: string;
-    note: string;
+    birthDate: string | null;
+    gender: KeyValue<number, string> | null;
+    phoneNumber: string | null;
+    licenseId: string | null;
+    job: string | null;
+    note: string | null;
     isWanted: boolean;
-    status: KeyValue<number, string>;
-    bloodType: KeyValue<number, string>;
-    photoUrl: string;
+    status: KeyValue<number, string> | null;
+    bloodType: KeyValue<number, string> | null;
+    photoUrl: string | null;
     createdBy: User;
     createdAt: Date;
     updatedAt: Date;
+    updatedBy: User;
+    fullName: string;
+    address: string | null;
+    city: string | null;
 
     constructor(citizen: CitizenType) {
         this.id = citizen.id;
@@ -38,41 +50,82 @@ export default class Citizen {
         this.photoUrl = citizen.photoUrl;
         this.createdAt = citizen.createdAt;
         this.updatedAt = citizen.updatedAt;
+        this.address = citizen.address;
+        this.city = citizen.city;
         this.createdBy = new User(citizen.createdBy);
+        this.updatedBy = new User(citizen.updatedBy);
+        this.fullName = `${this.firstName} ${this.lastName}`;
     }
 
     static getFromDb(
-        citizenDb: typeof citizensTable.$inferSelect | null,
+        citizenDb: typeof citizensTable.$inferSelect,
         genderDb: typeof gendersTable.$inferSelect | null,
         statusDb: typeof statusesTable.$inferSelect | null,
         bloodTypeDb: typeof bloodTypesTable.$inferSelect | null,
-        userDb: typeof usersTable.$inferSelect | null,
-        rankDb: typeof ranksTable.$inferSelect | null,
-        jobDb: typeof jobsTable.$inferSelect | null
-    ): Citizen | null {
-        if(!citizenDb) return null;
-
-        const createdBy = User.getFromDb(userDb, rankDb, jobDb)!.toUserType();
+        createdByDb: typeof usersTable.$inferSelect,
+        createdByRankDb: typeof ranksTable.$inferSelect,
+        createdByJobDb: typeof jobsTable.$inferSelect,
+        updatedByDb: typeof usersTable.$inferSelect,
+        updatedByRankDb: typeof ranksTable.$inferSelect,
+        updatedByJobDb: typeof jobsTable.$inferSelect
+    ): Citizen {
+        const createdBy = User.getFromDb(
+            createdByDb,
+            createdByRankDb,
+            createdByJobDb
+        )!.toUserType();
+        const updatedBy = User.getFromDb(
+            updatedByDb,
+            updatedByRankDb,
+            updatedByJobDb
+        )!.toUserType();
 
         const citizenType: CitizenType = {
             id: citizenDb.id,
             firstName: citizenDb.firstName,
             lastName: citizenDb.lastName,
             birthDate: citizenDb.birthDate,
-            gender: {key: genderDb!.id, value: genderDb!.name},
-            phoneNumber: citizenDb.phoneNumber!,
+            gender: genderDb ? { key: genderDb.id, value: genderDb.name } : null,
+            phoneNumber: citizenDb.phoneNumber,
             licenseId: citizenDb.licenseId!,
-            job: citizenDb.job!,
-            note: citizenDb.note!,
+            job: citizenDb.job,
+            note: citizenDb.note,
             isWanted: citizenDb.isWanted ?? false,
-            status: {key: statusDb!.id, value: statusDb!.name},
-            bloodType: {key: bloodTypeDb!.id, value: bloodTypeDb!.type},
-            photoUrl: citizenDb.photoUrl!,
-            createdBy: createdBy!,
+            status: statusDb ? { key: statusDb.id, value: statusDb.name } : null,
+            bloodType: bloodTypeDb ? { key: bloodTypeDb.id, value: bloodTypeDb.type } : null,
+            photoUrl: citizenDb.photoUrl ?? "0",
+            createdBy: createdBy,
             createdAt: new Date(citizenDb.createdAt),
             updatedAt: new Date(citizenDb.updatedAt),
+            updatedBy: updatedBy,
+            address: citizenDb.address,
+            city: citizenDb.city,
         };
 
         return new Citizen(citizenType);
+    }
+
+    toType(): CitizenType {
+        return {
+            id: this.id,
+            firstName: this.firstName,
+            lastName: this.lastName,
+            birthDate: this.birthDate,
+            gender: this.gender,
+            phoneNumber: this.phoneNumber,
+            licenseId: this.licenseId,
+            job: this.job,
+            note: this.note,
+            isWanted: this.isWanted,
+            status: this.status,
+            bloodType: this.bloodType,
+            photoUrl: this.photoUrl,
+            createdBy: this.createdBy,
+            createdAt: this.createdAt,
+            updatedAt: this.updatedAt,
+            updatedBy: this.updatedBy,
+            address: this.address,
+            city: this.city,
+        };
     }
 }

@@ -1,1 +1,0 @@
-ALTER TABLE "citizens" RENAME COLUMN "occupation" TO "job";

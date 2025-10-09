@@ -1,4 +1,3 @@
-import UserId from "@/app/(protected)/police/users/[id]/page";
 import {
     bloodTypesTable,
     citizensTable,
@@ -9,15 +8,21 @@ import {
     usersTable,
 } from "@/db/schema";
 import Citizen from "@/types/class/Citizen";
-import User from "@/types/class/User";
-import { RankType } from "@/types/db/rank";
-import { eq } from "drizzle-orm";
+import Pager from "@/types/class/Pager";
+import { CitizenType } from "@/types/db/citizen";
+import { eq, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
+import { alias } from "drizzle-orm/pg-core";
 
 const db = drizzle(process.env.DATABASE_URL!);
 
 export default class CitizenRepository {
-    static async GetList(): Promise<Citizen[]> {
+    static async GetList(page: number, valuePerPage: number): Promise<Pager<Citizen, CitizenType>> {
+        const offset = (page - 1) * valuePerPage;
+
+        const updatedByUsers = alias(usersTable, "updated_by_users");
+        const updatedByUsersJobs = alias(jobsTable, "updated_by_user_jobs");
+        const updatedByUsersRanks = alias(ranksTable, "updated_by_user_ranks");
         const dbCitizens = await db
             .select()
             .from(citizensTable)
@@ -26,20 +31,33 @@ export default class CitizenRepository {
             .leftJoin(gendersTable, eq(gendersTable.id, citizensTable.genderId))
             .leftJoin(usersTable, eq(usersTable.id, citizensTable.createdBy))
             .leftJoin(jobsTable, eq(jobsTable.id, usersTable.jobId))
-            .leftJoin(ranksTable, eq(ranksTable.id, usersTable.rankId));
+            .leftJoin(ranksTable, eq(ranksTable.id, usersTable.rankId))
+            .leftJoin(updatedByUsers, eq(updatedByUsers.id, citizensTable.updatedBy))
+            .leftJoin(updatedByUsersJobs, eq(updatedByUsersJobs.id, updatedByUsers.jobId))
+            .leftJoin(updatedByUsersRanks, eq(updatedByUsersRanks.id, updatedByUsers.rankId))
+            .orderBy(citizensTable.firstName, citizensTable.lastName)
+            .limit(valuePerPage)
+            .offset(offset);
 
-        const citizens = dbCitizens.map((dbCitizen) => {
-            return Citizen.getFromDb(
-                dbCitizen.citizens,
-                dbCitizen.genders,
-                dbCitizen.statuses,
-                dbCitizen.blood_types,
-                dbCitizen.users,
-                dbCitizen.ranks,
-                dbCitizen.jobs
-            );
-        });
+        const [{ count }] = await db.select({ count: sql<number>`count(*)` }).from(citizensTable);
 
-        return citizens.filter((x) => x !== null);
+        const citizens = dbCitizens
+            .map((dbCitizen) =>
+                Citizen.getFromDb(
+                    dbCitizen.citizens,
+                    dbCitizen.genders,
+                    dbCitizen.statuses,
+                    dbCitizen.blood_types,
+                    dbCitizen.users!,
+                    dbCitizen.ranks!,
+                    dbCitizen.jobs!,
+                    dbCitizen.updated_by_users!,
+                    dbCitizen.updated_by_user_ranks!,
+                    dbCitizen.updated_by_user_jobs!
+                )
+            )
+            .filter((x): x is Citizen => x !== null);
+
+        return new Pager(citizens, count, valuePerPage, page);
     }
 }

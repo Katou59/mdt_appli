@@ -19,7 +19,10 @@ export default async function ProtectedLayout({
         return redirect("/");
     }
 
-    const topItems = [{ name: "Accueil", link: "/police/dashboard" }];
+    const topItems = [
+        { name: "Accueil", link: "/police/dashboard" },
+        { name: "Citoyens", link: "/police/citizens" },
+    ];
 
     const botItems = [{ name: "Mon profil", link: "/police/users/me" }];
 

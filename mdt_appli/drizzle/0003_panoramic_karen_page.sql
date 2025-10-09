@@ -1,0 +1,1 @@
+ALTER TABLE "citizens" ALTER COLUMN "updated_by" SET NOT NULL;

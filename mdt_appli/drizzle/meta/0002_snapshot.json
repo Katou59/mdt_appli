@@ -1,6 +1,6 @@
 {
-  "id": "6ce8a65b-feda-4ef2-aa94-36fd95eb2ae0",
-  "prevId": "dff46e4f-e80a-477f-b603-5eae7cc67d9f",
+  "id": "f89c5d5f-908b-43a4-9eea-82957c90eca8",
+  "prevId": "190da30a-9439-4065-a6f4-3cd69a1fe2ed",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -67,7 +67,31 @@
           "name": "birth_date",
           "type": "varchar(20)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
+        },
+        "birth_place": {
+          "name": "birth_place",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nationality_id": {
+          "name": "nationality_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "height": {
+          "name": "height",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "weight": {
+          "name": "weight",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
         },
         "phone_number": {
           "name": "phone_number",
@@ -87,9 +111,15 @@
           "primaryKey": false,
           "notNull": false
         },
-        "note": {
-          "name": "note",
-          "type": "varchar(255)",
+        "address": {
+          "name": "address",
+          "type": "varchar(250)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "city": {
+          "name": "city",
+          "type": "varchar(100)",
           "primaryKey": false,
           "notNull": false
         },
@@ -99,6 +129,12 @@
           "primaryKey": false,
           "notNull": false,
           "default": false
+        },
+        "note": {
+          "name": "note",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
         },
         "photo_url": {
           "name": "photo_url",
@@ -126,6 +162,12 @@
           "notNull": true,
           "default": "now()"
         },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
         "status_id": {
           "name": "status_id",
           "type": "integer",
@@ -147,12 +189,38 @@
       },
       "indexes": {},
       "foreignKeys": {
+        "citizens_nationality_id_nationalities_id_fk": {
+          "name": "citizens_nationality_id_nationalities_id_fk",
+          "tableFrom": "citizens",
+          "tableTo": "nationalities",
+          "columnsFrom": [
+            "nationality_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
         "citizens_created_by_users_id_fk": {
           "name": "citizens_created_by_users_id_fk",
           "tableFrom": "citizens",
           "tableTo": "users",
           "columnsFrom": [
             "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "citizens_updated_by_users_id_fk": {
+          "name": "citizens_updated_by_users_id_fk",
+          "tableFrom": "citizens",
+          "tableTo": "users",
+          "columnsFrom": [
+            "updated_by"
           ],
           "columnsTo": [
             "id"
@@ -254,6 +322,42 @@
           "identity": {
             "type": "always",
             "name": "jobs_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.nationalities": {
+      "name": "nationalities",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "nationalities_id_seq",
             "schema": "public",
             "increment": "1",
             "startWith": "1",
