@@ -25,7 +25,6 @@ export default function Ranks() {
         }
 
         const fetchRanks = async () => {
-            console.log("caca");
             const jobsResponse = await getData(axiosClient.get<JobType[]>("/jobs"));
             if (jobsResponse.errorMessage) {
                 setErrorMessage(jobsResponse.errorMessage);

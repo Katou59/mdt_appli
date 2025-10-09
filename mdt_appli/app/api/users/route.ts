@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json((await UserRepository.get(userToAddRequest.id))?.toUserType());
     } catch (e) {
-        console.log(e);
+        console.error(e);
         if (e instanceof Error) {
             const pgError = e.cause as { code?: string; detail?: string; message?: string };
 
