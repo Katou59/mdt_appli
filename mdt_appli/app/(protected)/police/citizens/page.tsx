@@ -37,7 +37,7 @@ export default function Citoyens() {
         init();
     }, [filter]);
 
-    if (!isLoaded) return <div>Chargement...</div>;
+    if (!isLoaded || !pager) return <div>Chargement...</div>;
 
     async function handlePageChange(page: number): Promise<void> {
         setPager(await getPager(page, pager!.itemPerPage, filter));
@@ -89,7 +89,11 @@ export default function Citoyens() {
                     </div>
                 </form>
 
-                <div className="overflow-visible mt-4">
+                <div className="text-center opacity-50 mt-4 text-sm">
+                    {pager!.itemCount} citoyen{pager!.itemCount > 1 ? "s" : ""}
+                </div>
+
+                <div className="overflow-visible">
                     <table className="table table-xs">
                         <thead>
                             <tr>
@@ -100,76 +104,94 @@ export default function Citoyens() {
                             </tr>
                         </thead>
                         <tbody>
-                            {pager?.items.map((citizen) => (
-                                <tr key={citizen.id}>
-                                    <td>
-                                        <div className="flex items-center gap-3">
-                                            <div className="dropdown dropdown-hover dropdown-right dropdown-center">
-                                                <div
-                                                    tabIndex={0}
-                                                    role="button"
-                                                    className="m-1 avatar"
-                                                >
-                                                    <div className="mask mask-squircle h-8 w-8">
-                                                        <Image
-                                                            width={100}
-                                                            height={100}
-                                                            src={citizen.photoUrl ?? "/Image.png"}
-                                                            alt="Photo de profil"
-                                                        />
+                            {Number(pager.itemCount) === 0 ? (
+                                <tr>
+                                    <td colSpan={4} className="text-center text-sm font-bold">
+                                        Aucun citoyen
+                                    </td>
+                                </tr>
+                            ) : (
+                                pager?.items.map((citizen) => (
+                                    <tr key={citizen.id}>
+                                        <td>
+                                            <div className="flex items-center gap-3">
+                                                <div className="dropdown dropdown-hover dropdown-right dropdown-center">
+                                                    <div
+                                                        tabIndex={0}
+                                                        role="button"
+                                                        className="m-1 avatar"
+                                                    >
+                                                        <div className="mask mask-squircle h-8 w-8">
+                                                            <Image
+                                                                width={100}
+                                                                height={100}
+                                                                src={
+                                                                    citizen.photoUrl ?? "/Image.png"
+                                                                }
+                                                                alt="Photo de profil"
+                                                            />
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div
-                                                    tabIndex={0}
-                                                    className="dropdown-content card card-sm bg-base-300 z-10 w-96 shadow-md"
-                                                >
-                                                    <div className="card-body">
-                                                        <div className="flex flex-row gap-2 items-center">
-                                                            <div className="mask mask-squircle h-20 w-20 min-h-20 min-w-20">
-                                                                <Image
-                                                                    width={100}
-                                                                    height={100}
-                                                                    src={
-                                                                        citizen.photoUrl ??
-                                                                        "/Image.png"
-                                                                    }
-                                                                    alt="Photo de profil"
-                                                                    className="object-cover w-full h-full"
-                                                                />
-                                                            </div>
-                                                            <div className="grow flex flex-col">
-                                                                <div className="text-md font-bold">
-                                                                    {citizen.firstName}{" "}
-                                                                    {citizen.lastName}
+                                                    <div
+                                                        tabIndex={0}
+                                                        className="dropdown-content card card-sm bg-base-300 z-10 w-96 shadow-md"
+                                                    >
+                                                        <div className="card-body">
+                                                            <div className="flex flex-row gap-2 items-center">
+                                                                <div className="mask mask-squircle h-20 w-20 min-h-20 min-w-20">
+                                                                    <Image
+                                                                        width={100}
+                                                                        height={100}
+                                                                        src={
+                                                                            citizen.photoUrl ??
+                                                                            "/Image.png"
+                                                                        }
+                                                                        alt="Photo de profil"
+                                                                        className="object-cover w-full h-full"
+                                                                    />
                                                                 </div>
-                                                                <div>{citizen.address}</div>
-                                                                <div>{citizen.city}</div>
-                                                                <div>{citizen.note}</div>
+                                                                <div className="grow flex flex-col">
+                                                                    <div className="text-md font-bold">
+                                                                        {citizen.firstName}{" "}
+                                                                        {citizen.lastName}
+                                                                    </div>
+                                                                    <div>{citizen.address}</div>
+                                                                    <div>{citizen.city}</div>
+                                                                    <div>{citizen.note}</div>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div>
-                                                <div className="font-bold">{citizen.fullName}</div>
-                                                <div className="text-sm opacity-50">
-                                                    {citizen.gender?.value} /{" "}
-                                                    {citizen.status?.value}
+                                                <div>
+                                                    <div className="font-bold">
+                                                        {citizen.fullName}
+                                                    </div>
+                                                    <div className="text-sm opacity-50">
+                                                        {citizen.gender?.value} /{" "}
+                                                        {citizen.status?.value}
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td>{citizen.phoneNumber}</td>
-                                    <td>
-                                        {citizen.createdBy.number} | {citizen.createdBy.fullName} le{" "}
-                                        {dayjs(citizen.createdAt).format("DD/MM/YYYY à HH:mm:ss")}
-                                    </td>
-                                    <td>
-                                        {citizen.updatedBy.number} | {citizen.updatedBy.fullName} le{" "}
-                                        {dayjs(citizen.updatedAt).format("DD/MM/YYYY à HH:mm:ss")}
-                                    </td>
-                                </tr>
-                            ))}
+                                        </td>
+                                        <td>{citizen.phoneNumber}</td>
+                                        <td>
+                                            {citizen.createdBy.number} |{" "}
+                                            {citizen.createdBy.fullName} le{" "}
+                                            {dayjs(citizen.createdAt).format(
+                                                "DD/MM/YYYY à HH:mm:ss"
+                                            )}
+                                        </td>
+                                        <td>
+                                            {citizen.updatedBy.number} |{" "}
+                                            {citizen.updatedBy.fullName} le{" "}
+                                            {dayjs(citizen.updatedAt).format(
+                                                "DD/MM/YYYY à HH:mm:ss"
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
                         </tbody>
                     </table>
                     {pager!.pageCount > 1 && (

@@ -40,17 +40,21 @@ export default class CitizenRepository {
             .leftJoin(updatedByUsersJobs, eq(updatedByUsersJobs.id, updatedByUsers.jobId))
             .leftJoin(updatedByUsersRanks, eq(updatedByUsersRanks.id, updatedByUsers.rankId));
 
-        if (search) {
+        if (search && /^[0-9]+$/.test(search.replace(/\s+/g, ""))) {
+            query.where(
+                ilike(
+                    sql`regexp_replace(${citizensTable.phoneNumber}, '[^0-9]', '', 'g')`,
+                    sql`'%' || regexp_replace(${search}, '[^0-9]', '', 'g') || '%'`
+                )
+            );
+        } else if (search) {
             const terms = search.split(" ").filter(Boolean);
 
             const conditions = terms.map((term) =>
                 or(
                     ilike(citizensTable.firstName, `%${term}%`),
                     ilike(citizensTable.lastName, `%${term}%`),
-                    ilike(
-                        sql`regexp_replace(${citizensTable.phoneNumber}, '[^0-9]', '', 'g')`,
-                        sql`'%' || regexp_replace(${term}, '[^0-9]', '', 'g') || '%'`
-                    ),
+
                     ilike(sql`cast(${citizensTable.id} as text)`, `%${term}%`)
                 )
             );
@@ -59,24 +63,28 @@ export default class CitizenRepository {
         }
 
         query
-            .orderBy(citizensTable.firstName, citizensTable.lastName)
+            .orderBy(citizensTable.firstName, citizensTable.lastName, citizensTable.birthDate)
             .limit(valuePerPage)
             .offset(offset);
 
         const dbCitizens = await query;
 
         const countQuery = db.select({ count: sql<number>`count(*)` }).from(citizensTable);
-        if (search) {
+
+        if (search && /^[0-9]+$/.test(search.replace(/\s+/g, ""))) {
+            countQuery.where(
+                ilike(
+                    sql`regexp_replace(${citizensTable.phoneNumber}, '[^0-9]', '', 'g')`,
+                    sql`'%' || regexp_replace(${search}, '[^0-9]', '', 'g') || '%'`
+                )
+            );
+        } else if (search) {
             const terms = search.split(" ").filter(Boolean);
 
             const conditions = terms.map((term) =>
                 or(
                     ilike(citizensTable.firstName, `%${term}%`),
                     ilike(citizensTable.lastName, `%${term}%`),
-                    ilike(
-                        sql`regexp_replace(${citizensTable.phoneNumber}, '[^0-9]', '', 'g')`,
-                        sql`'%' || regexp_replace(${term}, '[^0-9]', '', 'g') || '%'`
-                    ),
                     ilike(sql`cast(${citizensTable.id} as text)`, `%${term}%`)
                 )
             );
