@@ -25,7 +25,7 @@ export default function Pager<TEntity extends IConverter<TType>, TType>({
             >
                 {"<"}
             </button>
-            <button className="join-item btn w-36">
+            <button className="join-item btn w-36 text-xs">
                 Page {pager?.page}/{pager?.pageCount}
             </button>
             <button
