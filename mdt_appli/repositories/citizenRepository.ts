@@ -10,20 +10,24 @@ import {
 import Citizen from "@/types/class/Citizen";
 import Pager from "@/types/class/Pager";
 import { CitizenType } from "@/types/db/citizen";
-import { eq, sql } from "drizzle-orm";
+import { eq, ilike, sql, or, and } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { alias } from "drizzle-orm/pg-core";
 
 const db = drizzle(process.env.DATABASE_URL!);
 
 export default class CitizenRepository {
-    static async GetList(page: number, valuePerPage: number): Promise<Pager<Citizen, CitizenType>> {
+    static async GetList(
+        page: number,
+        valuePerPage: number,
+        search?: string
+    ): Promise<Pager<Citizen, CitizenType>> {
         const offset = (page - 1) * valuePerPage;
 
         const updatedByUsers = alias(usersTable, "updated_by_users");
         const updatedByUsersJobs = alias(jobsTable, "updated_by_user_jobs");
         const updatedByUsersRanks = alias(ranksTable, "updated_by_user_ranks");
-        const dbCitizens = await db
+        const query = db
             .select()
             .from(citizensTable)
             .leftJoin(bloodTypesTable, eq(bloodTypesTable.id, citizensTable.bloodTypeId))
@@ -34,12 +38,53 @@ export default class CitizenRepository {
             .leftJoin(ranksTable, eq(ranksTable.id, usersTable.rankId))
             .leftJoin(updatedByUsers, eq(updatedByUsers.id, citizensTable.updatedBy))
             .leftJoin(updatedByUsersJobs, eq(updatedByUsersJobs.id, updatedByUsers.jobId))
-            .leftJoin(updatedByUsersRanks, eq(updatedByUsersRanks.id, updatedByUsers.rankId))
+            .leftJoin(updatedByUsersRanks, eq(updatedByUsersRanks.id, updatedByUsers.rankId));
+
+        if (search) {
+            const terms = search.split(" ").filter(Boolean);
+
+            const conditions = terms.map((term) =>
+                or(
+                    ilike(citizensTable.firstName, `%${term}%`),
+                    ilike(citizensTable.lastName, `%${term}%`),
+                    ilike(
+                        sql`regexp_replace(${citizensTable.phoneNumber}, '[^0-9]', '', 'g')`,
+                        sql`'%' || regexp_replace(${term}, '[^0-9]', '', 'g') || '%'`
+                    ),
+                    ilike(sql`cast(${citizensTable.id} as text)`, `%${term}%`)
+                )
+            );
+
+            query.where(and(...conditions));
+        }
+
+        query
             .orderBy(citizensTable.firstName, citizensTable.lastName)
             .limit(valuePerPage)
             .offset(offset);
 
-        const [{ count }] = await db.select({ count: sql<number>`count(*)` }).from(citizensTable);
+        const dbCitizens = await query;
+
+        const countQuery = db.select({ count: sql<number>`count(*)` }).from(citizensTable);
+        if (search) {
+            const terms = search.split(" ").filter(Boolean);
+
+            const conditions = terms.map((term) =>
+                or(
+                    ilike(citizensTable.firstName, `%${term}%`),
+                    ilike(citizensTable.lastName, `%${term}%`),
+                    ilike(
+                        sql`regexp_replace(${citizensTable.phoneNumber}, '[^0-9]', '', 'g')`,
+                        sql`'%' || regexp_replace(${term}, '[^0-9]', '', 'g') || '%'`
+                    ),
+                    ilike(sql`cast(${citizensTable.id} as text)`, `%${term}%`)
+                )
+            );
+
+            countQuery.where(and(...conditions));
+        }
+
+        const [{ count }] = await countQuery;
 
         const citizens = dbCitizens
             .map((dbCitizen) =>

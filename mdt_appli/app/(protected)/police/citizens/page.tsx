@@ -8,18 +8,21 @@ import { CitizenType } from "@/types/db/citizen";
 import { PagerType } from "@/types/response/pagerType";
 import dayjs from "dayjs";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 import PagerComponent from "@/components/Pager";
 
 export default function Citoyens() {
     const [isLoaded, setIsLoaded] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [pager, setPager] = useState<Pager<Citizen, CitizenType>>();
+    const [filter, setFilter] = useState<FilterType>({
+        searchTerm: "",
+    });
 
     useEffect(() => {
         const init = async () => {
             try {
-                setPager(await getPager(1, 20));
+                setPager(await getPager(1, 20, filter));
             } catch (error) {
                 if (error instanceof Error) {
                     setErrorMessage(error.message);
@@ -32,14 +35,25 @@ export default function Citoyens() {
         };
 
         init();
-    }, []);
+    }, [filter]);
 
     if (!isLoaded) return <div>Chargement...</div>;
 
-    async function handlePageChange(
-        page: number
-    ): Promise<void> {
-        setPager(await getPager(page, pager!.itemPerPage));
+    async function handlePageChange(page: number): Promise<void> {
+        setPager(await getPager(page, pager!.itemPerPage, filter));
+    }
+
+    function handleSearchSubmit(event: FormEvent<HTMLFormElement>): void {
+        event.preventDefault();
+
+        const formData = new FormData(event.currentTarget);
+        const searchTerm = (formData.get("search") as string) ?? "";
+
+        setFilter((prev) => ({ ...prev, searchTerm: searchTerm }));
+    }
+
+    function handleSearchReset(): void {
+        setFilter({ searchTerm: "" });
     }
 
     return (
@@ -49,7 +63,33 @@ export default function Citoyens() {
                 <h1 className="text-4xl font-bold text-primary text-center mb-4">
                     Liste des citoyens
                 </h1>
-                <div className="overflow-x-auto">
+                <form
+                    onSubmit={handleSearchSubmit}
+                    onReset={handleSearchReset}
+                    className="flex flex-col items-center"
+                >
+                    <fieldset className="fieldset">
+                        <legend className="fieldset-legend p-0">Recherche</legend>
+                        <input
+                            type="text"
+                            name="search"
+                            placeholder="Recherche"
+                            className="input input-sm input-primary w-64"
+                            autoComplete="off"
+                            defaultValue=""
+                        />
+                    </fieldset>
+                    <div className="join mt-2">
+                        <button type="submit" className="btn btn-success btn-sm w-24 join-item">
+                            Rechercher
+                        </button>
+                        <button type="reset" className="btn btn-error btn-sm w-24 join-item">
+                            Annuler
+                        </button>
+                    </div>
+                </form>
+
+                <div className="overflow-x-auto mt-4">
                     <table className="table table-xs">
                         <thead>
                             <tr>
@@ -69,7 +109,7 @@ export default function Citoyens() {
                                                     <Image
                                                         width={100}
                                                         height={100}
-                                                        src={citizen.photoUrl ?? ""}
+                                                        src={citizen.photoUrl ?? "/Image.png"}
                                                         alt="Photo de profil"
                                                     />
                                                 </div>
@@ -96,17 +136,23 @@ export default function Citoyens() {
                             ))}
                         </tbody>
                     </table>
+                    {pager!.pageCount > 1 && (
                     <PagerComponent pager={pager!} onPageChange={handlePageChange} />
+                    )}
                 </div>
             </div>
         </>
     );
 }
 
-async function getPager(page: number, itemPerPage: number): Promise<Pager<Citizen, CitizenType>> {
+async function getPager(
+    page: number,
+    itemPerPage: number,
+    filter: FilterType
+): Promise<Pager<Citizen, CitizenType>> {
     const pagerResponse = await getData(
         axiosClient.get("/citizens", {
-            params: { page: page, result: itemPerPage ?? 20 },
+            params: { page: page, result: itemPerPage ?? 20, search: filter.searchTerm },
         })
     );
     if (pagerResponse.errorMessage) {
@@ -122,3 +168,7 @@ async function getPager(page: number, itemPerPage: number): Promise<Pager<Citize
         pagerType.page
     );
 }
+
+type FilterType = {
+    searchTerm: string;
+};

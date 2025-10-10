@@ -7,12 +7,13 @@ export async function GET(request: NextRequest) {
         const { searchParams } = new URL(request.url);
         const page = Number(searchParams.get("page"));
         const result = Number(searchParams.get("result"));
+        const search = searchParams.get("search");
         
         if(isNaN(page) || isNaN(result)){
             return NextResponse.json({error: "Bad Request"}, {status: HttpStatus.BAD_REQUEST})
         }
 
-        const pager = await CitizenRepository.GetList(page, result);
+        const pager = await CitizenRepository.GetList(page, result, search ?? undefined);
 
         return NextResponse.json(pager.toType());
     } catch (error) {
