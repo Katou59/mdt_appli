@@ -1,4 +1,4 @@
-import { KeyValue } from "../utils/keyValue";
+import { KeyValueType } from "../utils/keyValue";
 import { UserType } from "./user";
 
 export interface CitizenType {
@@ -6,14 +6,14 @@ export interface CitizenType {
     firstName: string;
     lastName: string;
     birthDate: string | null;
-    gender: KeyValue<number, string> | null;
+    gender: KeyValueType<number, string> | null;
     phoneNumber: string | null;
     licenseId: string | null;
     job: string | null;
     note: string | null;
     isWanted: boolean;
-    status: KeyValue<number, string> | null;
-    bloodType: KeyValue<number, string> | null;
+    status: KeyValueType<number, string> | null;
+    bloodType: KeyValueType<number, string> | null;
     photoUrl: string | null;
     createdBy: UserType;
     createdAt: Date;

@@ -8,23 +8,24 @@ import {
     usersTable,
 } from "@/db/schema";
 import { CitizenType } from "../db/citizen";
-import { KeyValue } from "../utils/keyValue";
+import { KeyValueType } from "../utils/keyValue";
 import User from "./User";
 import IConverter from "../interfaces/IConverter";
+import { StatusType } from "../enums/statusType";
 
 export default class Citizen implements CitizenType, IConverter<CitizenType> {
     id: string;
     firstName: string;
     lastName: string;
     birthDate: string | null;
-    gender: KeyValue<number, string> | null;
+    gender: KeyValueType<number, string> | null;
     phoneNumber: string | null;
     licenseId: string | null;
     job: string | null;
     note: string | null;
     isWanted: boolean;
-    status: KeyValue<number, string> | null;
-    bloodType: KeyValue<number, string> | null;
+    status: KeyValueType<number, string>| null;
+    bloodType: KeyValueType<number, string> | null;
     photoUrl: string | null;
     createdBy: User;
     createdAt: Date;

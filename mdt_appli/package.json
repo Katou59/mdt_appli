@@ -3,12 +3,13 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "predev": "npm run generate:roles",
-        "prebuild": "npm run generate:roles",
+        "predev": "npm run generate:roles && npm run generate:statuses",
+        "prebuild": "npm run generate:roles && npm run generate:statuses",
         "dev": "next dev --turbopack",
         "build": "next build --turbopack",
         "start": "next start",
         "lint": "eslint",
+        "generate:statuses": "tsx scripts/generateStatusEnum.ts",
         "generate:roles": "tsx scripts/generateRoleEnum.ts"
     },
     "dependencies": {

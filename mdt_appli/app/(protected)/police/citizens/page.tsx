@@ -89,7 +89,7 @@ export default function Citoyens() {
                     </div>
                 </form>
 
-                <div className="overflow-x-auto mt-4">
+                <div className="overflow-visible mt-4">
                     <table className="table table-xs">
                         <thead>
                             <tr>
@@ -104,14 +104,50 @@ export default function Citoyens() {
                                 <tr key={citizen.id}>
                                     <td>
                                         <div className="flex items-center gap-3">
-                                            <div className="avatar">
-                                                <div className="mask mask-squircle h-8 w-8">
-                                                    <Image
-                                                        width={100}
-                                                        height={100}
-                                                        src={citizen.photoUrl ?? "/Image.png"}
-                                                        alt="Photo de profil"
-                                                    />
+                                            <div className="dropdown dropdown-hover dropdown-right dropdown-center">
+                                                <div
+                                                    tabIndex={0}
+                                                    role="button"
+                                                    className="m-1 avatar"
+                                                >
+                                                    <div className="mask mask-squircle h-8 w-8">
+                                                        <Image
+                                                            width={100}
+                                                            height={100}
+                                                            src={citizen.photoUrl ?? "/Image.png"}
+                                                            alt="Photo de profil"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    tabIndex={0}
+                                                    className="dropdown-content card card-sm bg-base-300 z-10 w-96 shadow-md"
+                                                >
+                                                    <div className="card-body">
+                                                        <div className="flex flex-row gap-2 items-center">
+                                                            <div className="mask mask-squircle h-20 w-20 min-h-20 min-w-20">
+                                                                <Image
+                                                                    width={100}
+                                                                    height={100}
+                                                                    src={
+                                                                        citizen.photoUrl ??
+                                                                        "/Image.png"
+                                                                    }
+                                                                    alt="Photo de profil"
+                                                                    className="object-cover w-full h-full"
+                                                                />
+                                                            </div>
+                                                            <div className="grow flex flex-col">
+                                                                <div className="text-md font-bold">
+                                                                    {citizen.firstName}{" "}
+                                                                    {citizen.lastName}
+                                                                </div>
+                                                                <div>{citizen.address}</div>
+                                                                <div>{citizen.city}</div>
+                                                                <div>{citizen.note}</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div>
@@ -137,7 +173,7 @@ export default function Citoyens() {
                         </tbody>
                     </table>
                     {pager!.pageCount > 1 && (
-                    <PagerComponent pager={pager!} onPageChange={handlePageChange} />
+                        <PagerComponent pager={pager!} onPageChange={handlePageChange} />
                     )}
                 </div>
             </div>
