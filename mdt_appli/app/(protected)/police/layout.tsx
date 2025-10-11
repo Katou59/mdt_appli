@@ -5,7 +5,6 @@ import { UserProvider } from "@/lib/Contexts/UserContext";
 import { UserName } from "@/components/UserName";
 import Image from "next/image";
 import { UserRepository } from "@/repositories/userRepository";
-import "@/styles/sidebar.scss";
 
 export default async function ProtectedLayout({
     children,
