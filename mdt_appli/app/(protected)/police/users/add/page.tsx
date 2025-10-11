@@ -74,7 +74,7 @@ export default function AddUser() {
             <form
                 className="flex flex-col justify-center"
                 onSubmit={handleSubmit}
-                onReset={(e) => {
+                onReset={() => {
                     setErrorMessage("");
                     setUserToCreate({ id: "", jobId: null, rankId: null });
                 }}

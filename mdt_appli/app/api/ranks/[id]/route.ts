@@ -25,7 +25,6 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
 
 export async function GET(request: NextRequest, context: { params: Promise<{ id: string }> }) {
 	try {
-		const c = await request.nextUrl.pathname;
 		const { id } = await context.params;
 
 		if (!id || !Number(id)) {

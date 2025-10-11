@@ -1,11 +1,7 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { jobsTable, ranksTable, usersTable } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
-import { JobType } from "@/types/db/job";
-import { RankType } from "@/types/db/rank";
-import { RoleType } from "@/types/enums/roleType";
 import User from "@/types/class/User";
-import Rank from "@/types/class/Rank";
 import { UserToCreateType } from "@/types/db/user";
 
 const db = drizzle(process.env.DATABASE_URL!);

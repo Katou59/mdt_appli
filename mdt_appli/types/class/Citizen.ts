@@ -11,7 +11,6 @@ import { CitizenType } from "../db/citizen";
 import { KeyValueType } from "../utils/keyValue";
 import User from "./User";
 import IConverter from "../interfaces/IConverter";
-import { StatusType } from "../enums/statusType";
 
 export default class Citizen implements CitizenType, IConverter<CitizenType> {
     id: string;

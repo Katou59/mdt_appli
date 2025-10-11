@@ -2,7 +2,6 @@ import { UserToUpdateType, UserType } from "@/types/db/user";
 import { RoleType } from "@/types/enums/roleType";
 import Rank from "@/types/class/Rank";
 import { jobsTable, ranksTable, usersTable } from "@/db/schema";
-import { InferModel } from "drizzle-orm";
 import { JobType } from "../db/job";
 import { RankType } from "../db/rank";
 
