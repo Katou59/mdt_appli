@@ -1,0 +1,1 @@
+ALTER TABLE "blood_types" RENAME COLUMN "type" TO "name";

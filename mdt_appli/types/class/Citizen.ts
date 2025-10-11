@@ -92,7 +92,7 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
             note: citizenDb.note,
             isWanted: citizenDb.isWanted ?? false,
             status: statusDb ? { key: statusDb.id, value: statusDb.name } : null,
-            bloodType: bloodTypeDb ? { key: bloodTypeDb.id, value: bloodTypeDb.type } : null,
+            bloodType: bloodTypeDb ? { key: bloodTypeDb.id, value: bloodTypeDb.name } : null,
             photoUrl: citizenDb.photoUrl,
             createdBy: createdBy,
             createdAt: new Date(citizenDb.createdAt),
