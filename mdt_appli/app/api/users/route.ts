@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
         const userToAddRequest = (await request.json()) as UserToCreateType;
         await UserRepository.add(userToAddRequest);
 
-        return NextResponse.json((await UserRepository.get(userToAddRequest.id))?.toUserType());
+        return NextResponse.json((await UserRepository.get(userToAddRequest.id))?.toType());
     } catch (e) {
         console.error(e);
         if (e instanceof Error) {

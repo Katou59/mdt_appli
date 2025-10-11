@@ -73,12 +73,12 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
             createdByDb,
             createdByRankDb,
             createdByJobDb
-        )!.toUserType();
+        )!.toType();
         const updatedBy = User.getFromDb(
             updatedByDb,
             updatedByRankDb,
             updatedByJobDb
-        )!.toUserType();
+        )!.toType();
 
         const citizenType: CitizenType = {
             id: citizenDb.id,

@@ -5,6 +5,7 @@ import { UserProvider } from "@/lib/Contexts/UserContext";
 import { UserName } from "@/components/UserName";
 import Image from "next/image";
 import { UserRepository } from "@/repositories/userRepository";
+import "@/styles/sidebar.scss";
 
 export default async function ProtectedLayout({
     children,
@@ -38,7 +39,7 @@ export default async function ProtectedLayout({
     }
 
     return (
-        <UserProvider initialUser={user.toUserType()}>
+        <UserProvider initialUser={user.toType()}>
             <div className="w-full h-full min-h-full">
                 <div className="w-[250px]">
                     <div className="fixed h-screen flex flex-col bg-base-200 pt-2 pb-2 w-[250px]">
@@ -62,7 +63,7 @@ export default async function ProtectedLayout({
                             </ul>
                         </div>
                         <div className="grow"></div>
-                        <ul className="menu bg-base-200 rounded-box w-full">
+                        <ul className="menu bg-base-200 rounded-box w-full custom-menu">
                             {user.isAdmin && (
                                 <li>
                                     <details>

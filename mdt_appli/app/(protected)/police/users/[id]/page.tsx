@@ -34,7 +34,7 @@ export default function UserId() {
 	return (
 		<>
 			<Alert message={errorMessage} />
-			{user && <UserComponent user={user!.toUserType()} isConsult={true} />}
+			{user && <UserComponent user={user!.toType()} isConsult={true} />}
 		</>
 	);
 }

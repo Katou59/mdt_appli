@@ -1,24 +1,36 @@
 import NextAuth from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
-import type { JWT } from "next-auth/jwt";
-import type { Session, User } from "next-auth";
-import { Account, Profile } from "@auth/core/types";
+import type { NextAuthConfig, User } from "next-auth";
 
 export const authOptions = {
-    providers: [DiscordProvider],
+    providers: [
+        DiscordProvider({
+            clientId: process.env.DISCORD_CLIENT_ID!,
+            clientSecret: process.env.DISCORD_CLIENT_SECRET!,
+        }),
+    ],
     callbacks: {
-        async jwt({ token, profile, account }: { token: JWT; profile?: Profile; account?: Account }) {
-            if (profile?.id) token.discordId = profile.id;
-            if (account?.providerAccountId) token.discordId = account.providerAccountId;
+        async jwt({ token, account, profile, user }) {
+            // Premier login
+            if (account && user) {
+                token.discordId = account.providerAccountId;
+            }
+
+            // Si le profil existe (nouvelle structure)
+            if (profile?.id) {
+                token.discordId = profile.id;
+            }
+
             return token;
         },
-        async session({ session, token }: { session: Session; token: JWT }) {
+        async session({ session, token }) {
             if (token.discordId) {
-                (session.user as User & { discordId?: string }).discordId = token.discordId as string;
+                (session.user as User & { discordId?: string }).discordId =
+                    token.discordId as string;
             }
             return session;
         },
     },
-};
+} satisfies NextAuthConfig;
 
 export const { handlers, signIn, signOut, auth } = NextAuth(authOptions);

@@ -70,13 +70,3 @@ input:-webkit-autofill:active {
 .menu li:focus-within {
     background-color: transparent !important;
 }
-
-@layer components {
-    .menu-clean {
-        @apply flex flex-col p-2 gap-1 text-sm rounded-box;
-    }
-    .menu-clean li > a,
-    .menu-clean li > button {
-        @apply rounded-lg p-2 hover:bg-base-300 transition-colors;
-    }
-}

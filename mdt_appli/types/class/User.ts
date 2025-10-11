@@ -4,8 +4,9 @@ import Rank from "@/types/class/Rank";
 import { jobsTable, ranksTable, usersTable } from "@/db/schema";
 import { JobType } from "../db/job";
 import { RankType } from "../db/rank";
+import IConverter from "../interfaces/IConverter";
 
-export default class User {
+export default class User implements IConverter<UserType> {
     id: string;
     name: string | null;
     email: string | null;
@@ -81,7 +82,7 @@ export default class User {
         }
     }
 
-    toUserType(): UserType {
+    toType(): UserType {
         return {
             id: this.id,
             name: this.name,

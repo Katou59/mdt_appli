@@ -288,7 +288,7 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
                                         setIsSuccess(false);
                                         setToUserToUpdate(
                                             new User({
-                                                ...userToUpdate.toUserType(),
+                                                ...userToUpdate.toType(),
                                                 lastName: e.target.value,
                                             })
                                         );
@@ -316,7 +316,7 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
                                         setIsSuccess(false);
                                         setToUserToUpdate(
                                             new User({
-                                                ...userToUpdate.toUserType(),
+                                                ...userToUpdate.toType(),
                                                 firstName: e.target.value,
                                             })
                                         );
@@ -347,7 +347,7 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
                                         setIsSuccess(false);
                                         setToUserToUpdate(
                                             new User({
-                                                ...userToUpdate.toUserType(),
+                                                ...userToUpdate.toType(),
                                                 number: Number(e.target.value),
                                             })
                                         );
@@ -378,7 +378,7 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
                                         setIsSuccess(false);
                                         setToUserToUpdate(
                                             new User({
-                                                ...userToUpdate.toUserType(),
+                                                ...userToUpdate.toType(),
                                                 phoneNumber: e.target.value,
                                             })
                                         );
