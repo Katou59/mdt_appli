@@ -1,8 +1,9 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { jobsTable, ranksTable, usersTable } from "@/db/schema";
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import User from "@/types/class/User";
-import { UserToCreateType } from "@/types/db/user";
+import { UserToCreateType, UserType } from "@/types/db/user";
+import Pager from "@/types/class/Pager";
 
 const db = drizzle(process.env.DATABASE_URL!);
 
@@ -22,7 +23,13 @@ export class UserRepository {
         return User.getFromDb(users[0].users, users[0].ranks, users[0].jobs);
     }
 
-    public static async getList(params?: { rankId?: number }): Promise<User[] | null> {
+    public static async getList(params: {
+        rankId?: number;
+        itemPerPage: number;
+        page: number;
+    }): Promise<Pager<User, UserType>> {
+        const offset = (params.page - 1) * params.itemPerPage;
+
         const conditions = [];
 
         if (params?.rankId !== undefined) {
@@ -33,18 +40,25 @@ export class UserRepository {
             .select()
             .from(usersTable)
             .leftJoin(jobsTable, eq(jobsTable.id, usersTable.jobId))
-            .leftJoin(ranksTable, eq(ranksTable.id, usersTable.rankId));
+            .leftJoin(ranksTable, eq(ranksTable.id, usersTable.rankId))
+            .orderBy(usersTable.lastName, usersTable.firstName, usersTable.number)
+            .limit(params.itemPerPage)
+            .offset(offset);
 
         if (conditions.length > 0) {
-            // ici, query est encore un QueryBuilder
             query = query.where(and(...conditions)) as typeof query;
         }
 
-        return (await query)
+        const users = (await query)
             .map((user) => {
                 return User.getFromDb(user.users, user.ranks, user.jobs);
             })
             .filter((user) => user !== null);
+
+        const countQuery = db.select({ count: sql<number>`count(*)` }).from(usersTable);
+        const [{ count }] = await countQuery;
+
+        return new Pager(users, count, params.itemPerPage, params.page);
     }
 
     public static async update(user: User): Promise<void> {

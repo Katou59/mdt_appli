@@ -11,11 +11,13 @@ import Rank from "@/types/class/Rank";
 import Job from "@/types/class/Job";
 import { RankType } from "@/types/db/rank";
 import Alert from "@/components/Alert";
+import { PagerType } from "@/types/response/pagerType";
+import PagerClass from "@/types/class/Pager";
+import Pager from "@/components/Pager";
 
 export default function Users() {
     const { user } = useUser();
     const router = useRouter();
-    const [users, setUsers] = useState<User[]>([]);
     const [originalUsers, setOriginUsers] = useState<User[]>([]);
     const [ranks, setRanks] = useState<Rank[]>([]);
     const [jobs, setJobs] = useState<Job[]>([]);
@@ -36,27 +38,12 @@ export default function Users() {
         rankId: null,
         roleId: null,
     });
-    const [pager, setPager] = useState<{ current: number; total: number; max: number }>({
-        current: 1,
-        total: 0,
-        max: 20,
-    });
+    const [pager, setPager] = useState<PagerClass<User, UserType>>(new PagerClass([], 0, 20, 1));
 
     useEffect(() => {
+        if (!user?.isAdmin) return redirect("/police/dashboard");
+
         const init = async () => {
-            if (!user?.isAdmin) return redirect("/police/dashboard");
-
-            const usersResult = await getData(axiosClient.get(`/users`));
-            if (usersResult.errorMessage) {
-                setErrorMessage(usersResult.errorMessage);
-                setIsLoading(false);
-                return;
-            }
-            const results = usersResult.data as UserType[];
-            const allUsers = results.map((u) => new User(u));
-            setOriginUsers(allUsers);
-            setTotalUser(allUsers.length);
-
             const jobsResult = await getData(axiosClient.get("/jobs"));
             if (jobsResult.errorMessage) {
                 setErrorMessage(jobsResult.errorMessage);
@@ -65,15 +52,8 @@ export default function Users() {
             }
             setJobs((jobsResult.data as Job[]).map((x) => new Job(x)));
 
-            const totalPages = Math.ceil(allUsers.length / pager.max);
+            setPager(await getPager(pager));
 
-            setPager((prev) => ({
-                ...prev,
-                current: 1,
-                total: totalPages,
-            }));
-
-            setUsers(allUsers.slice(0, pager.max));
             setIsLoading(false);
 
             const parsedRoles = Object.entries(RoleType)
@@ -87,7 +67,8 @@ export default function Users() {
         };
 
         init();
-    }, [pager.max, user?.isAdmin]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user?.isAdmin]);
 
     function handleTh(
         e: React.MouseEvent<HTMLTableHeaderCellElement>,
@@ -121,45 +102,17 @@ export default function Users() {
                 results = results.sort((a, b) => (a.role ?? 0) - (b.role ?? 0));
                 break;
         }
-
-        setUsers([...results.slice(0, pager.max)]);
-        setPager({ ...pager, current: 1 });
-        setOriginUsers([...results]);
     }
 
     const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
-        if (e.type === "reset") {
-            setFilter({ isDisable: "", searchTerm: "", jobId: null, rankId: null, roleId: null });
-            const totalPages = Math.ceil(originalUsers.length / pager.max);
-            setPager((prev) => ({ ...prev, current: 1, total: totalPages }));
-            setUsers([...originalUsers].slice(0, pager.max));
-            return;
-        }
-
-        const results = getFilteredUsers();
-        setTotalUser(results.length);
-
-        const totalPages = Math.ceil(results.length / pager.max);
-        setPager((prev) => ({ ...prev, current: 1, total: totalPages }));
-        setUsers(results.slice(0, pager.max));
     };
 
-    const handlePageChange = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, page: number) => {
-        e.preventDefault();
-
-        const users = getFilteredUsers();
-
-        const totalPages = Math.ceil(users.length / pager.max);
-        const safePage = Math.max(1, Math.min(page, totalPages));
-
-        const start = (safePage - 1) * pager.max;
-        const end = safePage * pager.max;
-
-        setPager((prev) => ({ ...prev, current: safePage }));
-
-        setUsers(users.slice(start, end));
+    const handlePageChange = async (
+        page: number
+    ) => {
+        pager.page = page;
+        setPager(await getPager(pager));
     };
 
     if (isLoading) return <div>Chargement...</div>;
@@ -292,7 +245,7 @@ export default function Users() {
                     </div>
                 </form>
                 <div className="text-center opacity-50 mt-4 text-sm">
-                    {totalUser} utilisateur{totalUser > 1 ? "s" : ""}
+                    {pager.itemCount} utilisateur{pager.itemCount > 1 ? "s" : ""}
                 </div>
                 <table className="table table-xs mt-4">
                     <thead>
@@ -338,14 +291,14 @@ export default function Users() {
                         </tr>
                     </thead>
                     <tbody>
-                        {(!user || users.length === 0) && (
+                        {(!pager.items || pager.items.length === 0) && (
                             <tr>
                                 <td colSpan={8} className="text-center text-sm font-bold">
                                     Aucun utilisateur
                                 </td>
                             </tr>
                         )}
-                        {users.map((user: User) => (
+                        {pager.items.map((user: User) => (
                             <tr
                                 key={user.id}
                                 className="hover:bg-base-300 hover:cursor-pointer"
@@ -365,40 +318,8 @@ export default function Users() {
                         ))}
                     </tbody>
                 </table>
-                {pager.total > 1 && (
-                    <div className="join flex justify-center mt-4">
-                        <button
-                            className="join-item btn w-10"
-                            disabled={pager.current == 1}
-                            onClick={(e) => handlePageChange(e, 1)}
-                        >
-                            {"<<"}
-                        </button>
-                        <button
-                            className="join-item btn w-10"
-                            disabled={pager.current == 1}
-                            onClick={(e) => handlePageChange(e, pager.current - 1)}
-                        >
-                            {"<"}
-                        </button>
-                        <button className="join-item btn w-36">
-                            Page {pager.current}/{pager.total}
-                        </button>
-                        <button
-                            className="join-item btn w-10"
-                            disabled={pager.current == pager.total}
-                            onClick={(e) => handlePageChange(e, pager.current + 1)}
-                        >
-                            {">"}
-                        </button>
-                        <button
-                            className="join-item btn w-10"
-                            disabled={pager.current == pager.total}
-                            onClick={(e) => handlePageChange(e, pager.total)}
-                        >
-                            {">>"}
-                        </button>
-                    </div>
+                {pager.pageCount > 1 && (
+                    <Pager onPageChange={handlePageChange} pager={pager}/>
                 )}
             </div>
         </>
@@ -442,4 +363,23 @@ export default function Users() {
 
         return results;
     }
+}
+
+async function getPager(pager: PagerClass<User, UserType>) {
+    const pagerResult = await getData(
+        axiosClient.get(`/users`, {
+            params: { page: pager.page, itemPerPage: pager.itemPerPage },
+        })
+    );
+    if (pagerResult.errorMessage) {
+        throw new Error(pagerResult.errorMessage);
+    }
+
+    const pagerData = pagerResult.data as PagerType<UserType>;
+    return new PagerClass<User, UserType>(
+        pagerData.items.map((x) => new User(x)),
+        pagerData.itemCount,
+        pagerData.itemPerPage,
+        pagerData.page
+    );
 }

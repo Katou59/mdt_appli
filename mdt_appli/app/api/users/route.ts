@@ -3,6 +3,7 @@ import { UserToCreateType, UserToUpdateType } from "@/types/db/user";
 import { auth } from "@/auth";
 import { UserRepository } from "@/repositories/userRepository";
 import { RoleType } from "@/types/enums/roleType";
+import { HttpStatus } from "@/types/enums/httpStatus";
 
 export async function PUT(request: NextRequest) {
     try {
@@ -39,20 +40,30 @@ export async function PUT(request: NextRequest) {
     }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
     try {
         const session = await auth();
+
+        const { searchParams } = new URL(request.url);
+
+        const page = Number(searchParams.get("page"));
+        const itemPerPage = Number(searchParams.get("itemPerPage"));
+
+        if (isNaN(page) || isNaN(itemPerPage) || page == 0 || itemPerPage == 0) {
+            return NextResponse.json({ error: "Bad Request" }, { status: HttpStatus.BAD_REQUEST });
+        }
+
         const currentUser = await UserRepository.get(session!.user.discordId!);
 
-        const users = await UserRepository.getList();
+        const pager = await UserRepository.getList({ itemPerPage, page });
 
         if (!currentUser!.isAdmin) {
-            users?.forEach((user) => {
+            pager.items?.forEach((user) => {
                 user.email = null;
             });
         }
 
-        return NextResponse.json(users);
+        return NextResponse.json(pager);
     } catch (e) {
         console.error(e);
         return NextResponse.json({ error: e }, { status: 500 });

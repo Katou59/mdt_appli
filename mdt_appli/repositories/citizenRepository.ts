@@ -22,7 +22,7 @@ export default class CitizenRepository {
         valuePerPage: number,
         search?: string
     ): Promise<Pager<Citizen, CitizenType>> {
-        const offset = (page - 1) * valuePerPage;
+            const offset = (page - 1) * valuePerPage;
 
         const updatedByUsers = alias(usersTable, "updated_by_users");
         const updatedByUsersJobs = alias(jobsTable, "updated_by_user_jobs");
@@ -63,7 +63,7 @@ export default class CitizenRepository {
         }
 
         query
-            .orderBy(citizensTable.firstName, citizensTable.lastName, citizensTable.birthDate)
+            .orderBy(citizensTable.lastName, citizensTable.firstName, citizensTable.birthDate)
             .limit(valuePerPage)
             .offset(offset);
 
