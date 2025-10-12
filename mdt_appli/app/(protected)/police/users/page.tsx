@@ -280,7 +280,7 @@ export default function Users() {
                                     {user.lastName} {user.firstName}
                                 </td>
                                 <td>{user.rank?.name}</td>
-                                <td>{RoleT∑∑ype[user.role]}</td>
+                                <td>{RoleType[user.role]}</td>
                                 <td>{user.isDisable ? "Oui" : "Non"}</td>
                             </tr>
                         ))}
