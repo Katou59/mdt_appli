@@ -1,10 +1,11 @@
 import { UserToUpdateType, UserType } from "@/types/db/user";
 import { RoleType } from "@/types/enums/roleType";
 import Rank from "@/types/class/Rank";
-import { jobsTable, ranksTable, usersTable } from "@/db/schema";
+import { jobsTable, ranksTable, rolesTable, usersTable } from "@/db/schema";
 import { JobType } from "../db/job";
 import { RankType } from "../db/rank";
 import IConverter from "../interfaces/IConverter";
+import { KeyValueType } from "../utils/keyValue";
 
 export default class User implements IConverter<UserType> {
     id: string;
@@ -19,7 +20,7 @@ export default class User implements IConverter<UserType> {
     rank: Rank | null;
     phoneNumber: string | null;
     isDisable: boolean;
-    roleId: RoleType;
+    role: KeyValueType<number, string>;
     isAdmin: boolean;
     fullName: string | null;
 
@@ -36,9 +37,9 @@ export default class User implements IConverter<UserType> {
         this.rank = data.rank ? new Rank(data.rank) : null;
         this.phoneNumber = data.phoneNumber;
         this.isDisable = data.isDisable;
-        this.roleId = data.roleId;
+        this.role = data.role;
 
-        this.isAdmin = data.roleId === RoleType.Admin || data.roleId === RoleType.SuperAdmin;
+        this.isAdmin = data.role.key === RoleType.Admin || data.role.key === RoleType.SuperAdmin;
         this.fullName =
             this.firstName && this.lastName ? `${this.firstName} ${this.lastName}` : null;
     }
@@ -78,7 +79,7 @@ export default class User implements IConverter<UserType> {
         if (!currentUserIsSuperAdmin) return;
 
         if (user.role) {
-            this.roleId = user.role;
+            this.role = user.role;
         }
     }
 
@@ -96,14 +97,15 @@ export default class User implements IConverter<UserType> {
             rank: this.rank?.toRankType() ?? null,
             phoneNumber: this.phoneNumber,
             isDisable: this.isDisable,
-            roleId: this.roleId,
+            role: this.role,
         };
     }
 
     static getFromDb(
         userDb: typeof usersTable.$inferSelect | null,
         rankDb: typeof ranksTable.$inferSelect | null,
-        jobDb: typeof jobsTable.$inferSelect | null
+        jobDb: typeof jobsTable.$inferSelect | null,
+        rolesDb: typeof rolesTable.$inferSelect
     ): User | null {
         if (!userDb) return null;
 
@@ -138,7 +140,7 @@ export default class User implements IConverter<UserType> {
             rank: rankType,
             phoneNumber: userDb.phoneNumber,
             isDisable: userDb.isDisable ?? false,
-            roleId: userDb.roleId,
+            role: { key: rolesDb.id, value: rolesDb.name! },
         };
 
         return new User(userType);

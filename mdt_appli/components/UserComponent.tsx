@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { UserToUpdateType, UserType } from "@/types/db/user";
 import axiosClient, { getData } from "@/lib/axiosClient";
-import Toast from "@/components/Toast";
 import { useUser } from "@/lib/Contexts/UserContext";
 import dayjs from "dayjs";
 import User from "@/types/class/User";
@@ -11,15 +10,17 @@ import { RoleType } from "@/types/enums/roleType";
 import Rank from "@/types/class/Rank";
 import { RankType } from "@/types/db/rank";
 import Alert from "./Alert";
+import { KeyValueType } from "@/types/utils/keyValue";
+import { useToast } from "@/lib/Contexts/ToastContext";
 
 export default function UserComponent(props: { user: UserType; isConsult: boolean }) {
-    const [isSuccess, setIsSuccess] = useState<boolean>(false);
     const [userToUpdate, setToUserToUpdate] = useState<User>(new User(props.user));
     const [isConsult, setIsConsult] = useState(props.isConsult);
-    const [roles, setRoles] = useState<{ id: number; name: string }[]>([]);
+    const [roles, setRoles] = useState<KeyValueType<number, string>[]>([]);
     const [ranks, setRanks] = useState<Rank[]>([]);
     const [errorMessage, setErrorMessage] = useState("");
     const { user, setUser } = useUser();
+    const toast = useToast();
 
     useEffect(() => {
         async function init() {
@@ -34,14 +35,16 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
             const ranks = result.data as RankType[];
             setRanks(ranks.map((x: RankType) => new Rank(x)));
 
-            const parsedRoles = Object.entries(RoleType)
-                .filter(([key]) => isNaN(Number(key))) // on garde seulement les noms
-                .map(([key, value]) => ({
-                    id: Number(value),
-                    name: key,
-                }));
-
-            setRoles(parsedRoles);
+            try {
+                setRoles(await getRoles());
+            } catch (error) {
+                if (error instanceof Error) {
+                    setErrorMessage(error.message);
+                    return;
+                }
+                setErrorMessage("Une erreur est survenue");
+                return;
+            }
         }
 
         if (user?.isAdmin) {
@@ -59,7 +62,7 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
             number: userToUpdate?.number,
             phoneNumber: userToUpdate?.phoneNumber,
             rank: userToUpdate?.rank?.toRankType(),
-            role: user?.roleId === RoleType.SuperAdmin ? userToUpdate.roleId : undefined,
+            role: user?.role.key === RoleType.SuperAdmin ? userToUpdate.role : undefined,
         } as UserToUpdateType;
 
         const userUpdatedResult = await getData(axiosClient.put(`/users`, userType));
@@ -68,7 +71,7 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
             return;
         }
 
-        setIsSuccess(true);
+        toast.addToast("Utilisateur mis à jour avec succès", "success");
         setToUserToUpdate(new User(userUpdatedResult.data as UserType));
 
         if (userToUpdate?.id == user!.id) {
@@ -80,11 +83,10 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
         e.preventDefault();
 
         setToUserToUpdate(new User(user as UserType));
-        setIsSuccess(false);
         setIsConsult(true);
     }
 
-    if (!userToUpdate) return <p>Chargement du profil…</p>;
+    if (!userToUpdate) return <p>Chargement...</p>;
 
     return (
         <>
@@ -137,7 +139,7 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
                                         <fieldset className="fieldset w-full">
                                             <legend className="fieldset-legend">Rôle</legend>
                                             <div className="w-full p-2 rounded-md bg-base-200 text-xl font-bold h-10">
-                                                {RoleType[userToUpdate.roleId]}
+                                                {userToUpdate.role.value}
                                             </div>
                                         </fieldset>
                                         <fieldset className="fieldset w-full">
@@ -201,26 +203,32 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
 
                         {!isConsult && user?.isAdmin && (
                             <>
-                                {user.roleId == RoleType.SuperAdmin && (
+                                {user.role.key == RoleType.SuperAdmin && (
                                     <fieldset className="fieldset col-span-2 w-1/2 mr-4">
                                         <legend className="fieldset-legend">Rôle</legend>
                                         <select
                                             className="select w-full"
-                                            value={userToUpdate.roleId}
+                                            value={userToUpdate.role.key}
                                             onChange={(e) => {
                                                 setToUserToUpdate(
                                                     (prev) =>
                                                         new User({
                                                             ...prev,
-                                                            roleId: Number(e.target.value),
+                                                            role: (roles.find(
+                                                                (x) =>
+                                                                    x.key === Number(e.target.value)
+                                                            ) ?? {
+                                                                key: 0,
+                                                                value: "",
+                                                            }) as KeyValueType<number, string>,
                                                         })
                                                 );
                                             }}
                                         >
                                             {roles?.map((x) => {
                                                 return (
-                                                    <option key={x.id} value={x.id!}>
-                                                        {x.name}
+                                                    <option key={x.key} value={x.key!}>
+                                                        {x.value}
                                                     </option>
                                                 );
                                             })}
@@ -285,7 +293,6 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
                                     placeholder="Nom"
                                     value={userToUpdate!.lastName ?? ""}
                                     onChange={(e) => {
-                                        setIsSuccess(false);
                                         setToUserToUpdate(
                                             new User({
                                                 ...userToUpdate.toType(),
@@ -313,7 +320,6 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
                                     placeholder="Prénom"
                                     value={userToUpdate.firstName ?? ""}
                                     onChange={(e) => {
-                                        setIsSuccess(false);
                                         setToUserToUpdate(
                                             new User({
                                                 ...userToUpdate.toType(),
@@ -344,7 +350,6 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
                                     max={100000}
                                     value={userToUpdate.number ?? ""}
                                     onChange={(e) => {
-                                        setIsSuccess(false);
                                         setToUserToUpdate(
                                             new User({
                                                 ...userToUpdate.toType(),
@@ -375,7 +380,6 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
                                     max={5000}
                                     value={userToUpdate.phoneNumber ?? ""}
                                     onChange={(e) => {
-                                        setIsSuccess(false);
                                         setToUserToUpdate(
                                             new User({
                                                 ...userToUpdate.toType(),
@@ -401,8 +405,16 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
                         </div>
                     )}
                 </form>
-                {isSuccess && <Toast message="Mise à jour effectuée" type="success" />}
             </div>
         </>
     );
+}
+
+async function getRoles(): Promise<KeyValueType<number, string>[]> {
+    const rolesDb = await getData(axiosClient.get("/roles"));
+    if (rolesDb.errorMessage) {
+        throw new Error(rolesDb.errorMessage);
+    }
+
+    return rolesDb.data as KeyValueType<number, string>[];
 }

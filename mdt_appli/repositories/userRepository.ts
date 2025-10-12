@@ -1,5 +1,5 @@
 import { drizzle } from "drizzle-orm/node-postgres";
-import { jobsTable, ranksTable, usersTable } from "@/db/schema";
+import { jobsTable, ranksTable, rolesTable, usersTable } from "@/db/schema";
 import { and, eq, ilike, or, sql } from "drizzle-orm";
 import User from "@/types/class/User";
 import { UserToCreateType, UserType } from "@/types/db/user";
@@ -22,13 +22,14 @@ export class UserRepository {
             .from(usersTable)
             .leftJoin(jobsTable, eq(jobsTable.id, usersTable.jobId))
             .leftJoin(ranksTable, eq(ranksTable.id, usersTable.rankId))
+            .leftJoin(rolesTable, eq(rolesTable.id, usersTable.roleId))
             .where(eq(usersTable.id, discordId));
 
         const userDb = users[0]?.users;
 
         if (!userDb) return null;
 
-        return User.getFromDb(users[0].users, users[0].ranks, users[0].jobs);
+        return User.getFromDb(users[0].users, users[0].ranks, users[0].jobs, users[0].roles!);
     }
 
     public static async getList(params: {
@@ -70,6 +71,7 @@ export class UserRepository {
             .from(usersTable)
             .leftJoin(jobsTable, eq(jobsTable.id, usersTable.jobId))
             .leftJoin(ranksTable, eq(ranksTable.id, usersTable.rankId))
+            .leftJoin(rolesTable, eq(rolesTable.id, usersTable.roleId))
             .orderBy(usersTable.lastName, usersTable.firstName, usersTable.number)
             .limit(params.itemPerPage)
             .offset(offset);
@@ -87,11 +89,9 @@ export class UserRepository {
 
         query = query.where(and(...whereClause)) as typeof query;
 
-        // query = query.where(or(...orConditions)) as typeof query;
-
         const users = (await query)
             .map((user) => {
-                return User.getFromDb(user.users, user.ranks, user.jobs);
+                return User.getFromDb(user.users, user.ranks, user.jobs, user.roles!);
             })
             .filter((user) => user !== null);
 
@@ -105,7 +105,7 @@ export class UserRepository {
     public static async update(user: User): Promise<void> {
         await db
             .update(usersTable)
-            .set({ ...user, jobId: user.rank?.job?.id, rankId: user.rank?.id })
+            .set({ ...user, jobId: user.rank?.job?.id, rankId: user.rank?.id, roleId: user.role.key })
             .where(eq(usersTable.id, user.id));
     }
 
