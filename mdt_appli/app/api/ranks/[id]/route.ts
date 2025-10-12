@@ -9,8 +9,8 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
 			return NextResponse.json({ error: "Bad Request" }, { status: 400 });
 		}
 
-		const users = await UserRepository.getList({ rankId: Number(id) });
-		if (users && users.length > 0) {
+		const pager = await UserRepository.getList({ rankId: Number(id), itemPerPage: 20, page: 1 });
+		if (pager?.items && pager.items.length > 0) {
 			return NextResponse.json({ error: "Users with this rank exist" }, { status: 409 });
 		}
 

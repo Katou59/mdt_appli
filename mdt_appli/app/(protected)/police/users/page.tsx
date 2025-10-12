@@ -57,6 +57,7 @@ export default function Users() {
             } catch (e) {
                 if (e instanceof Error) setErrorMessage(e.message);
                 else setErrorMessage("Erreur");
+                return;
             }
 
             setIsLoading(false);
@@ -280,7 +281,7 @@ export default function Users() {
                                     {user.lastName} {user.firstName}
                                 </td>
                                 <td>{user.rank?.name}</td>
-                                <td>{RoleType[user.role]}</td>
+                                <td>{RoleType[user.roleId]}</td>
                                 <td>{user.isDisable ? "Oui" : "Non"}</td>
                             </tr>
                         ))}
@@ -303,7 +304,7 @@ async function getPager(pager: PagerClass<User, UserType>, filter: FilterType) {
     }
 
     const pagerData = pagerResult.data as PagerType<UserType>;
-    
+
     return new PagerClass<User, UserType>(
         pagerData.items.map((x) => new User(x)),
         pagerData.itemCount,

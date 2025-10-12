@@ -20,7 +20,7 @@ export async function PUT(request: NextRequest) {
         userToUpdate.update(
             userToAddRequest,
             currentUser?.isAdmin,
-            currentUser?.role === RoleType.SuperAdmin
+            currentUser?.roleId === RoleType.SuperAdmin
         );
 
         const isSelf = session!.user.discordId === userToUpdate.id;

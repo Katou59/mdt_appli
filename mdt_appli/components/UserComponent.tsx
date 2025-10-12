@@ -59,7 +59,7 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
             number: userToUpdate?.number,
             phoneNumber: userToUpdate?.phoneNumber,
             rank: userToUpdate?.rank?.toRankType(),
-            role: user?.role === RoleType.SuperAdmin ? userToUpdate.role : undefined,
+            role: user?.roleId === RoleType.SuperAdmin ? userToUpdate.roleId : undefined,
         } as UserToUpdateType;
 
         const userUpdatedResult = await getData(axiosClient.put(`/users`, userType));
@@ -137,7 +137,7 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
                                         <fieldset className="fieldset w-full">
                                             <legend className="fieldset-legend">Rôle</legend>
                                             <div className="w-full p-2 rounded-md bg-base-200 text-xl font-bold h-10">
-                                                {RoleType[userToUpdate.role]}
+                                                {RoleType[userToUpdate.roleId]}
                                             </div>
                                         </fieldset>
                                         <fieldset className="fieldset w-full">
@@ -201,12 +201,12 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
 
                         {!isConsult && user?.isAdmin && (
                             <>
-                                {user.role == RoleType.SuperAdmin && (
+                                {user.roleId == RoleType.SuperAdmin && (
                                     <fieldset className="fieldset col-span-2 w-1/2 mr-4">
                                         <legend className="fieldset-legend">Rôle</legend>
                                         <select
                                             className="select w-full"
-                                            value={userToUpdate.role}
+                                            value={userToUpdate.roleId}
                                             onChange={(e) => {
                                                 setToUserToUpdate(
                                                     (prev) =>

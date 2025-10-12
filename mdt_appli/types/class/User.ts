@@ -19,7 +19,7 @@ export default class User implements IConverter<UserType> {
     rank: Rank | null;
     phoneNumber: string | null;
     isDisable: boolean;
-    role: RoleType;
+    roleId: RoleType;
     isAdmin: boolean;
     fullName: string | null;
 
@@ -36,7 +36,7 @@ export default class User implements IConverter<UserType> {
         this.rank = data.rank ? new Rank(data.rank) : null;
         this.phoneNumber = data.phoneNumber;
         this.isDisable = data.isDisable;
-        this.role = data.roleId;
+        this.roleId = data.roleId;
 
         this.isAdmin = data.roleId === RoleType.Admin || data.roleId === RoleType.SuperAdmin;
         this.fullName =
@@ -78,7 +78,7 @@ export default class User implements IConverter<UserType> {
         if (!currentUserIsSuperAdmin) return;
 
         if (user.role) {
-            this.role = user.role;
+            this.roleId = user.role;
         }
     }
 
@@ -96,7 +96,7 @@ export default class User implements IConverter<UserType> {
             rank: this.rank?.toRankType() ?? null,
             phoneNumber: this.phoneNumber,
             isDisable: this.isDisable,
-            roleId: this.role,
+            roleId: this.roleId,
         };
     }
 
