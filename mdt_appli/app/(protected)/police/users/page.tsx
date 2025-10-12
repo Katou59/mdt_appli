@@ -4,39 +4,39 @@ import { redirect, useRouter } from "next/navigation";
 import { UserType } from "@/types/db/user";
 import { RoleType } from "@/types/enums/roleType";
 import { useUser } from "@/lib/Contexts/UserContext";
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import axiosClient, { getData } from "@/lib/axiosClient";
 import User from "@/types/class/User";
 import Rank from "@/types/class/Rank";
 import Job from "@/types/class/Job";
-import { RankType } from "@/types/db/rank";
 import Alert from "@/components/Alert";
 import { PagerType } from "@/types/response/pagerType";
 import PagerClass from "@/types/class/Pager";
 import Pager from "@/components/Pager";
+import { RankType } from "@/types/db/rank";
+
+type FilterType = {
+    searchTerm: string | undefined;
+    isDisable: boolean | undefined;
+    jobId: number | undefined;
+    rankId: number | undefined;
+    roleId: number | undefined;
+};
 
 export default function Users() {
     const { user } = useUser();
     const router = useRouter();
-    const [originalUsers, setOriginUsers] = useState<User[]>([]);
     const [ranks, setRanks] = useState<Rank[]>([]);
     const [jobs, setJobs] = useState<Job[]>([]);
     const [roles, setRoles] = useState<{ id: number; name: string }[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState("");
-    const [totalUser, setTotalUser] = useState(0);
-    const [filter, setFilter] = useState<{
-        searchTerm: string;
-        isDisable: "" | "on" | "off";
-        jobId: number | null;
-        rankId: number | null;
-        roleId: number | null;
-    }>({
-        searchTerm: "",
-        isDisable: "",
-        jobId: null,
-        rankId: null,
-        roleId: null,
+    const [filter, setFilter] = useState<FilterType>({
+        searchTerm: undefined,
+        isDisable: undefined,
+        jobId: undefined,
+        rankId: undefined,
+        roleId: undefined,
     });
     const [pager, setPager] = useState<PagerClass<User, UserType>>(new PagerClass([], 0, 20, 1));
 
@@ -52,7 +52,12 @@ export default function Users() {
             }
             setJobs((jobsResult.data as Job[]).map((x) => new Job(x)));
 
-            setPager(await getPager(pager));
+            try {
+                setPager(await getPager(pager, filter));
+            } catch (e) {
+                if (e instanceof Error) setErrorMessage(e.message);
+                else setErrorMessage("Erreur");
+            }
 
             setIsLoading(false);
 
@@ -67,53 +72,36 @@ export default function Users() {
         };
 
         init();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user?.isAdmin]);
 
-    function handleTh(
-        e: React.MouseEvent<HTMLTableHeaderCellElement>,
-        type: "name" | "email" | "number" | "lastName" | "rank" | "role" | "isDisable"
-    ) {
+    const handleSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
-        let results: User[] = getFilteredUsers();
-
-        switch (type) {
-            case "name":
-                results = results.sort((a, b) => (a.name ?? "").localeCompare(b.name ?? ""));
-                break;
-            case "email":
-                results = results.sort((a, b) => (a.email ?? "").localeCompare(b.email ?? ""));
-                break;
-            case "number":
-                results = results.sort((a, b) => (a.number ?? 0) - (b.number ?? 0));
-                break;
-            case "lastName":
-                results = results.sort((a, b) =>
-                    (a.lastName ?? "").localeCompare(b.lastName ?? "")
-                );
-                break;
-            case "rank":
-                results = results.sort((a, b) =>
-                    (a.rank?.name ?? "").localeCompare(b.rank?.name ?? "")
-                );
-                break;
-            case "role":
-                results = results.sort((a, b) => (a.role ?? 0) - (b.role ?? 0));
-                break;
-        }
-    }
-
-    const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+        setPager(await getPager(pager, filter));
     };
 
-    const handlePageChange = async (
-        page: number
-    ) => {
+    const handlePageChange = async (page: number) => {
         pager.page = page;
-        setPager(await getPager(pager));
+        try {
+            setPager(await getPager(pager, filter));
+        } catch (e) {
+            if (e instanceof Error) setErrorMessage(e.message);
+            else setErrorMessage("Erreur");
+        }
     };
+
+    async function handleSearchReset(event: FormEvent<HTMLFormElement>): Promise<void> {
+        event.preventDefault();
+        const newFilter = {
+            isDisable: undefined,
+            jobId: undefined,
+            rankId: undefined,
+            roleId: undefined,
+            searchTerm: undefined,
+        };
+        setFilter(newFilter);
+        setPager(await getPager(pager, filter));
+    }
 
     if (isLoading) return <div>Chargement...</div>;
 
@@ -126,7 +114,7 @@ export default function Users() {
                 </h1>
                 <form
                     onSubmit={handleSearchSubmit}
-                    onReset={handleSearchSubmit}
+                    onReset={handleSearchReset}
                     className="flex flex-col items-center"
                 >
                     <fieldset className="fieldset">
@@ -136,11 +124,11 @@ export default function Users() {
                             name="search"
                             placeholder="Recherche"
                             className="input input-sm input-primary w-64"
-                            value={filter.searchTerm}
+                            autoComplete="off"
+                            value={filter.searchTerm ?? ""}
                             onChange={(e) =>
                                 setFilter((prev) => ({ ...prev, searchTerm: e.target.value }))
                             }
-                            autoComplete="off"
                         />
                     </fieldset>
                     <div className="flex flex-row gap-2">
@@ -150,26 +138,26 @@ export default function Users() {
                                 className="select select-sm select-primary w-52"
                                 value={filter.jobId ?? ""}
                                 onChange={async (e) => {
-                                    const value = Number(e.target.value);
+                                    const value = e.target.value
+                                        ? Number(e.target.value)
+                                        : undefined;
+                                    setFilter((prev) => ({
+                                        ...prev,
+                                        jobId: value,
+                                        rankId: undefined,
+                                    }));
 
                                     if (value) {
-                                        const ranksResult = await getData(
-                                            axiosClient.get(`/ranks/${value}`)
-                                        );
-                                        if (ranksResult.errorMessage) {
-                                            setErrorMessage(ranksResult.errorMessage);
-                                            setIsLoading(false);
-                                            return;
+                                        try {
+                                            setRanks(await getRanks(value));
+                                        } catch (error) {
+                                            if (error instanceof Error)
+                                                setErrorMessage(error.message);
+                                            setRanks([]);
                                         }
-
-                                        setRanks(
-                                            (ranksResult.data as RankType[]).map((x) => new Rank(x))
-                                        );
                                     } else {
                                         setRanks([]);
                                     }
-
-                                    setFilter((prev) => ({ ...prev, jobId: value ?? null }));
                                 }}
                             >
                                 <option value={""}>Tous</option>
@@ -184,13 +172,14 @@ export default function Users() {
                             <legend className="fieldset-legend p-0">Grades</legend>
                             <select
                                 className="select select-sm select-primary w-52"
+                                disabled={!ranks || ranks.length === 0}
                                 value={filter.rankId ?? ""}
-                                onChange={async (e) => {
-                                    const value = Number(e.target.value);
-
+                                onChange={(e) => {
+                                    const value = e.target.value
+                                        ? Number(e.target.value)
+                                        : undefined;
                                     setFilter((prev) => ({ ...prev, rankId: value }));
                                 }}
-                                disabled={!ranks || ranks.length === 0}
                             >
                                 <option value={""}>Tous</option>
                                 {ranks.map((job) => (
@@ -205,9 +194,10 @@ export default function Users() {
                             <select
                                 className="select select-sm select-primary w-52"
                                 value={filter.roleId ?? ""}
-                                onChange={async (e) => {
-                                    const value = Number(e.target.value);
-
+                                onChange={(e) => {
+                                    const value = e.target.value
+                                        ? Number(e.target.value)
+                                        : undefined;
                                     setFilter((prev) => ({ ...prev, roleId: value }));
                                 }}
                             >
@@ -223,15 +213,23 @@ export default function Users() {
                             <legend className="fieldset-legend p-0">Utilisateurs désactivés</legend>
                             <select
                                 className="select select-sm select-primary w-52"
-                                value={filter.isDisable}
+                                value={
+                                    filter.isDisable === undefined ? "" : String(filter.isDisable)
+                                }
                                 onChange={(e) => {
-                                    const value = e.target.value as "" | "on" | "off";
-                                    setFilter((prev) => ({ ...prev, isDisable: value }));
+                                    console.log(e.target.value);
+                                    setFilter((prev) => ({
+                                        ...prev,
+                                        isDisable:
+                                            e.target.value === ""
+                                                ? undefined
+                                                : e.target.value === "true",
+                                    }));
                                 }}
                             >
                                 <option value={""}>Tous</option>
-                                <option value={"on"}>Oui</option>
-                                <option value={"off"}>Non</option>
+                                <option value={"true"}>Oui</option>
+                                <option value={"false"}>Non</option>
                             </select>
                         </fieldset>
                     </div>
@@ -250,43 +248,13 @@ export default function Users() {
                 <table className="table table-xs mt-4">
                     <thead>
                         <tr>
-                            <th>Id</th>
-                            <th
-                                className="hover:cursor-pointer"
-                                onClick={(e) => handleTh(e, "name")}
-                            >
-                                Nom Discord
-                            </th>
-                            <th
-                                className="hover:cursor-pointer"
-                                onClick={(e) => handleTh(e, "email")}
-                            >
-                                Email
-                            </th>
-                            <th
-                                className="hover:cursor-pointer"
-                                onClick={(e) => handleTh(e, "number")}
-                            >
-                                Matricule
-                            </th>
-                            <th
-                                className="hover:cursor-pointer"
-                                onClick={(e) => handleTh(e, "lastName")}
-                            >
-                                Nom Prénom
-                            </th>
-                            <th
-                                className="hover:cursor-pointer"
-                                onClick={(e) => handleTh(e, "rank")}
-                            >
-                                Grade
-                            </th>
-                            <th
-                                className="hover:cursor-pointer"
-                                onClick={(e) => handleTh(e, "role")}
-                            >
-                                Role
-                            </th>
+                            <th>Id Discord</th>
+                            <th>Nom Discord</th>
+                            <th>Email</th>
+                            <th>Matricule</th>
+                            <th>Nom Prénom</th>
+                            <th>Grade</th>
+                            <th>Role</th>
                             <th>Est désactivé</th>
                         </tr>
                     </thead>
@@ -312,63 +280,22 @@ export default function Users() {
                                     {user.lastName} {user.firstName}
                                 </td>
                                 <td>{user.rank?.name}</td>
-                                <td>{RoleType[user.role]}</td>
+                                <td>{RoleT∑∑ype[user.role]}</td>
                                 <td>{user.isDisable ? "Oui" : "Non"}</td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
-                {pager.pageCount > 1 && (
-                    <Pager onPageChange={handlePageChange} pager={pager}/>
-                )}
+                {pager.pageCount > 1 && <Pager onPageChange={handlePageChange} pager={pager} />}
             </div>
         </>
     );
-
-    function getFilteredUsers() {
-        let results = originalUsers;
-
-        if (filter.isDisable === "on") {
-            results = results.filter((r) => r.isDisable);
-        } else if (filter.isDisable === "off") {
-            results = results.filter((r) => !r.isDisable);
-        }
-
-        if (filter.jobId) {
-            results = results.filter((r) => r?.rank?.job?.id === filter.jobId);
-        }
-
-        if (filter.rankId) {
-            results = results.filter((r) => r.rank?.id === filter.rankId);
-        }
-
-        if (filter.roleId) {
-            results = results.filter((r) => r.role === filter.roleId);
-        }
-
-        results = results.filter((user) => {
-            const fields = [
-                user.name,
-                user.email,
-                user.firstName,
-                user.lastName,
-                user.id,
-                user.number?.toString(),
-            ];
-
-            return fields.some((f) =>
-                f?.toLowerCase().includes(filter.searchTerm.toLocaleLowerCase())
-            );
-        });
-
-        return results;
-    }
 }
 
-async function getPager(pager: PagerClass<User, UserType>) {
+async function getPager(pager: PagerClass<User, UserType>, filter: FilterType) {
     const pagerResult = await getData(
         axiosClient.get(`/users`, {
-            params: { page: pager.page, itemPerPage: pager.itemPerPage },
+            params: { ...filter, page: pager.page, itemPerPage: pager.itemPerPage },
         })
     );
     if (pagerResult.errorMessage) {
@@ -376,10 +303,20 @@ async function getPager(pager: PagerClass<User, UserType>) {
     }
 
     const pagerData = pagerResult.data as PagerType<UserType>;
+    
     return new PagerClass<User, UserType>(
         pagerData.items.map((x) => new User(x)),
         pagerData.itemCount,
         pagerData.itemPerPage,
         pagerData.page
     );
+}
+
+async function getRanks(jobId: number): Promise<Rank[]> {
+    const ranksResult = await getData(axiosClient.get(`/ranks/${jobId}`));
+    if (ranksResult.errorMessage) throw new Error(ranksResult.errorMessage);
+
+    const results = ranksResult.data as RankType[];
+
+    return results.map((r) => new Rank(r));
 }

@@ -212,7 +212,7 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
                                                     (prev) =>
                                                         new User({
                                                             ...prev,
-                                                            role: Number(e.target.value),
+                                                            roleId: Number(e.target.value),
                                                         })
                                                 );
                                             }}

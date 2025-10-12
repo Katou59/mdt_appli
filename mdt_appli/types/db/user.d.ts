@@ -14,7 +14,7 @@ export interface UserType {
     rank: RankType | null;
     phoneNumber: string | null;
     isDisable: boolean;
-    role: RoleType;
+    roleId: RoleType;
 }
 
 export interface UserToUpdateType {

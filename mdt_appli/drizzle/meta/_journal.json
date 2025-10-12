@@ -50,6 +50,13 @@
       "when": 1760212556836,
       "tag": "0006_jazzy_sugar_man",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1760279926083,
+      "tag": "0007_simple_greymalkin",
+      "breakpoints": true
     }
   ]
 }

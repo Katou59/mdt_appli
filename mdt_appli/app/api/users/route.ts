@@ -48,6 +48,14 @@ export async function GET(request: NextRequest) {
 
         const page = Number(searchParams.get("page"));
         const itemPerPage = Number(searchParams.get("itemPerPage"));
+        const searchTerm = searchParams.get("searchTerm") ?? undefined;
+        const isDisable =
+            searchParams.get("isDisable") === undefined || searchParams.get("isDisable") === null
+                ? undefined
+                : searchParams.get("isDisable") === "true";
+        const jobId = searchParams.get("jobId") ? Number(searchParams.get("jobId")) : undefined;
+        const rankId = searchParams.get("rankId") ? Number(searchParams.get("rankId")) : undefined;
+        const roleId = searchParams.get("roleId") ? Number(searchParams.get("roleId")) : undefined;
 
         if (isNaN(page) || isNaN(itemPerPage) || page == 0 || itemPerPage == 0) {
             return NextResponse.json({ error: "Bad Request" }, { status: HttpStatus.BAD_REQUEST });
@@ -55,7 +63,17 @@ export async function GET(request: NextRequest) {
 
         const currentUser = await UserRepository.get(session!.user.discordId!);
 
-        const pager = await UserRepository.getList({ itemPerPage, page });
+        const pager = await UserRepository.getList({
+            itemPerPage,
+            page,
+            filter: {
+                isDisable,
+                searchTerm,
+                jobId,
+                rankId,
+                roleId,
+            },
+        });
 
         if (!currentUser!.isAdmin) {
             pager.items?.forEach((user) => {

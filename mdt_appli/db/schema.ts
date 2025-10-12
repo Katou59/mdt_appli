@@ -15,7 +15,7 @@ export const usersTable = pgTable("users", {
     isDisable: boolean("is_disable").default(false),
     jobId: integer("job_id").references(() => jobsTable.id),
     rankId: integer("rank_id").references(() => ranksTable.id),
-    role: integer("role")
+    roleId: integer("role_id")
         .default(0)
         .references(() => rolesTable.id),
 });

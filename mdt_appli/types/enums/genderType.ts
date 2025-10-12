@@ -1,5 +1,5 @@
 // ⚙️ Fichier généré automatiquement — ne pas modifier à la main
-// Dernière génération : 2025-10-11T21:09:43.336Z
+// Dernière génération : 2025-10-12T15:59:41.216Z
 
 export enum GenderType {
   Male = 1,

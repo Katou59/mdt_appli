@@ -1,9 +1,17 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { jobsTable, ranksTable, usersTable } from "@/db/schema";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, ilike, or, sql } from "drizzle-orm";
 import User from "@/types/class/User";
 import { UserToCreateType, UserType } from "@/types/db/user";
 import Pager from "@/types/class/Pager";
+
+type FilterType = {
+    searchTerm?: string;
+    isDisable?: boolean;
+    jobId?: number;
+    rankId?: number;
+    roleId?: number;
+};
 
 const db = drizzle(process.env.DATABASE_URL!);
 
@@ -27,6 +35,7 @@ export class UserRepository {
         rankId?: number;
         itemPerPage: number;
         page: number;
+        filter?: FilterType;
     }): Promise<Pager<User, UserType>> {
         const offset = (params.page - 1) * params.itemPerPage;
 
@@ -34,6 +43,26 @@ export class UserRepository {
 
         if (params?.rankId !== undefined) {
             conditions.push(eq(usersTable.rankId, params.rankId));
+        }
+        if (params?.filter?.isDisable !== undefined) {
+            conditions.push(eq(usersTable.isDisable, params.filter.isDisable));
+        }
+        if (params?.filter?.jobId !== undefined) {
+            conditions.push(eq(usersTable.jobId, params.filter.jobId));
+        }
+        if (params?.filter?.rankId !== undefined) {
+            conditions.push(eq(usersTable.rankId, params.filter.rankId));
+        }
+        if (params?.filter?.roleId !== undefined) {
+            conditions.push(eq(usersTable.roleId, params.filter.roleId));
+        }
+
+        const orConditions = [];
+        if (params?.filter?.searchTerm !== undefined) {
+            orConditions.push(ilike(usersTable.id, `%${params.filter.searchTerm}%`));
+            orConditions.push(ilike(usersTable.firstName, `%${params.filter.searchTerm}%`));
+            orConditions.push(ilike(usersTable.lastName, `%${params.filter.searchTerm}%`));
+            orConditions.push(ilike(usersTable.name, `%${params.filter.searchTerm}%`));
         }
 
         let query = db
@@ -45,9 +74,20 @@ export class UserRepository {
             .limit(params.itemPerPage)
             .offset(offset);
 
-        if (conditions.length > 0) {
-            query = query.where(and(...conditions)) as typeof query;
+        const whereClause = [];
+
+        if (conditions.length > 0 && orConditions.length > 0) {
+            whereClause.push(and(...conditions));
+            whereClause.push(or(...orConditions));
+        } else if (conditions.length > 0) {
+            whereClause.push(and(...conditions));
+        } else if (orConditions.length > 0) {
+            whereClause.push(or(...orConditions));
         }
+
+        query = query.where(and(...whereClause)) as typeof query;
+
+        // query = query.where(or(...orConditions)) as typeof query;
 
         const users = (await query)
             .map((user) => {
@@ -55,7 +95,8 @@ export class UserRepository {
             })
             .filter((user) => user !== null);
 
-        const countQuery = db.select({ count: sql<number>`count(*)` }).from(usersTable);
+        let countQuery = db.select({ count: sql<number>`count(*)` }).from(usersTable);
+        countQuery = countQuery.where(and(...whereClause)) as typeof countQuery;
         const [{ count }] = await countQuery;
 
         return new Pager(users, count, params.itemPerPage, params.page);
