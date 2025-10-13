@@ -8,9 +8,8 @@ export interface CitizenType {
     birthDate: string | null;
     gender: KeyValueType<number, string> | null;
     phoneNumber: string | null;
-    licenseId: string | null;
     job: string | null;
-    note: string | null;
+    description: string | null;
     isWanted: boolean;
     status: KeyValueType<number, string> | null;
     bloodType: KeyValueType<number, string> | null;

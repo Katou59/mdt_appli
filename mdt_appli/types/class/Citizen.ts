@@ -4,6 +4,7 @@ import {
     gendersTable,
     jobsTable,
     ranksTable,
+    rolesTable,
     statusesTable,
     usersTable,
 } from "@/db/schema";
@@ -19,9 +20,8 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
     birthDate: string | null;
     gender: KeyValueType<number, string> | null;
     phoneNumber: string | null;
-    licenseId: string | null;
     job: string | null;
-    note: string | null;
+    description: string | null;
     isWanted: boolean;
     status: KeyValueType<number, string>| null;
     bloodType: KeyValueType<number, string> | null;
@@ -41,9 +41,8 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
         this.birthDate = citizen.birthDate;
         this.gender = citizen.gender;
         this.phoneNumber = citizen.phoneNumber;
-        this.licenseId = citizen.licenseId;
         this.job = citizen.job;
-        this.note = citizen.note;
+        this.description = citizen.description;
         this.isWanted = citizen.isWanted;
         this.status = citizen.status;
         this.bloodType = citizen.bloodType;
@@ -65,19 +64,23 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
         createdByDb: typeof usersTable.$inferSelect,
         createdByRankDb: typeof ranksTable.$inferSelect,
         createdByJobDb: typeof jobsTable.$inferSelect,
+        createdByRoleDb: typeof rolesTable.$inferSelect,
         updatedByDb: typeof usersTable.$inferSelect,
         updatedByRankDb: typeof ranksTable.$inferSelect,
-        updatedByJobDb: typeof jobsTable.$inferSelect
+        updatedByJobDb: typeof jobsTable.$inferSelect,
+        updatedByRoleDb: typeof rolesTable.$inferSelect
     ): Citizen {
         const createdBy = User.getFromDb(
             createdByDb,
             createdByRankDb,
-            createdByJobDb
+            createdByJobDb,
+            createdByRoleDb
         )!.toType();
         const updatedBy = User.getFromDb(
             updatedByDb,
             updatedByRankDb,
-            updatedByJobDb
+            updatedByJobDb,
+            updatedByRoleDb
         )!.toType();
 
         const citizenType: CitizenType = {
@@ -87,9 +90,8 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
             birthDate: citizenDb.birthDate,
             gender: genderDb ? { key: genderDb.id, value: genderDb.name } : null,
             phoneNumber: citizenDb.phoneNumber,
-            licenseId: citizenDb.licenseId!,
             job: citizenDb.job,
-            note: citizenDb.note,
+            description: citizenDb.description,
             isWanted: citizenDb.isWanted ?? false,
             status: statusDb ? { key: statusDb.id, value: statusDb.name } : null,
             bloodType: bloodTypeDb ? { key: bloodTypeDb.id, value: bloodTypeDb.name } : null,
@@ -113,9 +115,8 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
             birthDate: this.birthDate,
             gender: this.gender,
             phoneNumber: this.phoneNumber,
-            licenseId: this.licenseId,
             job: this.job,
-            note: this.note,
+            description: this.description,
             isWanted: this.isWanted,
             status: this.status,
             bloodType: this.bloodType,

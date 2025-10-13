@@ -12,6 +12,7 @@
         "generate:enums": "tsx scripts/generateEnums.ts"
     },
     "dependencies": {
+        "@supabase/supabase-js": "^2.75.0",
         "axios": "^1.12.2",
         "dayjs": "^1.11.18",
         "dotenv": "^17.2.2",

@@ -4,6 +4,7 @@ import {
     gendersTable,
     jobsTable,
     ranksTable,
+    rolesTable,
     statusesTable,
     usersTable,
 } from "@/db/schema";
@@ -27,6 +28,7 @@ export default class CitizenRepository {
         const updatedByUsers = alias(usersTable, "updated_by_users");
         const updatedByUsersJobs = alias(jobsTable, "updated_by_user_jobs");
         const updatedByUsersRanks = alias(ranksTable, "updated_by_user_ranks");
+        const updatedByUsersRoles = alias(rolesTable, "updated_by_user_roles");
         const query = db
             .select()
             .from(citizensTable)
@@ -36,9 +38,12 @@ export default class CitizenRepository {
             .leftJoin(usersTable, eq(usersTable.id, citizensTable.createdBy))
             .leftJoin(jobsTable, eq(jobsTable.id, usersTable.jobId))
             .leftJoin(ranksTable, eq(ranksTable.id, usersTable.rankId))
+            .leftJoin(rolesTable, eq(rolesTable.id, usersTable.roleId))
             .leftJoin(updatedByUsers, eq(updatedByUsers.id, citizensTable.updatedBy))
             .leftJoin(updatedByUsersJobs, eq(updatedByUsersJobs.id, updatedByUsers.jobId))
-            .leftJoin(updatedByUsersRanks, eq(updatedByUsersRanks.id, updatedByUsers.rankId));
+            .leftJoin(updatedByUsersRanks, eq(updatedByUsersRanks.id, updatedByUsers.rankId))
+            .leftJoin(updatedByUsersRoles, eq(updatedByUsersRoles.id, updatedByUsers.roleId))
+            ;
 
         if (search && /^[0-9]+$/.test(search.replace(/\s+/g, ""))) {
             query.where(
@@ -104,9 +109,11 @@ export default class CitizenRepository {
                     dbCitizen.users!,
                     dbCitizen.ranks!,
                     dbCitizen.jobs!,
+                    dbCitizen.roles!,
                     dbCitizen.updated_by_users!,
                     dbCitizen.updated_by_user_ranks!,
-                    dbCitizen.updated_by_user_jobs!
+                    dbCitizen.updated_by_user_jobs!,
+                    dbCitizen.updated_by_user_roles!
                 )
             )
             .filter((x): x is Citizen => x !== null);

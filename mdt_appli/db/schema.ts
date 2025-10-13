@@ -1,4 +1,4 @@
-import { boolean, integer, pgTable, uuid, varchar } from "drizzle-orm/pg-core";
+import { boolean, integer, pgTable, text, uuid, varchar } from "drizzle-orm/pg-core";
 import { timestamp } from "drizzle-orm/pg-core/columns/timestamp";
 
 export const usersTable = pgTable("users", {
@@ -45,13 +45,16 @@ export const citizensTable = pgTable("citizens", {
     nationalityId: integer("nationality_id").references(() => nationalitiesTable.id),
     height: integer("height"),
     weight: integer("weight"),
+    eyeColor: varchar("eye_color", { length: 50 }),
+    hairColor: varchar("hair_color", { length: 50 }),
+    origin: varchar("origin", { length: 50 }),
     phoneNumber: varchar("phone_number", { length: 50 }),
-    licenseId: varchar("license_id", { length: 50 }),
     job: varchar("job", { length: 50 }),
     address: varchar("address", { length: 250 }),
     city: varchar("city", { length: 100 }),
     isWanted: boolean("is_wanted").default(false),
-    note: varchar("note", { length: 255 }),
+    description: text("description"),
+    hasTattoo: boolean("has_tattoo"),
     photoUrl: varchar("photo_url", { length: 255 }),
     createdBy: varchar("created_by", { length: 50 })
         .references(() => usersTable.id)
