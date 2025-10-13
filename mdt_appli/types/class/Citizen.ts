@@ -23,7 +23,7 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
     job: string | null;
     description: string | null;
     isWanted: boolean;
-    status: KeyValueType<number, string>| null;
+    status: KeyValueType<number, string> | null;
     bloodType: KeyValueType<number, string> | null;
     photoUrl: string | null;
     createdBy: User;
@@ -33,6 +33,10 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
     fullName: string;
     address: string | null;
     city: string | null;
+    eyeColor: string | null;
+    hairColor: string | null;
+    hasTattoo: boolean | null;
+    origin: string | null;
 
     constructor(citizen: CitizenType) {
         this.id = citizen.id;
@@ -54,6 +58,10 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
         this.createdBy = new User(citizen.createdBy);
         this.updatedBy = new User(citizen.updatedBy);
         this.fullName = `${this.firstName} ${this.lastName}`;
+        this.eyeColor = citizen.eyeColor;
+        this.hairColor = citizen.hairColor;
+        this.hasTattoo = citizen.hasTattoo;
+        this.origin = citizen.origin;
     }
 
     static getFromDb(
@@ -102,6 +110,10 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
             updatedBy: updatedBy,
             address: citizenDb.address,
             city: citizenDb.city,
+            eyeColor: citizenDb.eyeColor,
+            hairColor: citizenDb.hairColor,
+            hasTattoo: citizenDb.hasTattoo,
+            origin: citizenDb.origin,
         };
 
         return new Citizen(citizenType);
@@ -127,6 +139,10 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
             updatedBy: this.updatedBy,
             address: this.address,
             city: this.city,
+            eyeColor: this.eyeColor,
+            hairColor: this.hairColor,
+            hasTattoo: this.hasTattoo,
+            origin: this.origin,
         };
     }
 }

@@ -21,4 +21,8 @@ export interface CitizenType {
     createdBy: UserType;
     address: string | null;
     city: string | null;
+    eyeColor: string | null;
+    hairColor: string | null;
+    hasTattoo: boolean | null;
+    origin: string | null;
 }
