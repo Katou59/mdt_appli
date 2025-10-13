@@ -1,14 +1,12 @@
-import { drizzle } from "drizzle-orm/node-postgres";
 import { jobsTable, ranksTable, usersTable } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { RankType } from "@/types/db/rank";
 import Rank from "@/types/class/Rank";
+import Repository from "./repository";
 
-const db = drizzle(process.env.DATABASE_URL!);
-
-export default class RankRepository {
+export default class RankRepository extends Repository {
 	static async GetList(jobId: number): Promise<Rank[]> {
-		const ranks = await db
+		const ranks = await RankRepository.db
 			.select({
 				id: ranksTable.id,
 				name: ranksTable.name,
@@ -46,7 +44,7 @@ export default class RankRepository {
 			ranks.map(async (rank) => {
 				if (rank.id) {
 					// Update
-					await db
+					await RankRepository.db
 						.update(ranksTable)
 						.set({
 							jobId: rank.job?.id ?? 1,
@@ -56,7 +54,7 @@ export default class RankRepository {
 						.where(eq(ranksTable.id, rank.id));
 				} else {
 					// Insert
-					await db.insert(ranksTable).values({
+					await RankRepository.db.insert(ranksTable).values({
 						name: rank.name ?? "",
 						order: rank.order ?? 0,
 						jobId: rank.job?.id ?? 1,
@@ -67,6 +65,6 @@ export default class RankRepository {
 	}
 
 	public static async delete(id: number) {
-		await db.delete(ranksTable).where(eq(ranksTable.id, id));
+		await RankRepository.db.delete(ranksTable).where(eq(ranksTable.id, id));
 	}
 }

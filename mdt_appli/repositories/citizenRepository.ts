@@ -12,12 +12,10 @@ import Citizen from "@/types/class/Citizen";
 import Pager from "@/types/class/Pager";
 import { CitizenType } from "@/types/db/citizen";
 import { eq, ilike, sql, or, and } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/node-postgres";
 import { alias } from "drizzle-orm/pg-core";
+import Repository from "./repository";
 
-const db = drizzle(process.env.DATABASE_URL!);
-
-export default class CitizenRepository {
+export default class CitizenRepository extends Repository {
     static async GetList(
         page: number,
         valuePerPage: number,
@@ -29,7 +27,7 @@ export default class CitizenRepository {
         const updatedByUsersJobs = alias(jobsTable, "updated_by_user_jobs");
         const updatedByUsersRanks = alias(ranksTable, "updated_by_user_ranks");
         const updatedByUsersRoles = alias(rolesTable, "updated_by_user_roles");
-        const query = db
+        const query = CitizenRepository.db
             .select()
             .from(citizensTable)
             .leftJoin(bloodTypesTable, eq(bloodTypesTable.id, citizensTable.bloodTypeId))
@@ -74,7 +72,7 @@ export default class CitizenRepository {
 
         const dbCitizens = await query;
 
-        const countQuery = db.select({ count: sql<number>`count(*)` }).from(citizensTable);
+        const countQuery = CitizenRepository.db.select({ count: sql<number>`count(*)` }).from(citizensTable);
 
         if (search && /^[0-9]+$/.test(search.replace(/\s+/g, ""))) {
             countQuery.where(

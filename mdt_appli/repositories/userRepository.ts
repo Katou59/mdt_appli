@@ -1,9 +1,9 @@
-import { drizzle } from "drizzle-orm/node-postgres";
 import { jobsTable, ranksTable, rolesTable, usersTable } from "@/db/schema";
 import { and, eq, ilike, or, sql } from "drizzle-orm";
 import User from "@/types/class/User";
 import { UserToCreateType, UserType } from "@/types/db/user";
 import Pager from "@/types/class/Pager";
+import Repository from "./repository";
 
 type FilterType = {
     searchTerm?: string;
@@ -13,11 +13,9 @@ type FilterType = {
     roleId?: number;
 };
 
-const db = drizzle(process.env.DATABASE_URL!);
-
-export class UserRepository {
+export class UserRepository extends Repository {
     public static async get(discordId: string): Promise<User | null> {
-        const users = await db
+        const users = await UserRepository.db
             .select()
             .from(usersTable)
             .leftJoin(jobsTable, eq(jobsTable.id, usersTable.jobId))
@@ -66,7 +64,7 @@ export class UserRepository {
             orConditions.push(ilike(usersTable.name, `%${params.filter.searchTerm}%`));
         }
 
-        let query = db
+        let query = UserRepository.db
             .select()
             .from(usersTable)
             .leftJoin(jobsTable, eq(jobsTable.id, usersTable.jobId))
@@ -95,7 +93,7 @@ export class UserRepository {
             })
             .filter((user) => user !== null);
 
-        let countQuery = db.select({ count: sql<number>`count(*)` }).from(usersTable);
+        let countQuery = UserRepository.db.select({ count: sql<number>`count(*)` }).from(usersTable);
         countQuery = countQuery.where(and(...whereClause)) as typeof countQuery;
         const [{ count }] = await countQuery;
 
@@ -103,14 +101,14 @@ export class UserRepository {
     }
 
     public static async update(user: User): Promise<void> {
-        await db
+        await UserRepository.db
             .update(usersTable)
             .set({ ...user, jobId: user.rank?.job?.id, rankId: user.rank?.id, roleId: user.role.key })
             .where(eq(usersTable.id, user.id));
     }
 
     public static async add(userToCreate: UserToCreateType): Promise<void> {
-        await db.insert(usersTable).values({
+        await UserRepository.db.insert(usersTable).values({
             id: userToCreate.id,
             jobId: userToCreate.jobId,
             rankId: userToCreate.rankId,

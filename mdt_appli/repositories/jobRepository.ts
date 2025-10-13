@@ -1,12 +1,10 @@
 import { jobsTable } from "@/db/schema";
 import Job from "@/types/class/Job";
-import { drizzle } from "drizzle-orm/node-postgres";
+import Repository from "./repository";
 
-const db = drizzle(process.env.DATABASE_URL!);
-
-export default class JobRepository {
+export default class JobRepository extends Repository {
 	public static async getList(): Promise<Job[]> {
-		const results = await db.select().from(jobsTable);
+		const results = await JobRepository.db.select().from(jobsTable);
 
 		return results.map((r) => new Job(r));
 	}
