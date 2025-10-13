@@ -12,7 +12,7 @@ export default function AddImage(props: {
                 <div
                     onPaste={props.onPaste}
                     tabIndex={0}
-                    className="w-full h-52 border-2 border-dashed flex items-center justify-center cursor-pointer rounded-xl"
+                    className="w-full h-[200px] border-2 border-dashed flex items-center justify-center cursor-pointer rounded-xl"
                 >
                     Colle une image ici
                 </div>
@@ -20,7 +20,7 @@ export default function AddImage(props: {
                 <>
                     <div className="flex items-center justify-center">
                         <div
-                            className="relative group inline-block rounded-xl overflow-hidden hover:cursor-pointer"
+                            className="relative group inline-block rounded-xl overflow-hidden hover:cursor-pointer border-1"
                             onClick={() => {
                                 const modal = document.getElementById(
                                     "my_modal_1"
@@ -28,13 +28,14 @@ export default function AddImage(props: {
                                 modal?.showModal();
                             }}
                         >
-                            <Image
-                                width={200}
-                                height={200}
-                                src={props.image}
-                                alt="Citizen Image"
-                                className="block rounded-xl"
-                            />
+                            <div className="w-[200px] h-[200px] relative">
+                                <Image
+                                    src={props.image}
+                                    alt="Citizen Image"
+                                    fill
+                                    className="object-contain rounded-xl"
+                                />
+                            </div>
                             <button
                                 type="button"
                                 onClick={(e) => {
@@ -48,18 +49,27 @@ export default function AddImage(props: {
                         </div>
                     </div>
                     <dialog id="my_modal_1" className="modal">
-                        <div className="modal-box w-1/2 min-w-1/2">
-                            <Image
-                                width={1000}
-                                height={1000}
-                                src={props.image}
-                                alt="Citizen Image"
-                                className="block rounded-xl"
-                            />
-                            <div className="modal-action">
-                                <form method="dialog">
-                                    <button className="btn btn-error rounded-xl">Fermer</button>
-                                </form>
+                        <div className="modal-box max-w-[800px] p-0 bg-base-100">
+                            <div className="relative w-full h-[500px] flex justify-center items-center">
+                                <Image
+                                    src={props.image}
+                                    alt="Citizen Image"
+                                    fill
+                                    className="object-contain rounded-xl"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        (
+                                            document.getElementById(
+                                                "my_modal_1"
+                                            ) as HTMLDialogElement
+                                        )?.close()
+                                    }
+                                    className="btn btn-error btn-circle absolute top-4 right-4"
+                                >
+                                    ✕
+                                </button>
                             </div>
                         </div>
                     </dialog>
