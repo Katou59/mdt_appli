@@ -157,7 +157,7 @@ export default function Citoyens() {
                                                                     </div>
                                                                     <div>{citizen.address}</div>
                                                                     <div>{citizen.city}</div>
-                                                                    <div>{citizen.note}</div>
+                                                                    <div>{citizen.description}</div>
                                                                 </div>
                                                             </div>
                                                         </div>

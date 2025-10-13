@@ -22,6 +22,7 @@ export default async function ProtectedLayout({
     const topItems = [
         { name: "Accueil", link: "/police/dashboard" },
         { name: "Citoyens", link: "/police/citizens" },
+        { name: "Ajouter un citoyen", link: "/police/citizens/add" },
     ];
 
     const botItems = [{ name: "Mon profil", link: "/police/users/me" }];
