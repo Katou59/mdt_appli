@@ -125,7 +125,7 @@ export default function Users() {
                             type="text"
                             name="search"
                             placeholder="Recherche"
-                            className="input input-sm input-primary w-64"
+                            className="input input-sm w-64"
                             autoComplete="off"
                             value={filter.searchTerm ?? ""}
                             onChange={(e) =>
@@ -137,7 +137,7 @@ export default function Users() {
                         <fieldset className="fieldset">
                             <legend className="fieldset-legend p-0">Métiers</legend>
                             <select
-                                className="select select-sm select-primary w-52"
+                                className="select select-sm w-52"
                                 value={filter.jobId ?? ""}
                                 onChange={async (e) => {
                                     const value = e.target.value
@@ -173,7 +173,7 @@ export default function Users() {
                         <fieldset className="fieldset">
                             <legend className="fieldset-legend p-0">Grades</legend>
                             <select
-                                className="select select-sm select-primary w-52"
+                                className="select select-sm w-52"
                                 disabled={!ranks || ranks.length === 0}
                                 value={filter.rankId ?? ""}
                                 onChange={(e) => {
@@ -194,7 +194,7 @@ export default function Users() {
                         <fieldset className="fieldset">
                             <legend className="fieldset-legend p-0">Rôles</legend>
                             <select
-                                className="select select-sm select-primary w-52"
+                                className="select select-sm w-52"
                                 value={filter.roleId ?? ""}
                                 onChange={(e) => {
                                     const value = e.target.value
@@ -214,7 +214,7 @@ export default function Users() {
                         <fieldset className="fieldset">
                             <legend className="fieldset-legend p-0">Utilisateurs désactivés</legend>
                             <select
-                                className="select select-sm select-primary w-52"
+                                className="select select-sm w-52"
                                 value={
                                     filter.isDisable === undefined ? "" : String(filter.isDisable)
                                 }

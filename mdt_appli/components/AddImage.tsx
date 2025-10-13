@@ -42,7 +42,8 @@ export default function AddImage(props: {
                                     e.stopPropagation();
                                     props.delete();
                                 }}
-                                className="btn btn-error btn-outline btn-sm absolute top-2 right-2 rounded-full"
+                                className="btn btn-error btn-sm absolute top-2 right-2 rounded-full"
+                                title="Supprimer l'image"
                             >
                                 X
                             </button>
