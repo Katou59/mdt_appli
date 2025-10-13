@@ -1,7 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AddImage from "@/components/AddImage";
+import axiosClient, { getData } from "@/lib/axiosClient";
+import { KeyValueType } from "@/types/utils/keyValue";
+import Alert from "@/components/Alert";
+import Loader from "@/components/Loader";
 
 const inputs = [
     { title: "Nom", type: "text", minLength: 2, maxLength: 50, placeHolder: "Nom" },
@@ -44,8 +48,38 @@ const inputs = [
     },
 ];
 
+type Lists = {
+    genders: KeyValueType<number, string>[];
+    bloodTypes: KeyValueType<number, string>[];
+    nationalities: KeyValueType<number, string>[];
+    statuses: KeyValueType<number, string>[];
+};
+
 export default function AddCitizen() {
     const [image, setImage] = useState<string | null>(null);
+    const [lists, setLists] = useState<Lists>();
+    const [errorMessage, setErrorMessage] = useState("");
+    const [isLoaded, setIsLoaded] = useState(false);
+
+    useEffect(() => {
+        async function init() {
+            try {
+                setLists(await getLists());
+            } catch (error) {
+                if (error instanceof Error) {
+                    setErrorMessage(error.message);
+                } else {
+                    setErrorMessage("Une erreur est survenue");
+                }
+            } finally {
+                setIsLoaded(true);
+            }
+        }
+
+        init();
+    }, []);
+
+    if (!isLoaded) return <Loader/>;
 
     const handlePaste = async (e: React.ClipboardEvent) => {
         const item = Array.from(e.clipboardData.items).find((i) => i.type.startsWith("image/"));
@@ -60,8 +94,9 @@ export default function AddCitizen() {
     return (
         <>
             <h1 className="text-4xl font-bold text-primary text-center mb-4">Ajouter un citoyen</h1>
+            <Alert message={errorMessage} />
             <AddImage image={image} onPaste={handlePaste} delete={() => setImage("")} />
-            <form className="grid grid-cols-2 gap-2">
+            <form className="grid grid-cols-2 gap-6">
                 {inputs.map((x, index) => (
                     <fieldset key={index} className="fieldset">
                         <legend className="fieldset-legend">{x.title}</legend>
@@ -103,4 +138,24 @@ export default function AddCitizen() {
             </form>
         </>
     );
+}
+
+async function getLists(): Promise<Lists> {
+    const [genders, bloodTypes, nationalities, statuses] = await Promise.all([
+        getData(axiosClient.get("/genders")),
+        getData(axiosClient.get("/bloodTypes")),
+        getData(axiosClient.get("/nationalities")),
+        getData(axiosClient.get("/statuses")),
+    ]);
+
+    const responses = [genders, bloodTypes, nationalities, statuses];
+    const error = responses.find((r) => r.errorMessage);
+    if (error) throw new Error(error.errorMessage);
+
+    return {
+        genders: genders.data,
+        bloodTypes: bloodTypes.data,
+        nationalities: nationalities.data,
+        statuses: statuses.data,
+    } as Lists;
 }

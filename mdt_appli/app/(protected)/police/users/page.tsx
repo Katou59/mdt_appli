@@ -14,6 +14,7 @@ import { PagerType } from "@/types/response/pagerType";
 import PagerClass from "@/types/class/Pager";
 import Pager from "@/components/Pager";
 import { RankType } from "@/types/db/rank";
+import Loader from "@/components/Loader";
 
 type FilterType = {
     searchTerm: string | undefined;
@@ -104,7 +105,7 @@ export default function Users() {
         setPager(await getPager(pager, filter));
     }
 
-    if (isLoading) return <div>Chargement...</div>;
+    if (isLoading) return <Loader/>;
 
     return (
         <>

@@ -10,6 +10,7 @@ import dayjs from "dayjs";
 import Image from "next/image";
 import React, { FormEvent, useEffect, useState } from "react";
 import PagerComponent from "@/components/Pager";
+import Loader from "@/components/Loader";
 
 export default function Citoyens() {
     const [isLoaded, setIsLoaded] = useState(false);
@@ -37,7 +38,7 @@ export default function Citoyens() {
         init();
     }, [filter]);
 
-    if (!isLoaded || !pager) return <div>Chargement...</div>;
+    if (!isLoaded || !pager) return <Loader/>
 
     async function handlePageChange(page: number): Promise<void> {
         setPager(await getPager(page, pager!.itemPerPage, filter));

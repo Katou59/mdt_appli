@@ -1,6 +1,7 @@
 "use client";
 
 import Alert from "@/components/Alert";
+import Loader from "@/components/Loader";
 import Toast from "@/components/Toast";
 import axiosClient, { getData } from "@/lib/axiosClient";
 import { useUser } from "@/lib/Contexts/UserContext";
@@ -46,7 +47,7 @@ export default function AddUser() {
         init();
     }, [router, user]);
 
-    if (!isLoaded) return <div>Chargement...</div>;
+    if (!isLoaded) return <Loader/>;
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>): Promise<void> {
         event.preventDefault();

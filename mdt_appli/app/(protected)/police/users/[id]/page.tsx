@@ -6,6 +6,7 @@ import axiosClient, { getData } from "@/lib/axiosClient";
 import UserComponent from "@/components/UserComponent";
 import User from "@/types/class/User";
 import Alert from "@/components/Alert";
+import Loader from "@/components/Loader";
 
 export default function UserId() {
 	const params = useParams<{ id: string }>();
@@ -29,7 +30,7 @@ export default function UserId() {
 		init();
 	}, [params.id]);
 
-	if (!isLoaded) return <div>Chargement du profil...</div>;
+	if (!isLoaded) return <Loader/>;
 
 	return (
 		<>

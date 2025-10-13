@@ -12,6 +12,7 @@ import { RankType } from "@/types/db/rank";
 import Alert from "./Alert";
 import { KeyValueType } from "@/types/utils/keyValue";
 import { useToast } from "@/lib/Contexts/ToastContext";
+import Loader from "./Loader";
 
 export default function UserComponent(props: { user: UserType; isConsult: boolean }) {
     const [userToUpdate, setToUserToUpdate] = useState<User>(new User(props.user));
@@ -86,7 +87,7 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
         setIsConsult(true);
     }
 
-    if (!userToUpdate) return <p>Chargement...</p>;
+    if (!userToUpdate) return <Loader/>;
 
     return (
         <>

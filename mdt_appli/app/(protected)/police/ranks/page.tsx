@@ -9,6 +9,7 @@ import { RankType } from "@/types/db/rank";
 import Alert from "@/components/Alert";
 import Job from "@/types/class/Job";
 import { JobType } from "@/types/db/job";
+import Loader from "@/components/Loader";
 
 export default function Ranks() {
     const { user } = useUser();
@@ -60,7 +61,7 @@ export default function Ranks() {
         fetchRanks();
     }, [router, user]);
 
-    if (isLoading) return <div>Chargement...</div>;
+    if (isLoading) return <Loader/>;
 
     // 🔹 Drag start
     const handleDragStart = (e: React.DragEvent<HTMLLIElement>, index: number) => {
