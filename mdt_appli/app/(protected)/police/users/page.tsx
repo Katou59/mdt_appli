@@ -219,7 +219,6 @@ export default function Users() {
                                     filter.isDisable === undefined ? "" : String(filter.isDisable)
                                 }
                                 onChange={(e) => {
-                                    console.log(e.target.value);
                                     setFilter((prev) => ({
                                         ...prev,
                                         isDisable:

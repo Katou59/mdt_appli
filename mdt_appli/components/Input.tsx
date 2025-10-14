@@ -9,6 +9,8 @@ type Props = {
     maxLenght?: number;
     max?: number;
     min?: number;
+    required?: boolean;
+    defaultValue?: string;
 };
 export default function Input(props: Props) {
     return (
@@ -23,6 +25,8 @@ export default function Input(props: Props) {
                 maxLength={props.maxLenght}
                 max={props.max}
                 min={props.min}
+                required={props.required === undefined ? true : props.required}
+                defaultValue={props.defaultValue ?? ""}
             />
         </fieldset>
     );

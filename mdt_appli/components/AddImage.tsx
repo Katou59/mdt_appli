@@ -23,7 +23,7 @@ export default function AddImage(props: {
                             className="relative group inline-block rounded-xl overflow-hidden hover:cursor-pointer border-1"
                             onClick={() => {
                                 const modal = document.getElementById(
-                                    "my_modal_1"
+                                    "showImage"
                                 ) as HTMLDialogElement | null;
                                 modal?.showModal();
                             }}
@@ -49,7 +49,7 @@ export default function AddImage(props: {
                             </button>
                         </div>
                     </div>
-                    <dialog id="my_modal_1" className="modal">
+                    <dialog id="showImage" className="modal">
                         <div className="modal-box max-w-[800px] p-0 bg-base-100">
                             <div className="relative w-full h-[500px] flex justify-center items-center">
                                 <Image

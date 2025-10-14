@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 import AddImage from "@/components/AddImage";
 import axiosClient, { getData } from "@/lib/axiosClient";
 import { KeyValueType } from "@/types/utils/keyValue";
@@ -10,6 +10,10 @@ import Input from "@/components/Input";
 import Select from "@/components/Select";
 import CheckBox from "@/components/CheckBox";
 import Textarea from "@/components/Textarea";
+import { CitizenToCreateType, CitizenType } from "@/types/db/citizen";
+import Citizen from "@/types/class/Citizen";
+import { useRouter } from "next/navigation";
+import { uploadImage } from "@/lib/supabaseClient";
 
 type Lists = {
     genders: KeyValueType<number, string>[];
@@ -19,10 +23,37 @@ type Lists = {
 };
 
 export default function AddCitizen() {
+    const [imageFile, setImageFile] = useState<File | null>(null);
     const [image, setImage] = useState<string | null>(null);
     const [lists, setLists] = useState<Lists>();
     const [errorMessage, setErrorMessage] = useState("");
     const [isLoaded, setIsLoaded] = useState(false);
+    const router = useRouter();
+
+    // Test autofill toggle
+    const TEST_FILL = true;
+    const testData: CitizenToCreateType = {
+        lastName: "Dupont",
+        firstName: "Jean",
+        birthDate: "1990-01-01",
+        birthPlace: "Paris",
+        phoneNumber: "0601020304",
+        address: "12 rue de la Paix",
+        city: "Lille",
+        job: "Informaticien",
+        eyeColor: "Bleu",
+        hairColor: "Châtain",
+        description: "Citoyen de test",
+        isWanted: false,
+        bloodTypeId: 2,
+        genderId: 2,
+        hasTattoo: true,
+        originId: 15,
+        statusId: 3,
+        photoUrl: null,
+        height: 189,
+        weight: 92,
+    } as const;
 
     useEffect(() => {
         async function init() {
@@ -49,17 +80,63 @@ export default function AddCitizen() {
         if (!item) return;
         const file = item.getAsFile();
         if (file) {
+            setImageFile(file);
             const url = URL.createObjectURL(file);
             setImage(url);
         }
     };
 
+    async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
+        event.preventDefault();
+        const form = new FormData(event.currentTarget);
+
+        let url = null;
+        if (imageFile) {
+            url = await uploadImage(imageFile);
+        }
+
+        const citizenToCreate: CitizenToCreateType = {
+            firstName: form.get("firstname") as string,
+            lastName: form.get("lastname") as string,
+            birthDate: (form.get("birthDate") as string) ?? null,
+            birthPlace: (form.get("birthPlace") as string) ?? null,
+            genderId: toNullableNumber(form.get("genderId")),
+            phoneNumber: (form.get("phoneNumber") as string) ?? null,
+            job: (form.get("job") as string) ?? null,
+            description: (form.get("description") as string) ?? null,
+            isWanted: form.get("isWanted") === "on",
+            statusId: toNullableNumber(form.get("statusId")),
+            bloodTypeId: toNullableNumber(form.get("bloodTypeId")),
+            address: (form.get("address") as string) ?? null,
+            city: (form.get("city") as string) ?? null,
+            eyeColor: (form.get("eyeColor") as string) ?? null,
+            hairColor: (form.get("hairColor") as string) ?? null,
+            hasTattoo: form.get("hasTattoo") === "on",
+            originId: toNullableNumber(form.get("originId")),
+            height: toNullableNumber(form.get("height")),
+            weight: toNullableNumber(form.get("weight")),
+            photoUrl: url,
+        };
+
+        try {
+            const newCitizen = await createAndGetCitizen(citizenToCreate);
+            router.push(`/police/citizens/${newCitizen.id}`);
+        } catch (error) {
+            if (error instanceof Error) {
+                setErrorMessage(error.message);
+                return;
+            }
+            setErrorMessage("Une erreur est survenue");
+            return;
+        }
+    }
+
     return (
         <>
-            <h1 className="text-4xl font-bold text-primary text-center mb-4">Ajouter un citoyen</h1>
             <Alert message={errorMessage} />
+            <h1 className="text-4xl font-bold text-primary text-center mb-4">Ajouter un citoyen</h1>
             <AddImage image={image} onPaste={handlePaste} delete={() => setImage("")} />
-            <form className="mt-4">
+            <form className="mt-4" onSubmit={handleSubmit}>
                 <div>
                     <h2 className="text-xl text-primary">Identité</h2>
                     <div className="grid grid-cols-2 gap-x-6">
@@ -69,7 +146,8 @@ export default function AddCitizen() {
                             placeHolder="Nom"
                             type="text"
                             maxLenght={50}
-                            minLenght={1}
+                            minLenght={2}
+                            defaultValue={TEST_FILL ? testData.lastName : undefined}
                         />
                         <Input
                             label="Prénom"
@@ -78,12 +156,14 @@ export default function AddCitizen() {
                             type="text"
                             maxLenght={50}
                             minLenght={1}
+                            defaultValue={TEST_FILL ? testData.firstName : undefined}
                         />
                         <Input
                             label="Date de naissance"
                             name="birthDate"
                             placeHolder="Date de naissance"
                             type="date"
+                            defaultValue={TEST_FILL ? (testData.birthDate as string) : undefined}
                         />
                         <Input
                             label="Lieu de naissance"
@@ -92,19 +172,20 @@ export default function AddCitizen() {
                             type="text"
                             maxLenght={50}
                             minLenght={1}
+                            defaultValue={TEST_FILL ? (testData.birthPlace as string) : undefined}
                         />
                         <Select
-                            defaulValue=""
+                            defaulValue={TEST_FILL ? String(testData.originId) : ""}
                             items={lists!.nationalities}
                             label="Nationalité"
-                            name="nationality"
+                            name="originId"
                             emptyValue="Choisir..."
                         />
                         <Select
-                            defaulValue=""
+                            defaulValue={TEST_FILL ? String(testData.genderId) : ""}
                             items={lists!.genders}
                             label="Sexe"
-                            name="sex"
+                            name="genderId"
                             emptyValue="Choisir..."
                         />
                     </div>
@@ -120,14 +201,16 @@ export default function AddCitizen() {
                             type="number"
                             max={300}
                             min={100}
+                            defaultValue={TEST_FILL ? String(testData.height) : undefined}
                         />
                         <Input
                             label="Poids"
                             name="weight"
                             placeHolder="Poids (kg)"
                             type="number"
-                            max={30}
-                            min={300}
+                            max={300}
+                            min={30}
+                            defaultValue={TEST_FILL ? String(testData.weight) : undefined}
                         />
                         <Input
                             label="Couleur des yeux"
@@ -136,6 +219,7 @@ export default function AddCitizen() {
                             type="text"
                             maxLenght={50}
                             minLenght={1}
+                            defaultValue={TEST_FILL ? (testData.eyeColor as string) : undefined}
                         />
                         <Input
                             label="Couleur des cheveux"
@@ -144,23 +228,21 @@ export default function AddCitizen() {
                             type="text"
                             maxLenght={50}
                             minLenght={1}
-                        />
-                        <Input
-                            label="Origine"
-                            name="origin"
-                            placeHolder="Origine"
-                            type="text"
-                            maxLenght={50}
-                            minLenght={1}
+                            defaultValue={TEST_FILL ? (testData.hairColor as string) : undefined}
                         />
                         <Select
                             label="Groupe sanguin"
-                            defaulValue=""
+                            defaulValue={TEST_FILL ? String(testData.bloodTypeId) : ""}
                             items={lists!.bloodTypes}
-                            name="bloodType"
+                            name="bloodTypeId"
                             emptyValue="Choisir..."
                         />
-                        <CheckBox label="Tatouages" name="tattoo" checkBoxLabel="Oui" />
+                        <CheckBox
+                            label="Tatouages"
+                            name="hasTattoo"
+                            checkBoxLabel="Oui"
+                            defaultChecked={TEST_FILL ? testData.hasTattoo : false}
+                        />
                     </div>
                 </div>
                 <div className="divider"></div>
@@ -174,6 +256,7 @@ export default function AddCitizen() {
                             type="text"
                             maxLenght={50}
                             minLenght={1}
+                            defaultValue={TEST_FILL ? (testData.phoneNumber as string) : undefined}
                         />
 
                         <Input
@@ -183,6 +266,7 @@ export default function AddCitizen() {
                             type="text"
                             maxLenght={50}
                             minLenght={1}
+                            defaultValue={TEST_FILL ? (testData.address as string) : undefined}
                         />
 
                         <Input
@@ -192,6 +276,7 @@ export default function AddCitizen() {
                             type="text"
                             maxLenght={50}
                             minLenght={1}
+                            defaultValue={TEST_FILL ? (testData.city as string) : undefined}
                         />
                     </div>
                 </div>
@@ -202,17 +287,22 @@ export default function AddCitizen() {
                     <div className="grid grid-cols-2 gap-x-6">
                         <Input
                             label="Métier"
-                            name="Job"
+                            name="job"
                             placeHolder="Métier"
                             type="text"
                             maxLenght={50}
                             minLenght={1}
+                            defaultValue={TEST_FILL ? (testData.job as string) : undefined}
                         />
                         <Select
-                            defaulValue=""
+                            defaulValue={
+                                TEST_FILL && lists!.statuses[0]
+                                    ? String(lists!.statuses[0].key)
+                                    : ""
+                            }
                             items={lists!.statuses}
                             label="Statut"
-                            name="status"
+                            name="statusId"
                             emptyValue="Choisir..."
                         />
                         <CheckBox
@@ -220,12 +310,14 @@ export default function AddCitizen() {
                             checkBoxLabel="Oui"
                             label="Est recherché"
                             name="isWanted"
+                            defaultChecked={TEST_FILL ? testData.isWanted : undefined}
                         />
                         <Textarea
                             className="w-full col-span-2"
                             label="Informations complémentaires"
                             name="description"
                             placeHolder="Informations Complémentaires"
+                            defaultValue={TEST_FILL ? (testData.description as string) : undefined}
                         />
                     </div>
                 </div>
@@ -261,4 +353,19 @@ async function getLists(): Promise<Lists> {
         nationalities: nationalities.data,
         statuses: statuses.data,
     } as Lists;
+}
+
+function toNullableNumber(v: FormDataEntryValue | null) {
+    if (v === null || v === "") return null;
+    const n = Number(v);
+    return Number.isNaN(n) ? null : n;
+}
+
+async function createAndGetCitizen(citizenToCreate: CitizenToCreateType) {
+    const citizenCreated = await getData(axiosClient.post("/citizens", citizenToCreate));
+    if (citizenCreated.errorMessage) {
+        throw new Error(citizenCreated.errorMessage);
+    }
+
+    return new Citizen(citizenCreated.data as CitizenType);
 }

@@ -1,0 +1,4 @@
+"id","name","enum_label"
+0,Utilisateur,User
+10,Administrateur,Admin
+20,Super Administrateur,SuperAdmin

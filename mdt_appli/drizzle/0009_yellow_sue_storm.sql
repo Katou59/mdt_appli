@@ -1,0 +1,1 @@
+ALTER TABLE "citizens" ALTER COLUMN "photo_url" SET DATA TYPE text;

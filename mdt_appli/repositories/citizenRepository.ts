@@ -10,10 +10,11 @@ import {
 } from "@/db/schema";
 import Citizen from "@/types/class/Citizen";
 import Pager from "@/types/class/Pager";
-import { CitizenType } from "@/types/db/citizen";
+import { CitizenToCreateType, CitizenType } from "@/types/db/citizen";
 import { eq, ilike, sql, or, and } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import Repository from "./repository";
+import User from "@/types/class/User";
 
 export default class CitizenRepository extends Repository {
     static async GetList(
@@ -21,7 +22,7 @@ export default class CitizenRepository extends Repository {
         valuePerPage: number,
         search?: string
     ): Promise<Pager<Citizen, CitizenType>> {
-            const offset = (page - 1) * valuePerPage;
+        const offset = (page - 1) * valuePerPage;
 
         const updatedByUsers = alias(usersTable, "updated_by_users");
         const updatedByUsersJobs = alias(jobsTable, "updated_by_user_jobs");
@@ -40,9 +41,7 @@ export default class CitizenRepository extends Repository {
             .leftJoin(updatedByUsers, eq(updatedByUsers.id, citizensTable.updatedBy))
             .leftJoin(updatedByUsersJobs, eq(updatedByUsersJobs.id, updatedByUsers.jobId))
             .leftJoin(updatedByUsersRanks, eq(updatedByUsersRanks.id, updatedByUsers.rankId))
-            .leftJoin(updatedByUsersRoles, eq(updatedByUsersRoles.id, updatedByUsers.roleId))
-            ;
-
+            .leftJoin(updatedByUsersRoles, eq(updatedByUsersRoles.id, updatedByUsers.roleId));
         if (search && /^[0-9]+$/.test(search.replace(/\s+/g, ""))) {
             query.where(
                 ilike(
@@ -72,7 +71,9 @@ export default class CitizenRepository extends Repository {
 
         const dbCitizens = await query;
 
-        const countQuery = CitizenRepository.db.select({ count: sql<number>`count(*)` }).from(citizensTable);
+        const countQuery = CitizenRepository.db
+            .select({ count: sql<number>`count(*)` })
+            .from(citizensTable);
 
         if (search && /^[0-9]+$/.test(search.replace(/\s+/g, ""))) {
             countQuery.where(
@@ -117,5 +118,57 @@ export default class CitizenRepository extends Repository {
             .filter((x): x is Citizen => x !== null);
 
         return new Pager(citizens, count, valuePerPage, page);
+    }
+
+    public static async Add(citizenToCreate: CitizenToCreateType, user: User): Promise<string> {
+        const [inserted] = await CitizenRepository.db
+            .insert(citizensTable)
+            .values({ ...citizenToCreate, createdBy: user.id, updatedBy: user.id })
+            .returning({ id: citizensTable.id });
+
+        return inserted.id;
+    }
+
+    public static async Get(id: string): Promise<Citizen | null> {
+        const updatedByUsers = alias(usersTable, "updated_by_users");
+        const updatedByUsersJobs = alias(jobsTable, "updated_by_user_jobs");
+        const updatedByUsersRanks = alias(ranksTable, "updated_by_user_ranks");
+        const updatedByUsersRoles = alias(rolesTable, "updated_by_user_roles");
+
+        const query = CitizenRepository.db
+            .select()
+            .from(citizensTable)
+            .leftJoin(bloodTypesTable, eq(bloodTypesTable.id, citizensTable.bloodTypeId))
+            .leftJoin(statusesTable, eq(statusesTable.id, citizensTable.statusId))
+            .leftJoin(gendersTable, eq(gendersTable.id, citizensTable.genderId))
+            .leftJoin(usersTable, eq(usersTable.id, citizensTable.createdBy))
+            .leftJoin(jobsTable, eq(jobsTable.id, usersTable.jobId))
+            .leftJoin(ranksTable, eq(ranksTable.id, usersTable.rankId))
+            .leftJoin(rolesTable, eq(rolesTable.id, usersTable.roleId))
+            .leftJoin(updatedByUsers, eq(updatedByUsers.id, citizensTable.updatedBy))
+            .leftJoin(updatedByUsersJobs, eq(updatedByUsersJobs.id, updatedByUsers.jobId))
+            .leftJoin(updatedByUsersRanks, eq(updatedByUsersRanks.id, updatedByUsers.rankId))
+            .leftJoin(updatedByUsersRoles, eq(updatedByUsersRoles.id, updatedByUsers.roleId))
+            .where(eq(citizensTable.id, id));
+
+        const userDb = (await query)[0];
+        if (!userDb) return null;
+
+        const user = Citizen.getFromDb(
+            userDb.citizens,
+            userDb.genders,
+            userDb.statuses,
+            userDb.blood_types,
+            userDb.users!,
+            userDb.ranks!,
+            userDb.jobs!,
+            userDb.roles!,
+            userDb.updated_by_users!,
+            userDb.updated_by_user_ranks!,
+            userDb.updated_by_user_jobs!,
+            userDb.updated_by_user_roles!
+        );
+
+        return user;
     }
 }

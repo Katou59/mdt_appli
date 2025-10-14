@@ -26,7 +26,6 @@ export default function Test() {
         const file = item.getAsFile();
         if (file) {
             const url = await uploadImage(file);
-            console.log(url);
             setImage(url);
         }
     };

@@ -37,6 +37,9 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
     hairColor: string | null;
     hasTattoo: boolean | null;
     origin: string | null;
+    birthPlace: string | null;
+    height: number | null;
+    weight: number | null;
 
     constructor(citizen: CitizenType) {
         this.id = citizen.id;
@@ -62,6 +65,9 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
         this.hairColor = citizen.hairColor;
         this.hasTattoo = citizen.hasTattoo;
         this.origin = citizen.origin;
+        this.birthPlace = citizen.birthPlace;
+        this.height = citizen.height;
+        this.weight = citizen.weight;
     }
 
     static getFromDb(
@@ -114,6 +120,9 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
             hairColor: citizenDb.hairColor,
             hasTattoo: citizenDb.hasTattoo,
             origin: citizenDb.origin,
+            birthPlace: citizenDb.birthPlace,
+            height: citizenDb.height,
+            weight: citizenDb.weight,
         };
 
         return new Citizen(citizenType);
@@ -143,6 +152,9 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
             hairColor: this.hairColor,
             hasTattoo: this.hasTattoo,
             origin: this.origin,
+            birthPlace: this.birthPlace,
+            height: this.height,
+            weight: this.weight
         };
     }
 }

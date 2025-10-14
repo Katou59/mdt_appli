@@ -5,8 +5,15 @@ import { NextResponse } from "next/server";
 export async function GET() {
     try {
         return NextResponse.json(await NationalityRepository.getList(), { status: HttpStatus.OK });
-    } catch (e) {
-        console.error(e);
-        return NextResponse.json({ error: e }, { status: HttpStatus.BAD_REQUEST });
+    } catch (error) {
+        if (error instanceof Error)
+            return NextResponse.json(
+                { error: error.message },
+                { status: HttpStatus.INTERNAL_SERVER_ERROR }
+            );
+        return NextResponse.json(
+            { error: "Internal server error" },
+            { status: HttpStatus.INTERNAL_SERVER_ERROR }
+        );
     }
 }

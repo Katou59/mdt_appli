@@ -34,9 +34,16 @@ export async function PUT(request: NextRequest) {
         const userUpdated = await UserRepository.get(userToUpdate.id);
 
         return NextResponse.json(userUpdated);
-    } catch (e) {
-        console.error(e);
-        return NextResponse.json({ error: e }, { status: 500 });
+    } catch (error) {
+        if (error instanceof Error)
+            return NextResponse.json(
+                { error: error.message },
+                { status: HttpStatus.INTERNAL_SERVER_ERROR }
+            );
+        return NextResponse.json(
+            { error: "Internal server error" },
+            { status: HttpStatus.INTERNAL_SERVER_ERROR }
+        );
     }
 }
 
@@ -82,9 +89,16 @@ export async function GET(request: NextRequest) {
         }
 
         return NextResponse.json(pager);
-    } catch (e) {
-        console.error(e);
-        return NextResponse.json({ error: e }, { status: 500 });
+    } catch (error) {
+        if (error instanceof Error)
+            return NextResponse.json(
+                { error: error.message },
+                { status: HttpStatus.INTERNAL_SERVER_ERROR }
+            );
+        return NextResponse.json(
+            { error: "Internal server error" },
+            { status: HttpStatus.INTERNAL_SERVER_ERROR }
+        );
     }
 }
 
