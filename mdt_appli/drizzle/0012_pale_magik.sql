@@ -1,0 +1,1 @@
+ALTER TABLE "error_logs" ADD COLUMN "20" varchar;

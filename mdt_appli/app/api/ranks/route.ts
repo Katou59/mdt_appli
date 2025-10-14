@@ -5,17 +5,19 @@ import Rank from "@/types/class/Rank";
 import { HttpStatus } from "@/types/enums/httpStatus";
 import HistoryRepository from "@/repositories/historyRepository";
 import { auth } from "@/auth";
+import ErrorLogRepository from "@/repositories/errorLogRepository";
 
 export async function PUT(request: NextRequest) {
+    let body = null;
     try {
         const session = await auth();
-        const ranks = (await request.json()).map((r: RankType) => new Rank(r));
+        body = (await request.json()).map((r: RankType) => new Rank(r));
 
-        const oldRanks = await RankRepository.GetList(ranks[0].job.id);
+        const oldRanks = await RankRepository.GetList(body[0].job.id);
 
-        await RankRepository.AddOrUpdateList(ranks);
+        await RankRepository.AddOrUpdateList(body);
 
-        const results = await RankRepository.GetList(ranks[0].job.id);
+        const results = await RankRepository.GetList(body[0].job.id);
 
         const newRanks = results.map((r) => r.toRankType());
         HistoryRepository.Add({
@@ -29,6 +31,14 @@ export async function PUT(request: NextRequest) {
 
         return NextResponse.json(newRanks);
     } catch (error) {
+        ErrorLogRepository.Add({
+            error: error,
+            path: request.nextUrl.href,
+            request: body,
+            userId: (await auth())!.user!.discordId!,
+            method: request.method,
+        });
+
         if (error instanceof Error)
             return NextResponse.json(
                 { error: error.message },

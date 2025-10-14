@@ -1,0 +1,1 @@
+ALTER TABLE "error_logs" RENAME COLUMN "20" TO "method";

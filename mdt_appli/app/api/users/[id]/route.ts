@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { UserRepository } from "@/repositories/userRepository";
 import { auth } from "@/auth";
 import { HttpStatus } from "@/types/enums/httpStatus";
+import ErrorLogRepository from "@/repositories/errorLogRepository";
 
 export async function GET(request: NextRequest, context: { params: Promise<{ id: string }> }) {
     try {
@@ -27,6 +28,13 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
 
         return NextResponse.json(userResult);
     } catch (error) {
+        ErrorLogRepository.Add({
+            error: error,
+            path: request.nextUrl.href,
+            request: null,
+            userId: (await auth())!.user!.discordId!,
+            method: request.method,
+        });
         if (error instanceof Error)
             return NextResponse.json(
                 { error: error.message },

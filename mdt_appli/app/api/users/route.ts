@@ -5,23 +5,25 @@ import { UserRepository } from "@/repositories/userRepository";
 import { RoleType } from "@/types/enums/roleType";
 import { HttpStatus } from "@/types/enums/httpStatus";
 import HistoryRepository from "@/repositories/historyRepository";
+import ErrorLogRepository from "@/repositories/errorLogRepository";
 
 export async function PUT(request: NextRequest) {
+    let body = null;
     try {
         const session = await auth();
         const currentUser = await UserRepository.get(session!.user.discordId!);
 
-        const userToAddRequest = (await request.json()) as UserToUpdateType;
-        if (!userToAddRequest?.id)
+        body = (await request.json()) as UserToUpdateType;
+        if (!body?.id)
             return NextResponse.json({ error: "Bad Request" }, { status: 400 });
 
-        const userToUpdate = await UserRepository.get(userToAddRequest.id);
+        const userToUpdate = await UserRepository.get(body.id);
         if (!userToUpdate?.id) return NextResponse.json({ error: "Bad Request" }, { status: 400 });
 
         const userToUpdateCopy = { ...userToUpdate };
 
         userToUpdate.update(
-            userToAddRequest,
+            body,
             currentUser?.isAdmin,
             currentUser?.role.key === RoleType.SuperAdmin
         );
@@ -47,6 +49,13 @@ export async function PUT(request: NextRequest) {
 
         return NextResponse.json(userUpdated);
     } catch (error) {
+        ErrorLogRepository.Add({
+            error: error,
+            path: request.nextUrl.href,
+            request: body,
+            userId: (await auth())!.user!.discordId!,
+            method: request.method,
+        });
         if (error instanceof Error)
             return NextResponse.json(
                 { error: error.message },
@@ -102,6 +111,13 @@ export async function GET(request: NextRequest) {
 
         return NextResponse.json(pager);
     } catch (error) {
+        ErrorLogRepository.Add({
+            error: error,
+            path: request.nextUrl.href,
+            request: null,
+            userId: (await auth())!.user!.discordId!,
+            method: request.method,
+        });
         if (error instanceof Error)
             return NextResponse.json(
                 { error: error.message },
@@ -115,13 +131,14 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+    let body = null;
     try {
         const session = await auth();
 
-        const userToAddRequest = (await request.json()) as UserToCreateType;
-        await UserRepository.add(userToAddRequest);
+        body = (await request.json()) as UserToCreateType;
+        await UserRepository.add(body);
 
-        const userCreated = (await UserRepository.get(userToAddRequest.id))?.toType();
+        const userCreated = (await UserRepository.get(body.id))?.toType();
 
         HistoryRepository.Add({
             action: "create",
@@ -134,6 +151,14 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json(userCreated);
     } catch (e) {
+        ErrorLogRepository.Add({
+            error: e,
+            path: request.nextUrl.href,
+            request: body,
+            userId: (await auth())!.user!.discordId!,
+            method: request.method,
+        });
+
         console.error(e);
         if (e instanceof Error) {
             const pgError = e.cause as { code?: string; detail?: string; message?: string };

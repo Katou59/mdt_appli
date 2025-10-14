@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import CitizenRepository from "@/repositories/citizenRepository";
+import ErrorLogRepository from "@/repositories/errorLogRepository";
 import HistoryRepository from "@/repositories/historyRepository";
 import { UserRepository } from "@/repositories/userRepository";
 import { CitizenToCreateType } from "@/types/db/citizen";
@@ -21,6 +22,14 @@ export async function GET(request: NextRequest) {
 
         return NextResponse.json(pager.toType());
     } catch (error) {
+        ErrorLogRepository.Add({
+            error: error,
+            path: request.nextUrl.href,
+            request: null,
+            userId: (await auth())!.user!.discordId!,
+            method: request.method,
+        });
+        
         if (error instanceof Error)
             return NextResponse.json(
                 { error: error.message },

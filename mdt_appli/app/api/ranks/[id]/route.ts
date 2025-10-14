@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import ErrorLogRepository from "@/repositories/errorLogRepository";
 import HistoryRepository from "@/repositories/historyRepository";
 import RankRepository from "@/repositories/rankRepository";
 import { UserRepository } from "@/repositories/userRepository";
@@ -38,6 +39,13 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
 
         return NextResponse.json({ status: 200 });
     } catch (error) {
+        ErrorLogRepository.Add({
+            error: error,
+            path: request.nextUrl.href,
+            request: null,
+            userId: (await auth())!.user!.discordId!,
+            method: request.method,
+        });
         if (error instanceof Error)
             return NextResponse.json(
                 { error: error.message },
@@ -62,6 +70,14 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
 
         return NextResponse.json(ranks.map((x) => x.toRankType()));
     } catch (error) {
+        ErrorLogRepository.Add({
+            error: error,
+            path: request.nextUrl.href,
+            request: null,
+            userId: (await auth())!.user!.discordId!,
+            method: request.method,
+        });
+
         if (error instanceof Error)
             return NextResponse.json(
                 { error: error.message },

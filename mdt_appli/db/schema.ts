@@ -118,3 +118,13 @@ export const historiesTable = pgTable(
         userIdIdx: index("idx_histories_user_id").on(table.userId),
     })
 );
+
+export const errorLogsTable = pgTable("error_logs", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: varchar("user_id", { length: 50 }),
+    path: text("path"),
+    method: varchar("method", { length: 20 }),
+    request: jsonb(),
+    error: jsonb(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});

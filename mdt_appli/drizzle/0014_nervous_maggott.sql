@@ -1,0 +1,1 @@
+ALTER TABLE "error_logs" ALTER COLUMN "method" SET DATA TYPE varchar(20);
