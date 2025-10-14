@@ -1,4 +1,4 @@
-import { boolean, integer, pgTable, text, uuid, varchar } from "drizzle-orm/pg-core";
+import { boolean, index, integer, jsonb, pgTable, text, uuid, varchar } from "drizzle-orm/pg-core";
 import { timestamp } from "drizzle-orm/pg-core/columns/timestamp";
 
 export const usersTable = pgTable("users", {
@@ -98,3 +98,23 @@ export const nationalitiesTable = pgTable("nationalities", {
     id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
     name: varchar("name", { length: 50 }).notNull(),
 });
+
+export const historiesTable = pgTable(
+    "histories",
+    {
+        id: uuid("id").primaryKey().defaultRandom(),
+        userId: varchar("user_id", { length: 50 }),
+        entityType: varchar("entity_type", { length: 50 }),
+        entityId: varchar("entity_id", { length: 50 }),
+        action: varchar("action", { length: 50 }),
+        oldData: jsonb("old_data"),
+        newData: jsonb("new_data"),
+        createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    },
+    (table) => ({
+        entityIdIdx: index("idx_histories_entity_id").on(table.entityId),
+        entitytypeIdx: index("idx_histories_entity_type").on(table.entityType),
+        actionIdx: index("idx_histories_action").on(table.action),
+        userIdIdx: index("idx_histories_user_id").on(table.userId),
+    })
+);

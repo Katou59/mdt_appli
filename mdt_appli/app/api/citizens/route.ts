@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import CitizenRepository from "@/repositories/citizenRepository";
+import HistoryRepository from "@/repositories/historyRepository";
 import { UserRepository } from "@/repositories/userRepository";
 import { CitizenToCreateType } from "@/types/db/citizen";
 import { HttpStatus } from "@/types/enums/httpStatus";
@@ -47,9 +48,16 @@ export async function POST(request: NextRequest) {
         const citizenToAddRequest = (await request.json()) as CitizenToCreateType;
         const newCitizenId = await CitizenRepository.Add(citizenToAddRequest, user);
 
-        const createdCitizen = await CitizenRepository.Get(newCitizenId);
+        HistoryRepository.Add({
+            action: "create",
+            entityId: newCitizenId,
+            entityType: "citizen",
+            newData: await CitizenRepository.Get(newCitizenId),
+            oldData: null,
+            userId: session!.user!.discordId!,
+        });
 
-        return NextResponse.json(createdCitizen?.toType(), { status: HttpStatus.CREATED });
+        return NextResponse.json({ id: newCitizenId }, { status: HttpStatus.CREATED });
     } catch (error) {
         if (error instanceof Error)
             return NextResponse.json(

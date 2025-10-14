@@ -1,3 +1,5 @@
+import { auth } from "@/auth";
+import HistoryRepository from "@/repositories/historyRepository";
 import RankRepository from "@/repositories/rankRepository";
 import { UserRepository } from "@/repositories/userRepository";
 import { HttpStatus } from "@/types/enums/httpStatus";
@@ -10,6 +12,10 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
             return NextResponse.json({ error: "Bad Request" }, { status: 400 });
         }
 
+        const session = await auth();
+
+        const rank = await RankRepository.Get(Number(id));
+
         const pager = await UserRepository.getList({
             rankId: Number(id),
             itemPerPage: 20,
@@ -19,7 +25,16 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
             return NextResponse.json({ error: "Users with this rank exist" }, { status: 409 });
         }
 
-        await RankRepository.delete(Number(id));
+        await RankRepository.Delete(Number(id));
+
+        HistoryRepository.Add({
+            action: "delete",
+            entityId: id,
+            entityType: "rank",
+            newData: null,
+            oldData: rank,
+            userId: session!.user!.discordId!,
+        });
 
         return NextResponse.json({ status: 200 });
     } catch (error) {

@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { UserRepository } from "@/repositories/userRepository";
 import { RoleType } from "@/types/enums/roleType";
 import { HttpStatus } from "@/types/enums/httpStatus";
+import HistoryRepository from "@/repositories/historyRepository";
 
 export async function PUT(request: NextRequest) {
     try {
@@ -16,6 +17,8 @@ export async function PUT(request: NextRequest) {
 
         const userToUpdate = await UserRepository.get(userToAddRequest.id);
         if (!userToUpdate?.id) return NextResponse.json({ error: "Bad Request" }, { status: 400 });
+
+        const userToUpdateCopy = { ...userToUpdate };
 
         userToUpdate.update(
             userToAddRequest,
@@ -32,6 +35,15 @@ export async function PUT(request: NextRequest) {
         await UserRepository.update(userToUpdate);
 
         const userUpdated = await UserRepository.get(userToUpdate.id);
+
+        HistoryRepository.Add({
+            action: "update",
+            entityId: userUpdated?.id ?? null,
+            entityType: "user",
+            newData: userUpdated,
+            oldData: userToUpdateCopy,
+            userId: session!.user!.discordId!,
+        });
 
         return NextResponse.json(userUpdated);
     } catch (error) {
@@ -104,10 +116,23 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
     try {
+        const session = await auth();
+
         const userToAddRequest = (await request.json()) as UserToCreateType;
         await UserRepository.add(userToAddRequest);
 
-        return NextResponse.json((await UserRepository.get(userToAddRequest.id))?.toType());
+        const userCreated = (await UserRepository.get(userToAddRequest.id))?.toType();
+
+        HistoryRepository.Add({
+            action: "create",
+            entityId: userCreated?.id ?? null,
+            entityType: "user",
+            newData: userCreated ?? null,
+            oldData: null,
+            userId: session!.user!.discordId!,
+        });
+
+        return NextResponse.json(userCreated);
     } catch (e) {
         console.error(e);
         if (e instanceof Error) {

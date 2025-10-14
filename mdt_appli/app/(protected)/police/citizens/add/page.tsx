@@ -121,9 +121,9 @@ export default function AddCitizen() {
         };
 
         try {
-            const newCitizen = await createAndGetCitizen(citizenToCreate);
+            const newCitizenId = await createAndGetCitizen(citizenToCreate);
             addToast("Citoyen créé avec succés", "success");
-            router.push(`/police/citizens/${newCitizen.id}`);
+            router.push(`/police/citizens/${newCitizenId}`);
         } catch (error) {
             if (error instanceof Error) {
                 setErrorMessage(error.message);
@@ -374,11 +374,12 @@ function toNullableNumber(v: FormDataEntryValue | null) {
     return Number.isNaN(n) ? null : n;
 }
 
-async function createAndGetCitizen(citizenToCreate: CitizenToCreateType) {
+async function createAndGetCitizen(citizenToCreate: CitizenToCreateType): Promise<string> {
     const citizenCreated = await getData(axiosClient.post("/citizens", citizenToCreate));
     if (citizenCreated.errorMessage) {
         throw new Error(citizenCreated.errorMessage);
     }
 
-    return new Citizen(citizenCreated.data as CitizenType);
+    const { id } = citizenCreated.data;
+    return id;
 }
