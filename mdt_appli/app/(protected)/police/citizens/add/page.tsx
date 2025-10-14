@@ -14,6 +14,7 @@ import { CitizenToCreateType, CitizenType } from "@/types/db/citizen";
 import Citizen from "@/types/class/Citizen";
 import { useRouter } from "next/navigation";
 import { uploadImage } from "@/lib/supabaseClient";
+import { useToast } from "@/lib/Contexts/ToastContext";
 
 type Lists = {
     genders: KeyValueType<number, string>[];
@@ -29,9 +30,10 @@ export default function AddCitizen() {
     const [errorMessage, setErrorMessage] = useState("");
     const [isLoaded, setIsLoaded] = useState(false);
     const router = useRouter();
+    const { addToast } = useToast();
 
     // Test autofill toggle
-    const TEST_FILL = true;
+    const TEST_FILL = false;
     const testData: CitizenToCreateType = {
         lastName: "Dupont",
         firstName: "Jean",
@@ -120,6 +122,7 @@ export default function AddCitizen() {
 
         try {
             const newCitizen = await createAndGetCitizen(citizenToCreate);
+            addToast("Citoyen créé avec succés", "success");
             router.push(`/police/citizens/${newCitizen.id}`);
         } catch (error) {
             if (error instanceof Error) {
@@ -164,6 +167,7 @@ export default function AddCitizen() {
                             placeHolder="Date de naissance"
                             type="date"
                             defaultValue={TEST_FILL ? (testData.birthDate as string) : undefined}
+                            required={false}
                         />
                         <Input
                             label="Lieu de naissance"
@@ -173,6 +177,7 @@ export default function AddCitizen() {
                             maxLenght={50}
                             minLenght={1}
                             defaultValue={TEST_FILL ? (testData.birthPlace as string) : undefined}
+                            required={false}
                         />
                         <Select
                             defaulValue={TEST_FILL ? String(testData.originId) : ""}
@@ -202,6 +207,7 @@ export default function AddCitizen() {
                             max={300}
                             min={100}
                             defaultValue={TEST_FILL ? String(testData.height) : undefined}
+                            required={false}
                         />
                         <Input
                             label="Poids"
@@ -211,6 +217,7 @@ export default function AddCitizen() {
                             max={300}
                             min={30}
                             defaultValue={TEST_FILL ? String(testData.weight) : undefined}
+                            required={false}
                         />
                         <Input
                             label="Couleur des yeux"
@@ -220,6 +227,7 @@ export default function AddCitizen() {
                             maxLenght={50}
                             minLenght={1}
                             defaultValue={TEST_FILL ? (testData.eyeColor as string) : undefined}
+                            required={false}
                         />
                         <Input
                             label="Couleur des cheveux"
@@ -229,6 +237,7 @@ export default function AddCitizen() {
                             maxLenght={50}
                             minLenght={1}
                             defaultValue={TEST_FILL ? (testData.hairColor as string) : undefined}
+                            required={false}
                         />
                         <Select
                             label="Groupe sanguin"
@@ -257,6 +266,7 @@ export default function AddCitizen() {
                             maxLenght={50}
                             minLenght={1}
                             defaultValue={TEST_FILL ? (testData.phoneNumber as string) : undefined}
+                            required={false}
                         />
 
                         <Input
@@ -267,6 +277,7 @@ export default function AddCitizen() {
                             maxLenght={50}
                             minLenght={1}
                             defaultValue={TEST_FILL ? (testData.address as string) : undefined}
+                            required={false}
                         />
 
                         <Input
@@ -277,6 +288,7 @@ export default function AddCitizen() {
                             maxLenght={50}
                             minLenght={1}
                             defaultValue={TEST_FILL ? (testData.city as string) : undefined}
+                            required={false}
                         />
                     </div>
                 </div>
@@ -293,6 +305,7 @@ export default function AddCitizen() {
                             maxLenght={50}
                             minLenght={1}
                             defaultValue={TEST_FILL ? (testData.job as string) : undefined}
+                            required={false}
                         />
                         <Select
                             defaulValue={

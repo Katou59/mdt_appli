@@ -5,6 +5,7 @@ import { UserProvider } from "@/lib/Contexts/UserContext";
 import { UserName } from "@/components/UserName";
 import Image from "next/image";
 import { UserRepository } from "@/repositories/userRepository";
+import { ToastProvider } from "@/lib/Contexts/ToastContext";
 
 export default async function ProtectedLayout({
     children,

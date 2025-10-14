@@ -2,8 +2,8 @@
 
 import Alert from "@/components/Alert";
 import Loader from "@/components/Loader";
-import Toast from "@/components/Toast";
 import axiosClient, { getData } from "@/lib/axiosClient";
+import { useToast } from "@/lib/Contexts/ToastContext";
 import { useUser } from "@/lib/Contexts/UserContext";
 import Job from "@/types/class/Job";
 import Rank from "@/types/class/Rank";
@@ -20,7 +20,7 @@ export default function AddUser() {
     const [jobs, setJobs] = useState<Job[]>([]);
     const [ranks, setRanks] = useState<Rank[]>([]);
     const [errorMessage, setErrorMessage] = useState("");
-    const [successMessage, setSuccessMessage] = useState("");
+    const { addToast } = useToast();
     const [userToCreate, setUserToCreate] = useState<UserToCreateType>({
         id: "",
         jobId: null,
@@ -47,7 +47,7 @@ export default function AddUser() {
         init();
     }, [router, user]);
 
-    if (!isLoaded) return <Loader/>;
+    if (!isLoaded) return <Loader />;
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>): Promise<void> {
         event.preventDefault();
@@ -65,12 +65,11 @@ export default function AddUser() {
 
         setErrorMessage("");
         setUserToCreate({ id: "", jobId: null, rankId: null });
-        setSuccessMessage("Utilisateur créé");
+        addToast("Utilisateur créé avec succés", "success");
     }
 
     return (
         <>
-            <Toast type="success" message={successMessage} />
             <Alert message={errorMessage} />
             <form
                 className="flex flex-col justify-center"

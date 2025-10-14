@@ -11,8 +11,8 @@ import Rank from "@/types/class/Rank";
 import { RankType } from "@/types/db/rank";
 import Alert from "./Alert";
 import { KeyValueType } from "@/types/utils/keyValue";
-import { useToast } from "@/lib/Contexts/ToastContext";
 import Loader from "./Loader";
+import { useToast } from "@/lib/Contexts/ToastContext";
 
 export default function UserComponent(props: { user: UserType; isConsult: boolean }) {
     const [userToUpdate, setToUserToUpdate] = useState<User>(new User(props.user));
@@ -21,7 +21,7 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
     const [ranks, setRanks] = useState<Rank[]>([]);
     const [errorMessage, setErrorMessage] = useState("");
     const { user, setUser } = useUser();
-    const toast = useToast();
+    const { addToast } = useToast();
 
     useEffect(() => {
         async function init() {
@@ -72,8 +72,9 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
             return;
         }
 
-        toast.addToast("Utilisateur mis à jour avec succès", "success");
+        addToast("Utilisateur mis à jour avec succès", "success");
         setToUserToUpdate(new User(userUpdatedResult.data as UserType));
+        setIsConsult(true);
 
         if (userToUpdate?.id == user!.id) {
             setUser(new User(userUpdatedResult.data as UserType));
@@ -87,7 +88,7 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
         setIsConsult(true);
     }
 
-    if (!userToUpdate) return <Loader/>;
+    if (!userToUpdate) return <Loader />;
 
     return (
         <>
