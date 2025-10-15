@@ -17,8 +17,9 @@ import { RankType } from "@/types/db/rank";
 import Loader from "@/components/Loader";
 import { DataTable } from "./data-table";
 import { columns, UserColumns } from "./columns";
-import InputWithLabel from "@/components/Input";
+import InputWithLabel from "@/components/InputWithLabel";
 import { Button } from "@/components/ui/button";
+import SelectWithLabel from "@/components/SelectWithLabel";
 
 type Payment = {
     id: string;
@@ -148,126 +149,106 @@ export default function Users() {
                     onReset={handleSearchReset}
                     className="flex flex-col items-center"
                 >
-                    <fieldset className="fieldset">
-                        <InputWithLabel
-                            label="Recherche"
-                            type="text"
-                            name="search"
-                            placeholder="Recherche"
-                            className="input input-sm w-64"
-                            autoComplete="off"
-                            value={filter.searchTerm ?? ""}
-                            onChange={(e) =>
-                                setFilter((prev) => ({ ...prev, searchTerm: e.target.value }))
-                            }
-                        />
-                    </fieldset>
-                    <div className="flex flex-row gap-2">
-                        <fieldset className="fieldset">
-                            <legend className="fieldset-legend p-0">Métiers</legend>
-                            <select
-                                className="select select-sm w-52"
-                                value={filter.jobId ?? ""}
-                                onChange={async (e) => {
-                                    const value = e.target.value
-                                        ? Number(e.target.value)
-                                        : undefined;
-                                    setFilter((prev) => ({
-                                        ...prev,
-                                        jobId: value,
-                                        rankId: undefined,
-                                    }));
+                    <InputWithLabel
+                        label="Recherche"
+                        type="text"
+                        name="search"
+                        placeholder="Recherche"
+                        className="input input-sm w-64"
+                        autoComplete="off"
+                        value={filter.searchTerm ?? ""}
+                        onChange={(e) =>
+                            setFilter((prev) => ({ ...prev, searchTerm: e.target.value }))
+                        }
+                    />
+                    <div className="flex flex-row gap-2 mt-2">
+                        <SelectWithLabel
+                            id="job"
+                            label="Métiers"
+                            className="w-50"
+                            items={jobs.map((x) => ({ value: String(x.id), label: x.name! }))}
+                            defaultValue="Aucun"
+                            value={filter.jobId && filter.jobId > 0 ? String(filter.jobId) : "none"}
+                            onValueChange={async (e: string): Promise<void> => {
+                                const value = e === "none" ? undefined : Number(e);
 
-                                    if (value) {
-                                        try {
-                                            setRanks(await getRanks(value));
-                                        } catch (error) {
-                                            if (error instanceof Error)
-                                                setErrorMessage(error.message);
-                                            setRanks([]);
-                                        }
-                                    } else {
+                                setFilter((prev) => ({
+                                    ...prev,
+                                    jobId: value === undefined ? undefined : Number(value),
+                                    rankId: undefined,
+                                }));
+
+                                if (value) {
+                                    try {
+                                        setRanks(await getRanks(Number(value)));
+                                    } catch (error) {
+                                        if (error instanceof Error) setErrorMessage(error.message);
                                         setRanks([]);
                                     }
-                                }}
-                            >
-                                <option value={""}>Tous</option>
-                                {jobs.map((job) => (
-                                    <option key={job.id} value={job.id ?? ""}>
-                                        {job.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </fieldset>
-                        <fieldset className="fieldset">
-                            <legend className="fieldset-legend p-0">Grades</legend>
-                            <select
-                                className="select select-sm w-52"
-                                disabled={!ranks || ranks.length === 0}
-                                value={filter.rankId ?? ""}
-                                onChange={(e) => {
-                                    const value = e.target.value
-                                        ? Number(e.target.value)
-                                        : undefined;
-                                    setFilter((prev) => ({ ...prev, rankId: value }));
-                                }}
-                            >
-                                <option value={""}>Tous</option>
-                                {ranks.map((job) => (
-                                    <option key={job.id} value={job.id ?? ""}>
-                                        {job.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </fieldset>
-                        <fieldset className="fieldset">
-                            <legend className="fieldset-legend p-0">Rôles</legend>
-                            <select
-                                className="select select-sm w-52"
-                                value={filter.roleId ?? ""}
-                                onChange={(e) => {
-                                    const value = e.target.value
-                                        ? Number(e.target.value)
-                                        : undefined;
-                                    setFilter((prev) => ({ ...prev, roleId: value }));
-                                }}
-                            >
-                                <option value={""}>Tous</option>
-                                {roles.map((role) => (
-                                    <option key={role.id} value={role.id ?? ""}>
-                                        {role.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </fieldset>
-                        <fieldset className="fieldset">
-                            <legend className="fieldset-legend p-0">Utilisateurs désactivés</legend>
-                            <select
-                                className="select select-sm w-52"
-                                value={
-                                    filter.isDisable === undefined ? "" : String(filter.isDisable)
+                                } else {
+                                    setRanks([]);
                                 }
-                                onChange={(e) => {
-                                    setFilter((prev) => ({
-                                        ...prev,
-                                        isDisable:
-                                            e.target.value === ""
-                                                ? undefined
-                                                : e.target.value === "true",
-                                    }));
-                                }}
-                            >
-                                <option value={""}>Tous</option>
-                                <option value={"true"}>Oui</option>
-                                <option value={"false"}>Non</option>
-                            </select>
-                        </fieldset>
+                            }}
+                        />
+                        <SelectWithLabel
+                            id="rank"
+                            label="Grades"
+                            className="w-50"
+                            items={ranks.map((x) => ({ value: String(x.id), label: x.name! }))}
+                            defaultValue="Aucun"
+                            disable={filter.jobId === undefined || filter.jobId < 1}
+                            value={
+                                filter.rankId && filter.rankId > 0 ? String(filter.rankId) : "none"
+                            }
+                            onValueChange={(e: string) => {
+                                const value = e === "none" ? undefined : Number(e);
+                                setFilter((prev) => ({ ...prev, rankId: value }));
+                            }}
+                        />
+                        <SelectWithLabel
+                            id="role"
+                            label="Rôles"
+                            className="w-50"
+                            items={roles.map((x) => ({ value: String(x.id), label: x.name! }))}
+                            defaultValue="Aucun"
+                            value={
+                                filter.roleId && filter.roleId > 0 ? String(filter.roleId) : "none"
+                            }
+                            onValueChange={(e: string) => {
+                                const value = e === "none" ? undefined : Number(e);
+                                setFilter((prev) => ({ ...prev, roleId: value }));
+                            }}
+                        />
+                        <SelectWithLabel
+                            id="isDisable"
+                            label="Est désactivé"
+                            className="w-50"
+                            items={[
+                                { value: "true", label: "Oui" },
+                                { value: "false", label: "Non" },
+                            ]}
+                            defaultValue="Aucun"
+                            value={
+                                filter.isDisable === undefined ? "none" : String(filter.isDisable)
+                            }
+                            onValueChange={(e: string) => {
+                                setFilter((prev) => ({
+                                    ...prev,
+                                    isDisable: e === "none" ? undefined : e === "true",
+                                }));
+                            }}
+                        />
                     </div>
                     <div className="mt-2">
                         <Button variant={"ok"} groupPosisiton="left" type="submit" className="w-25">
                             Rechercher
                         </Button>
-                        <Button variant={"cancel"} groupPosisiton="right" type="reset" className="w-25">
+                        <Button
+                            variant={"cancel"}
+                            groupPosisiton="right"
+                            type="reset"
+                            className="w-25"
+                        >
                             Annuler
                         </Button>
                     </div>

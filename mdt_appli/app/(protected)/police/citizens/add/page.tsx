@@ -6,7 +6,7 @@ import axiosClient, { getData } from "@/lib/axiosClient";
 import { KeyValueType } from "@/types/utils/keyValue";
 import Alert from "@/components/Alert";
 import Loader from "@/components/Loader";
-import InputWithLabel from "@/components/Input";
+import InputWithLabel from "@/components/InputWithLabel";
 import Select from "@/components/Select";
 import CheckBox from "@/components/CheckBox";
 import Textarea from "@/components/Textarea";

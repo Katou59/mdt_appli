@@ -44,7 +44,6 @@ export function DataTable<TData, TValue>({
     totalPage,
     onPageChange,
 }: DataTableProps<TData, TValue>) {
-    
     const table = useReactTable({
         data,
         columns,
@@ -88,7 +87,7 @@ export function DataTable<TData, TValue>({
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    No results.
+                                    Pas de résultat.
                                 </TableCell>
                             </TableRow>
                         )}
@@ -96,47 +95,49 @@ export function DataTable<TData, TValue>({
                 </Table>
             </div>
 
-            <Pagination className="mt-4">
-                <PaginationContent>
-                    <PaginationItem>
-                        <PaginationPrevious
-                            onClick={(e) => {
-                                e.preventDefault();
-                                onPageChange(pageIndex - 1);
-                            }}
-                            disabled={pageIndex <= 1}
-                        />
-                    </PaginationItem>
-
-                    {getPageNumbers(pageIndex, totalPage).map((page, index) => (
-                        <PaginationItem key={index}>
-                            {page === "..." ? (
-                                <span className="px-3">...</span>
-                            ) : (
-                                <PaginationLink
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        onPageChange(page as number);
-                                    }}
-                                    disabled={page === pageIndex}
-                                >
-                                    {page}
-                                </PaginationLink>
-                            )}
+            {totalPage > 1 && (
+                <Pagination className="mt-4">
+                    <PaginationContent>
+                        <PaginationItem>
+                            <PaginationPrevious
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    onPageChange(pageIndex - 1);
+                                }}
+                                disabled={pageIndex <= 1}
+                            />
                         </PaginationItem>
-                    ))}
 
-                    <PaginationItem>
-                        <PaginationNext
-                            onClick={(e) => {
-                                e.preventDefault();
-                                onPageChange(pageIndex + 1);
-                            }}
-                            disabled={pageIndex === totalPage}
-                        />
-                    </PaginationItem>
-                </PaginationContent>
-            </Pagination>
+                        {getPageNumbers(pageIndex, totalPage).map((page, index) => (
+                            <PaginationItem key={index}>
+                                {page === "..." ? (
+                                    <span className="px-3">...</span>
+                                ) : (
+                                    <PaginationLink
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            onPageChange(page as number);
+                                        }}
+                                        disabled={page === pageIndex}
+                                    >
+                                        {page}
+                                    </PaginationLink>
+                                )}
+                            </PaginationItem>
+                        ))}
+
+                        <PaginationItem>
+                            <PaginationNext
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    onPageChange(pageIndex + 1);
+                                }}
+                                disabled={pageIndex === totalPage}
+                            />
+                        </PaginationItem>
+                    </PaginationContent>
+                </Pagination>
+            )}
         </div>
     );
 }
