@@ -15,6 +15,31 @@ import PagerClass from "@/types/class/Pager";
 import Pager from "@/components/Pager";
 import { RankType } from "@/types/db/rank";
 import Loader from "@/components/Loader";
+import { DataTable } from "./data-table";
+import { columns, UserColumns } from "./columns";
+
+type Payment = {
+    id: string;
+    amount: number;
+    status: "pending" | "processing" | "success" | "failed";
+    email: string;
+};
+
+export const payments: Payment[] = [
+    {
+        id: "728ed52f",
+        amount: 100,
+        status: "pending",
+        email: "m@example.com",
+    },
+    {
+        id: "489e1d42",
+        amount: 125,
+        status: "processing",
+        email: "example@gmail.com",
+    },
+    // ...
+];
 
 type FilterType = {
     searchTerm: string | undefined;
@@ -54,7 +79,9 @@ export default function Users() {
             setJobs((jobsResult.data as Job[]).map((x) => new Job(x)));
 
             try {
-                setPager(await getPager(pager, filter));
+                const pagerResult = await getPager(pager, filter);
+                console.log(pagerResult);
+                setPager(pagerResult);
             } catch (e) {
                 if (e instanceof Error) setErrorMessage(e.message);
                 else setErrorMessage("Erreur");
@@ -105,7 +132,7 @@ export default function Users() {
         setPager(await getPager(pager, filter));
     }
 
-    if (isLoading) return <Loader/>;
+    if (isLoading) return <Loader />;
 
     return (
         <>
@@ -246,48 +273,15 @@ export default function Users() {
                 <div className="text-center opacity-50 mt-4 text-sm">
                     {pager.itemCount} utilisateur{pager.itemCount > 1 ? "s" : ""}
                 </div>
-                <table className="table table-xs mt-4">
-                    <thead>
-                        <tr>
-                            <th>Id Discord</th>
-                            <th>Nom Discord</th>
-                            <th>Email</th>
-                            <th>Matricule</th>
-                            <th>Nom Prénom</th>
-                            <th>Grade</th>
-                            <th>Role</th>
-                            <th>Est désactivé</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {(!pager.items || pager.items.length === 0) && (
-                            <tr>
-                                <td colSpan={8} className="text-center text-sm font-bold">
-                                    Aucun utilisateur
-                                </td>
-                            </tr>
-                        )}
-                        {pager.items.map((user: User) => (
-                            <tr
-                                key={user.id}
-                                className="hover:bg-base-300 hover:cursor-pointer"
-                                onClick={() => router.push(`/police/users/${user.id}`)}
-                            >
-                                <td>{user.id}</td>
-                                <td>{user.name}</td>
-                                <td>{user.email}</td>
-                                <td>{user.number}</td>
-                                <td>
-                                    {user.lastName} {user.firstName}
-                                </td>
-                                <td>{user.rank?.name}</td>
-                                <td>{user.role.value}</td>
-                                <td>{user.isDisable ? "Oui" : "Non"}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-                {pager.pageCount > 1 && <Pager onPageChange={handlePageChange} pager={pager} />}
+                <DataTable
+                    columns={columns}
+                    data={getRows(pager.items)}
+                    isSmall={true}
+                    pageSize={Number(pager.itemPerPage)}
+                    pageIndex={Number(pager.page)}
+                    totalPage={Number(pager.pageCount)}
+                    onPageChange={(page: number) => handlePageChange(page)}
+                />
             </div>
         </>
     );
@@ -320,4 +314,20 @@ async function getRanks(jobId: number): Promise<Rank[]> {
     const results = ranksResult.data as RankType[];
 
     return results.map((r) => new Rank(r));
+}
+
+function getRows(users: User[]): UserColumns[] {
+    return users.map(
+        (x) =>
+            ({
+                discordId: x.id,
+                userName: x.name,
+                email: x.email,
+                number: x.number,
+                fullName: x.fullName,
+                jobRank: `${x.rank?.job?.name}/${x.rank?.name}`,
+                role: x.role.value,
+                isDisable: x.isDisable ? "Oui" : "Non",
+            } as UserColumns)
+    );
 }
