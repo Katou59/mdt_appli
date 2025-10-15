@@ -1,33 +1,13 @@
 import React from "react";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
 
-type Props = {
-    label: string;
-    name: string;
-    type: string;
-    placeHolder: string;
-    minLenght?: number;
-    maxLenght?: number;
-    max?: number;
-    min?: number;
-    required?: boolean;
-    defaultValue?: string;
-};
-export default function Input(props: Props) {
+;
+export default function InputWithLabel({label, ...props }: {label?: string} & React.ComponentProps<"input">) {
     return (
-        <fieldset className="fieldset">
-            <legend className="fieldset-legend">{props.label}</legend>
-            <input
-                type={props.type}
-                name={props.name}
-                className="input w-full"
-                placeholder={props.placeHolder}
-                minLength={props.minLenght}
-                maxLength={props.maxLenght}
-                max={props.max}
-                min={props.min}
-                required={props.required === undefined ? true : props.required}
-                defaultValue={props.defaultValue ?? ""}
-            />
-        </fieldset>
+        <div className="grid w-full max-w-sm items-center gap-1">
+            <Label htmlFor={props.id}>{label}</Label>
+            <Input {...props} />
+        </div>
     );
 }

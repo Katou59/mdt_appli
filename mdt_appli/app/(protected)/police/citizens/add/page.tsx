@@ -6,7 +6,7 @@ import axiosClient, { getData } from "@/lib/axiosClient";
 import { KeyValueType } from "@/types/utils/keyValue";
 import Alert from "@/components/Alert";
 import Loader from "@/components/Loader";
-import Input from "@/components/Input";
+import InputWithLabel from "@/components/Input";
 import Select from "@/components/Select";
 import CheckBox from "@/components/CheckBox";
 import Textarea from "@/components/Textarea";
@@ -143,7 +143,7 @@ export default function AddCitizen() {
                 <div>
                     <h2 className="text-xl text-primary">Identité</h2>
                     <div className="grid grid-cols-2 gap-x-6">
-                        <Input
+                        <InputWithLabel
                             label="Nom"
                             name="lastname"
                             placeHolder="Nom"
@@ -152,7 +152,7 @@ export default function AddCitizen() {
                             minLenght={2}
                             defaultValue={TEST_FILL ? testData.lastName : undefined}
                         />
-                        <Input
+                        <InputWithLabel
                             label="Prénom"
                             name="firstname"
                             placeHolder="Prénom"
@@ -161,7 +161,7 @@ export default function AddCitizen() {
                             minLenght={1}
                             defaultValue={TEST_FILL ? testData.firstName : undefined}
                         />
-                        <Input
+                        <InputWithLabel
                             label="Date de naissance"
                             name="birthDate"
                             placeHolder="Date de naissance"
@@ -169,7 +169,7 @@ export default function AddCitizen() {
                             defaultValue={TEST_FILL ? (testData.birthDate as string) : undefined}
                             required={false}
                         />
-                        <Input
+                        <InputWithLabel
                             label="Lieu de naissance"
                             name="birthPlace"
                             placeHolder="Lieu de naissance"
@@ -199,7 +199,7 @@ export default function AddCitizen() {
                 <div>
                     <h2 className="text-xl text-primary">Caractéristiques physiques</h2>
                     <div className="grid grid-cols-2 gap-x-6">
-                        <Input
+                        <InputWithLabel
                             label="Taille"
                             name="height"
                             placeHolder="Taille (cm)"
@@ -209,7 +209,7 @@ export default function AddCitizen() {
                             defaultValue={TEST_FILL ? String(testData.height) : undefined}
                             required={false}
                         />
-                        <Input
+                        <InputWithLabel
                             label="Poids"
                             name="weight"
                             placeHolder="Poids (kg)"
@@ -219,7 +219,7 @@ export default function AddCitizen() {
                             defaultValue={TEST_FILL ? String(testData.weight) : undefined}
                             required={false}
                         />
-                        <Input
+                        <InputWithLabel
                             label="Couleur des yeux"
                             name="eyeColor"
                             placeHolder="Couleur des yeux"
@@ -229,7 +229,7 @@ export default function AddCitizen() {
                             defaultValue={TEST_FILL ? (testData.eyeColor as string) : undefined}
                             required={false}
                         />
-                        <Input
+                        <InputWithLabel
                             label="Couleur des cheveux"
                             name="hairColor"
                             placeHolder="Couleur des cheveux"
@@ -258,7 +258,7 @@ export default function AddCitizen() {
                 <div>
                     <h2 className="text-xl text-primary">Informations de contact</h2>
                     <div className="grid grid-cols-2 gap-x-6">
-                        <Input
+                        <InputWithLabel
                             label="Téléphone"
                             name="phoneNumber"
                             placeHolder="Numéro de téléphone"
@@ -269,7 +269,7 @@ export default function AddCitizen() {
                             required={false}
                         />
 
-                        <Input
+                        <InputWithLabel
                             label="Adresse"
                             name="address"
                             placeHolder="Adresse"
@@ -280,7 +280,7 @@ export default function AddCitizen() {
                             required={false}
                         />
 
-                        <Input
+                        <InputWithLabel
                             label="Ville"
                             name="city"
                             placeHolder="Ville"
@@ -297,7 +297,7 @@ export default function AddCitizen() {
                 <div>
                     <h2 className="text-xl text-primary">Autres</h2>
                     <div className="grid grid-cols-2 gap-x-6">
-                        <Input
+                        <InputWithLabel
                             label="Métier"
                             name="job"
                             placeHolder="Métier"

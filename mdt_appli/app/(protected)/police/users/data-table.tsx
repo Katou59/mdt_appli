@@ -40,22 +40,15 @@ export function DataTable<TData, TValue>({
     columns,
     data,
     isSmall,
-    pageSize,
     pageIndex,
     totalPage,
     onPageChange,
-    onPageSizeChange,
 }: DataTableProps<TData, TValue>) {
-    const [pagination, setPagination] = useState({
-        pageIndex: 0,
-        pageSize,
-    });
-
+    
     const table = useReactTable({
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
-        state: { pagination },
     });
 
     return (

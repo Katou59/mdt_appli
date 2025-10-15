@@ -17,6 +17,8 @@ import { RankType } from "@/types/db/rank";
 import Loader from "@/components/Loader";
 import { DataTable } from "./data-table";
 import { columns, UserColumns } from "./columns";
+import InputWithLabel from "@/components/Input";
+import { Button } from "@/components/ui/button";
 
 type Payment = {
     id: string;
@@ -147,8 +149,8 @@ export default function Users() {
                     className="flex flex-col items-center"
                 >
                     <fieldset className="fieldset">
-                        <legend className="fieldset-legend p-0">Recherche</legend>
-                        <input
+                        <InputWithLabel
+                            label="Recherche"
                             type="text"
                             name="search"
                             placeholder="Recherche"
@@ -261,13 +263,13 @@ export default function Users() {
                             </select>
                         </fieldset>
                     </div>
-                    <div className="join mt-2">
-                        <button type="submit" className="btn btn-success btn-sm w-24 join-item">
+                    <div className="mt-2">
+                        <Button variant={"ok"} groupPosisiton="left" type="submit" className="w-25">
                             Rechercher
-                        </button>
-                        <button type="reset" className="btn btn-error btn-sm w-24 join-item">
+                        </Button>
+                        <Button variant={"cancel"} groupPosisiton="right" type="reset" className="w-25">
                             Annuler
-                        </button>
+                        </Button>
                     </div>
                 </form>
                 <div className="text-center opacity-50 mt-4 text-sm">
