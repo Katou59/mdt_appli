@@ -20,6 +20,7 @@ import { columns, UserColumns } from "./columns";
 import InputWithLabel from "@/components/InputWithLabel";
 import { Button } from "@/components/ui/button";
 import SelectWithLabel from "@/components/SelectWithLabel";
+import Page from "@/components/Page";
 
 type Payment = {
     id: string;
@@ -138,12 +139,9 @@ export default function Users() {
     if (isLoading) return <Loader />;
 
     return (
-        <>
+        <Page title="Liste des utilisateurs">
             <Alert message={errorMessage} />
             <div className="">
-                <h1 className="text-4xl font-bold text-primary text-center mb-4">
-                    Liste des utilisateurs
-                </h1>
                 <form
                     onSubmit={handleSearchSubmit}
                     onReset={handleSearchReset}
@@ -266,7 +264,7 @@ export default function Users() {
                     onPageChange={(page: number) => handlePageChange(page)}
                 />
             </div>
-        </>
+        </Page>
     );
 }
 
