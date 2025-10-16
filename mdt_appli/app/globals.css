@@ -82,7 +82,7 @@
     --error: #ef4444;
 }
 
-.dark {
+:root {
     --background: oklch(0.141 0.005 285.823);
     --foreground: oklch(98.511% 0.00011 271.152 / 0.869);
     --card: oklch(0.21 0.006 285.885);
@@ -125,4 +125,10 @@
     body {
         @apply bg-background text-foreground;
     }
+}
+
+[data-sonner-toast][data-type="success"] {
+    background-color: var(--success) !important;
+    color: var(--foreground) !important;
+    border-color: transparent !important;
 }
