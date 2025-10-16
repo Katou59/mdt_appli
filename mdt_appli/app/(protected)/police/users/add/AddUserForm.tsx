@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { ButtonGroup, ButtonGroupSeparator } from "@/components/ui/button-group";
 import {
     Form,
     FormControl,
@@ -28,7 +29,7 @@ import { z } from "zod";
 const formSchema = z.object({
     discordId: z
         .string()
-        .min(2, "L'id discord doit au moin contenir 1 caractère")
+        .min(1, "L'id discord doit au moin contenir 1 caractère")
         .max(50, "L'id discord doit au maximum avoir 50 caractères"),
     jobId: z.string().min(1, "Vous devez choisir un métier"),
     rankId: z.string().min(1, "Vous devez choisir un grade"),
@@ -53,6 +54,8 @@ export function AddUserForm({
             jobId: "",
             rankId: "",
         },
+        mode: "onSubmit",
+        reValidateMode: "onSubmit",
     });
 
     // 2. Define a submit handler.
@@ -68,35 +71,40 @@ export function AddUserForm({
 
     return (
         <Form {...form}>
-            <form
-                onSubmit={form.handleSubmit(onSubmitInternal)}
-                className="space-y-8 grid grid-cols-2 gap-x-4"
-            >
+            <form onSubmit={form.handleSubmit(onSubmitInternal)} className="grid grid-cols-2 gap-5">
                 <FormField
                     control={form.control}
                     name="discordId"
-                    render={({ field }) => (
+                    render={({ field, fieldState }) => (
                         <FormItem>
-                            <FormLabel>Id Discord</FormLabel>
+                            <div className="h-5">
+                                {fieldState.error ? (
+                                    <FormMessage />
+                                ) : (
+                                    <FormLabel>Id Discord</FormLabel>
+                                )}
+                            </div>
                             <FormControl>
                                 <Input placeholder="Id Discord" {...field} />
                             </FormControl>
-                            <FormMessage />
                         </FormItem>
                     )}
                 />
-                <div></div>
+                <div />
                 <FormField
                     control={form.control}
                     name="jobId"
                     render={({ field, fieldState }) => (
                         <FormItem data-invalid={fieldState.invalid}>
-                            <FormLabel>Métier</FormLabel>
+                            <div className="h-5">
+                                {fieldState.error ? <FormMessage /> : <FormLabel>Métier</FormLabel>}
+                            </div>
                             <FormControl>
                                 <Select
                                     value={field.value}
                                     onValueChange={(value) => {
                                         field.onChange(value);
+                                        form.setValue("rankId", "");
                                         onJobChange(value);
                                     }}
                                 >
@@ -119,7 +127,6 @@ export function AddUserForm({
                                     </SelectContent>
                                 </Select>
                             </FormControl>
-                            <FormMessage />
                         </FormItem>
                     )}
                 />
@@ -128,7 +135,9 @@ export function AddUserForm({
                     name="rankId"
                     render={({ field, fieldState }) => (
                         <FormItem data-invalid={fieldState.invalid}>
-                            <FormLabel>Grade</FormLabel>
+                            <div className="h-5">
+                                {fieldState.error ? <FormMessage /> : <FormLabel>Grade</FormLabel>}
+                            </div>
                             <FormControl>
                                 <Select
                                     value={field.value}
@@ -155,18 +164,18 @@ export function AddUserForm({
                                     </SelectContent>
                                 </Select>
                             </FormControl>
-                            <FormMessage />
                         </FormItem>
                     )}
                 />
-                <div className="flex items-center justify-center col-span-2">
-                    <Button type="reset" className="w-30" variant={"cancel"} groupPosisiton="left">
+                <ButtonGroup className="col-span-2 flex items-center justify-center w-full mt-4">
+                    <Button type="reset" className="w-30" variant={"cancel"}>
                         Annuler
                     </Button>
-                    <Button type="submit" className="w-30" variant={"ok"} groupPosisiton="right">
+                    <ButtonGroupSeparator />
+                    <Button type="submit" className="w-30" variant={"ok"}>
                         Valider
                     </Button>
-                </div>
+                </ButtonGroup>
             </form>
         </Form>
     );
