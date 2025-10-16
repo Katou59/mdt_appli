@@ -15,7 +15,7 @@ import PagerClass from "@/types/class/Pager";
 import Pager from "@/components/Pager";
 import { RankType } from "@/types/db/rank";
 import Loader from "@/components/Loader";
-import { DataTable } from "./data-table";
+import { DataTable } from "../../../../components/data-table";
 import { columns, UserColumns } from "./columns";
 import InputWithLabel from "@/components/InputWithLabel";
 import { Button } from "@/components/ui/button";

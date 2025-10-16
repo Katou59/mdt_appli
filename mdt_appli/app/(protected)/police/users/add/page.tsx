@@ -15,6 +15,7 @@ import { RankType } from "@/types/db/rank";
 import { UserToCreateType } from "@/types/db/user";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { AddUserForm } from "./AddUserForm";
 
 export default function AddUser() {
     const { user } = useUser();
@@ -52,106 +53,51 @@ export default function AddUser() {
 
     if (!isLoaded) return <Loader />;
 
-    async function handleSubmit(event: React.FormEvent<HTMLFormElement>): Promise<void> {
-        event.preventDefault();
-
-        const userCreated = await getData(axiosClient.post("/users", userToCreate));
+    async function onSubmit(values: UserToCreateType): Promise<boolean> {
+        const userCreated = await getData(axiosClient.post("/users", values));
 
         if (userCreated.status === 409) {
             setErrorMessage("Un utilisateur avec cet id éxiste déjà");
-            return;
+            return false;
         }
         if (userCreated.errorMessage) {
             setErrorMessage(userCreated.errorMessage);
-            return;
+            return false;
         }
 
         setErrorMessage("");
         setUserToCreate({ id: "", jobId: null, rankId: null });
         addToast("Utilisateur créé avec succés", "success");
+        return true;
     }
 
     return (
         <Page title="Ajouter un nouvel utilisateur">
             <Alert message={errorMessage} />
-            <form
-                className="flex flex-col justify-center"
-                onSubmit={handleSubmit}
-                onReset={() => {
-                    setErrorMessage("");
-                    setUserToCreate({ id: "", jobId: null, rankId: null });
+            <AddUserForm
+                onSubmit={onSubmit}
+                jobs={jobs.map((x) => ({ value: String(x.id), label: x.name! }))}
+                ranks={ranks.map((x) => ({ value: String(x.id), label: x.name! }))}
+                onJobChange={async (e: string) => {
+                    const value = e ? Number(e) : undefined;
+
+                    const ranksResponse = await getData(axiosClient.get(`/ranks/${value}`));
+                    if (ranksResponse.errorMessage) {
+                        setErrorMessage(ranksResponse.errorMessage);
+                        return;
+                    }
+
+                    const ranks = (ranksResponse.data as RankType[]).map((x) => new Rank(x));
+
+                    setUserToCreate((prev) => ({
+                        ...prev,
+                        jobId: Number(value),
+                        rankId: null,
+                    }));
+
+                    setRanks(ranks);
                 }}
-            >
-                <div className="grid grid-cols-2 gap-2">
-                    <InputWithLabel
-                        type="text"
-                        id="discordId"
-                        label="Id Discord"
-                        className="w-full"
-                        placeholder="Id Discord"
-                        value={userToCreate.id}
-                        onChange={(e) => {
-                            setUserToCreate({ ...userToCreate, id: e.target.value });
-                        }}
-                        autoComplete="off"
-                        required={true}
-                    />
-                    <SelectWithLabel
-                        className="w-full"
-                        id="jobId"
-                        label="Métier"
-                        items={jobs.map((x) => ({ value: String(x.id), label: x.name! }))}
-                        defaultValue="Choisir..."
-                        value={userToCreate.jobId ? String(userToCreate.jobId) : ""}
-                        onValueChange={async (e) => {
-                            const value = e ? Number(e) : undefined;
-
-                            const ranksResponse = await getData(axiosClient.get(`/ranks/${value}`));
-                            if (ranksResponse.errorMessage) {
-                                setErrorMessage(ranksResponse.errorMessage);
-                                return;
-                            }
-
-                            const ranks = (ranksResponse.data as RankType[]).map(
-                                (x) => new Rank(x)
-                            );
-
-                            setUserToCreate((prev) => ({
-                                ...prev,
-                                jobId: Number(value),
-                                rankId: null,
-                            }));
-
-                            setRanks(ranks);
-                        }}
-                        isRequired={Boolean(true)}
-                    />
-                        {/* <SelectWithLabel
-                            className="select w-full"
-                            value={userToCreate.rankId ? String(userToCreate.rankId) : ""}
-                            id="rankId"
-                            label="Grade"
-                            defaultValue="Choisir..."
-                            items={ranks.map((x) => ({ value: String(x.id), label: x.name! }))}
-                            onValueChange={(e) => {
-                                const value = e === "" ? undefined : Number(e);
-                                setUserToCreate({
-                                    ...userToCreate,
-                                    rankId: Number(value),
-                                });
-                            }}
-                            isRequired={true}
-                        /> */}
-                </div>
-                <div className="flex justify-center join mt-4">
-                    <button type="reset" className="btn btn-error join-item w-30">
-                        Annuler
-                    </button>
-                    <button type="submit" className="btn btn-success join-item w-30">
-                        Valider
-                    </button>
-                </div>
-            </form>
+            />
         </Page>
     );
 }
