@@ -1,7 +1,10 @@
 "use client";
 
 import Alert from "@/components/Alert";
+import InputWithLabel from "@/components/InputWithLabel";
 import Loader from "@/components/Loader";
+import Page from "@/components/Page";
+import SelectWithLabel from "@/components/SelectWithLabel";
 import axiosClient, { getData } from "@/lib/axiosClient";
 import { useToast } from "@/lib/Contexts/ToastContext";
 import { useUser } from "@/lib/Contexts/UserContext";
@@ -69,7 +72,7 @@ export default function AddUser() {
     }
 
     return (
-        <>
+        <Page title="Ajouter un nouvel utilisateur">
             <Alert message={errorMessage} />
             <form
                 className="flex flex-col justify-center"
@@ -79,93 +82,66 @@ export default function AddUser() {
                     setUserToCreate({ id: "", jobId: null, rankId: null });
                 }}
             >
-                <h1 className="text-4xl font-bold text-primary text-center mb-4">
-                    Ajouter un nouvel utilisateur
-                </h1>
                 <div className="grid grid-cols-2 gap-2">
-                    <fieldset className="fieldset col-span-2 w-1/2 pr-1">
-                        <legend className="fieldset-legend">Id Discord</legend>
-                        <input
-                            type="text"
-                            name="discordId"
-                            className="input w-full"
-                            placeholder="Id Discord"
-                            value={userToCreate.id}
-                            onChange={(e) => {
-                                setUserToCreate({ ...userToCreate, id: e.target.value });
-                            }}
-                            autoComplete="off"
-                            required={true}
-                        />
-                    </fieldset>
-                    <fieldset className="fieldset">
-                        <legend className="fieldset-legend">Métier</legend>
-                        <select
+                    <InputWithLabel
+                        type="text"
+                        id="discordId"
+                        label="Id Discord"
+                        className="w-full"
+                        placeholder="Id Discord"
+                        value={userToCreate.id}
+                        onChange={(e) => {
+                            setUserToCreate({ ...userToCreate, id: e.target.value });
+                        }}
+                        autoComplete="off"
+                        required={true}
+                    />
+                    <SelectWithLabel
+                        className="w-full"
+                        id="jobId"
+                        label="Métier"
+                        items={jobs.map((x) => ({ value: String(x.id), label: x.name! }))}
+                        defaultValue="Choisir..."
+                        value={userToCreate.jobId ? String(userToCreate.jobId) : ""}
+                        onValueChange={async (e) => {
+                            const value = e ? Number(e) : undefined;
+
+                            const ranksResponse = await getData(axiosClient.get(`/ranks/${value}`));
+                            if (ranksResponse.errorMessage) {
+                                setErrorMessage(ranksResponse.errorMessage);
+                                return;
+                            }
+
+                            const ranks = (ranksResponse.data as RankType[]).map(
+                                (x) => new Rank(x)
+                            );
+
+                            setUserToCreate((prev) => ({
+                                ...prev,
+                                jobId: Number(value),
+                                rankId: null,
+                            }));
+
+                            setRanks(ranks);
+                        }}
+                        isRequired={Boolean(true)}
+                    />
+                        {/* <SelectWithLabel
                             className="select w-full"
-                            value={userToCreate.jobId ?? ""}
-                            onChange={async (e) => {
-                                e.preventDefault();
-                                const value = Number(e.target.value);
-
-                                const ranksResponse = await getData(
-                                    axiosClient.get(`/ranks/${value}`)
-                                );
-                                if (ranksResponse.errorMessage) {
-                                    setErrorMessage(ranksResponse.errorMessage);
-                                    return;
-                                }
-
-                                const ranks = (ranksResponse.data as RankType[]).map(
-                                    (x) => new Rank(x)
-                                );
-
-                                setUserToCreate((prev) => ({
-                                    ...prev,
-                                    jobId: Number(value),
-                                    rankId: null,
-                                }));
-
-                                setRanks(ranks);
-                            }}
-                            required={true}
-                        >
-                            <option value="" disabled={true}>
-                                Choisir
-                            </option>
-                            {jobs?.map((x) => {
-                                return (
-                                    <option key={x.id} value={x.id!}>
-                                        {x.name}
-                                    </option>
-                                );
-                            })}
-                        </select>
-                    </fieldset>
-                    <fieldset className="fieldset">
-                        <legend className="fieldset-legend">Grade</legend>
-                        <select
-                            className="select w-full"
-                            value={userToCreate.rankId ?? ""}
-                            onChange={(e) => {
+                            value={userToCreate.rankId ? String(userToCreate.rankId) : ""}
+                            id="rankId"
+                            label="Grade"
+                            defaultValue="Choisir..."
+                            items={ranks.map((x) => ({ value: String(x.id), label: x.name! }))}
+                            onValueChange={(e) => {
+                                const value = e === "" ? undefined : Number(e);
                                 setUserToCreate({
                                     ...userToCreate,
-                                    rankId: Number(e.target.value),
+                                    rankId: Number(value),
                                 });
                             }}
-                            required={true}
-                        >
-                            <option value="" disabled={true}>
-                                Choisir
-                            </option>
-                            {ranks?.map((x) => {
-                                return (
-                                    <option key={x.id} value={x.id!}>
-                                        {x.name}
-                                    </option>
-                                );
-                            })}
-                        </select>
-                    </fieldset>
+                            isRequired={true}
+                        /> */}
                 </div>
                 <div className="flex justify-center join mt-4">
                     <button type="reset" className="btn btn-error join-item w-30">
@@ -176,6 +152,6 @@ export default function AddUser() {
                     </button>
                 </div>
             </form>
-        </>
+        </Page>
     );
 }

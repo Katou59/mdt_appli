@@ -11,6 +11,7 @@ type Props = {
     defaultValue?: string;
     className?: string;
     disable?: boolean;
+    isRequired?: boolean;
 };
 export default function SelectWithLabel({
     label,
@@ -21,17 +22,23 @@ export default function SelectWithLabel({
     defaultValue,
     className,
     disable,
+    isRequired,
 }: Props) {
+    console.log(isRequired, value);
     return (
         <div className="grid items-center gap-1">
             <Label htmlFor={id}>{label}</Label>
-            <Select value={value} onValueChange={onValueChange} disabled={disable}>
+            <Select
+                value={value}
+                onValueChange={onValueChange}
+                disabled={disable}
+                required={true}
+            >
                 <SelectTrigger className={className}>
-                    <SelectValue placeholder={defaultValue} />
+                    {isRequired && <SelectValue placeholder={defaultValue} />}
                 </SelectTrigger>
-
-                <SelectContent>
-                    <SelectItem value="none">{defaultValue}</SelectItem>
+                <SelectContent className={className}>
+                    {!isRequired && <SelectItem value="none">{defaultValue}</SelectItem>}
                     {items?.map((item) => (
                         <SelectItem key={item.value} value={item.value}>
                             {item.label}
