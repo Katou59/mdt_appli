@@ -1,6 +1,5 @@
 "use client";
 
-import Alert from "@/components/Alert";
 import InputWithLabel from "@/components/InputWithLabel";
 import Loader from "@/components/Loader";
 import Page from "@/components/Page";
@@ -16,6 +15,7 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { AddUserForm } from "./AddUserForm";
 import { toast } from "sonner";
+import { useAlert } from "@/lib/Contexts/AlertContext";
 
 export default function AddUser() {
     const { user } = useUser();
@@ -23,7 +23,7 @@ export default function AddUser() {
     const [isLoaded, setIsLoaded] = useState(false);
     const [jobs, setJobs] = useState<Job[]>([]);
     const [ranks, setRanks] = useState<Rank[]>([]);
-    const [errorMessage, setErrorMessage] = useState("");
+    const { setAlert } = useAlert();
 
     useEffect(() => {
         async function init() {
@@ -34,8 +34,9 @@ export default function AddUser() {
 
             const jobsResponse = await getData(axiosClient.get("/jobs"));
             if (jobsResponse.errorMessage) {
-                setErrorMessage(jobsResponse.errorMessage);
+                setAlert({ title: "Erreur", description: jobsResponse.errorMessage });
                 setIsLoaded(true);
+                return;
             }
 
             setJobs((jobsResponse.data as JobType[]).map((x) => new Job(x)));
@@ -51,15 +52,14 @@ export default function AddUser() {
         const userCreated = await getData(axiosClient.post("/users", values));
 
         if (userCreated.status === 409) {
-            setErrorMessage("Un utilisateur avec cet id éxiste déjà");
+            setAlert({ title: "Erreur", description: "Un utilisateur avec cet id éxiste déjà" });
             return false;
         }
         if (userCreated.errorMessage) {
-            setErrorMessage(userCreated.errorMessage);
+            setAlert({ title: "Erreur", description: userCreated.errorMessage });
             return false;
         }
 
-        setErrorMessage("");
         toast.success("Utilisateur créé avec succés", {
             className: "bg-red-500",
         });
@@ -69,7 +69,6 @@ export default function AddUser() {
 
     return (
         <Page title="Ajouter un nouvel utilisateur">
-            <Alert message={errorMessage} />
             <AddUserForm
                 onSubmit={onSubmit}
                 jobs={jobs.map((x) => ({ value: String(x.id), label: x.name! }))}
@@ -79,7 +78,7 @@ export default function AddUser() {
 
                     const ranksResponse = await getData(axiosClient.get(`/ranks/${value}`));
                     if (ranksResponse.errorMessage) {
-                        setErrorMessage(ranksResponse.errorMessage);
+                        setAlert({ title: "Erreur", description: ranksResponse.errorMessage });
                         return;
                     }
 
