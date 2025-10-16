@@ -3,6 +3,7 @@ import { Roboto } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import { ToastProvider } from "@/lib/Contexts/ToastContext";
+import { Toaster } from "sonner";
 
 const robotoSans = Roboto({
     variable: "--font-geist-sans",
@@ -19,7 +20,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <html lang="en" className="dark">
             <body className={`${robotoSans.variable} antialiased min-h-screen h-screen`}>
                 <SessionProvider>
-                    <ToastProvider>{children}</ToastProvider>
+                    {children}
+                    <Toaster position="top-center" />
                 </SessionProvider>
             </body>
         </html>

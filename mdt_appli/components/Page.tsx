@@ -4,11 +4,11 @@ type Props = {
     children: ReactNode;
     title: string;
 };
-export default function Page({ children }: Props) {
+export default function Page({ children, title }: Props) {
     return (
         <>
             <h1 className="text-4xl font-bold text-center my-4">
-                Liste des utilisateurs
+                {title}
             </h1>
             <div>{children}</div>
         </>

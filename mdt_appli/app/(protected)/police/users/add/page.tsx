@@ -6,7 +6,6 @@ import Loader from "@/components/Loader";
 import Page from "@/components/Page";
 import SelectWithLabel from "@/components/SelectWithLabel";
 import axiosClient, { getData } from "@/lib/axiosClient";
-import { useToast } from "@/lib/Contexts/ToastContext";
 import { useUser } from "@/lib/Contexts/UserContext";
 import Job from "@/types/class/Job";
 import Rank from "@/types/class/Rank";
@@ -16,6 +15,7 @@ import { UserToCreateType } from "@/types/db/user";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { AddUserForm } from "./AddUserForm";
+import { toast } from "sonner";
 
 export default function AddUser() {
     const { user } = useUser();
@@ -24,12 +24,6 @@ export default function AddUser() {
     const [jobs, setJobs] = useState<Job[]>([]);
     const [ranks, setRanks] = useState<Rank[]>([]);
     const [errorMessage, setErrorMessage] = useState("");
-    const { addToast } = useToast();
-    const [userToCreate, setUserToCreate] = useState<UserToCreateType>({
-        id: "",
-        jobId: null,
-        rankId: null,
-    });
 
     useEffect(() => {
         async function init() {
@@ -66,8 +60,10 @@ export default function AddUser() {
         }
 
         setErrorMessage("");
-        setUserToCreate({ id: "", jobId: null, rankId: null });
-        addToast("Utilisateur créé avec succés", "success");
+        toast.success("Utilisateur créé avec succés", {
+            className: "bg-red-500",
+        });
+
         return true;
     }
 
@@ -88,12 +84,6 @@ export default function AddUser() {
                     }
 
                     const ranks = (ranksResponse.data as RankType[]).map((x) => new Rank(x));
-
-                    setUserToCreate((prev) => ({
-                        ...prev,
-                        jobId: Number(value),
-                        rankId: null,
-                    }));
 
                     setRanks(ranks);
                 }}
