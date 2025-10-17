@@ -30,7 +30,7 @@ import { z } from "zod";
 const formSchema = z.object({
     discordId: z
         .string()
-        .min(1, "L'id discord doit au moin contenir 1 caractère")
+        .min(1, "L'id discord doit au moins avoir contenir 1 caractère")
         .max(50, "L'id discord doit au maximum avoir 50 caractères"),
     jobId: z.string().min(1, "Vous devez choisir un métier"),
     rankId: z.string().min(1, "Vous devez choisir un grade"),

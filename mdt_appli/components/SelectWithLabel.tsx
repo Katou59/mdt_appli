@@ -24,7 +24,6 @@ export default function SelectWithLabel({
     disable,
     isRequired,
 }: Props) {
-    console.log(isRequired, value);
     return (
         <div className="grid items-center gap-1">
             <Label htmlFor={id}>{label}</Label>
