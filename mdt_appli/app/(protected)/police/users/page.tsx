@@ -49,6 +49,7 @@ export default function Users() {
     });
     const [pager, setPager] = useState<PagerClass<User, UserType>>(new PagerClass([], 0, 20, 1));
     const { setAlert } = useAlert();
+    const router = useRouter();
 
     useEffect(() => {
         if (!user?.isAdmin) return redirect("/police/dashboard");
@@ -195,7 +196,7 @@ export default function Users() {
                     pageIndex={Number(pager.page)}
                     totalPage={Number(pager.pageCount)}
                     onPageChange={(page: number) => handlePageChange(page)}
-                    onRowClick={(value) => console.log(value)}
+                    onRowClick={(value) => router.push(`/police/users/${value}`)}
                 />
             </div>
         </Page>

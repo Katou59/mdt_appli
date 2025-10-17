@@ -8,7 +8,7 @@ type Props = {
 
 export default function ButtonGroupForm({ onCancel }: Props) {
     return (
-        <ButtonGroup className="w-full mt-4">
+        <ButtonGroup className="w-full mt-4 flex justify-center">
             <Button type="reset" className="w-30" variant={"cancel"} onClick={() => onCancel()}>
                 Annuler
             </Button>

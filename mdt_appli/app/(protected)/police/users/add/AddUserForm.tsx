@@ -168,10 +168,14 @@ export function AddUserForm({
                         </FormItem>
                     )}
                 />
-                <ButtonGroupForm onCancel={() => {
-                    form.clearErrors();
-                    form.reset();
-                }} />
+                <div className="flex items-center col-span-2" >
+                    <ButtonGroupForm
+                        onCancel={() => {
+                            form.clearErrors();
+                            form.reset();
+                        }}
+                    />
+                </div>
             </form>
         </Form>
     );
