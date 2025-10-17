@@ -12,7 +12,8 @@ import { RankType } from "@/types/db/rank";
 import Alert from "./Alert";
 import { KeyValueType } from "@/types/utils/keyValue";
 import Loader from "./Loader";
-import { useToast } from "@/lib/Contexts/ToastContext";
+import UserConsult from "./UserConsult";
+import UserUpdate from "./UserUpdate";
 
 export default function UserComponent(props: { user: UserType; isConsult: boolean }) {
     const [userToUpdate, setToUserToUpdate] = useState<User>(new User(props.user));
@@ -21,7 +22,6 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
     const [ranks, setRanks] = useState<Rank[]>([]);
     const [errorMessage, setErrorMessage] = useState("");
     const { user, setUser } = useUser();
-    const { addToast } = useToast();
 
     useEffect(() => {
         async function init() {
@@ -72,7 +72,7 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
             return;
         }
 
-        addToast("Utilisateur mis à jour avec succès", "success");
+        // addToast("Utilisateur mis à jour avec succès", "success");
         setToUserToUpdate(new User(userUpdatedResult.data as UserType));
         setIsConsult(true);
 
@@ -91,9 +91,13 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
     if (!userToUpdate) return <Loader />;
 
     return (
-        <>
-            <Alert message={errorMessage} />
-            <div className="w-full h-full">
+        <div className="flex items-center justify-center">
+            {props.isConsult ? (
+                <UserConsult userToUpdate={userToUpdate.toType()} />
+            ) : (
+                <UserUpdate userToUpdate={userToUpdate.toType()} />
+            )}
+            {/* <div className="w-full h-full">
                 <h1 className="text-4xl font-bold text-primary text-center mb-4">
                     {user?.id == userToUpdate.id && "Mon profil"}
                     {user?.id != userToUpdate.id &&
@@ -407,8 +411,8 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
                         </div>
                     )}
                 </form>
-            </div>
-        </>
+            </div> */}
+        </div>
     );
 }
 

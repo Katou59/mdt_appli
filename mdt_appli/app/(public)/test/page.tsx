@@ -1,29 +1,75 @@
-import React from "react";
+"use client";
 
-export default function DarkBluePreview() {
+import { AppWindowIcon, CodeIcon } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+export default function TabsDemo() {
     return (
-        <div className="min-h-screen bg-[#0B1120] text-[#E0E6F0] flex flex-col items-center justify-center gap-8 p-10">
-            <div className="bg-[#1A2238] border border-[#2D3954] rounded-2xl p-8 w-full max-w-md shadow-lg">
-                <h1 className="text-3xl font-bold mb-4">Interface sombre bleue</h1>
-                <p className="text-[#A0AEC0] mb-6">
-                    Aperçu d'un thème moderne basé sur un bleu foncé profond.
-                </p>
-
-                <div className="flex flex-col gap-3">
-                    <button className="bg-[#3B82F6] hover:bg-[#60A5FA] text-white font-semibold py-2 px-4 rounded-md transition-colors">
-                        Bouton principal
-                    </button>
-                    <button className="bg-[#22C55E] hover:bg-[#16A34A] text-white font-semibold py-2 px-4 rounded-md transition-colors">
-                        Succès
-                    </button>
-                    <button className="bg-[#EF4444] hover:bg-[#DC2626] text-white font-semibold py-2 px-4 rounded-md transition-colors">
-                        Erreur
-                    </button>
-                    <button className="bg-[#EAB308] hover:bg-[#CA8A04] text-black font-semibold py-2 px-4 rounded-md transition-colors">
-                        Avertissement
-                    </button>
-                </div>
-            </div>
+        <div className="flex w-full max-w-sm flex-col gap-6">
+            <Tabs defaultValue="account">
+                <TabsList>
+                    <TabsTrigger value="account">Account</TabsTrigger>
+                    <TabsTrigger value="password">Password</TabsTrigger>
+                </TabsList>
+                <TabsContent value="account">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Account</CardTitle>
+                            <CardDescription>
+                                Make changes to your account here. Click save when you&apos;re done.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="grid gap-6">
+                            <div className="grid gap-3">
+                                <Label htmlFor="tabs-demo-name">Name</Label>
+                                <Input id="tabs-demo-name" defaultValue="Pedro Duarte" />
+                            </div>
+                            <div className="grid gap-3">
+                                <Label htmlFor="tabs-demo-username">Username</Label>
+                                <Input id="tabs-demo-username" defaultValue="@peduarte" />
+                            </div>
+                        </CardContent>
+                        <CardFooter>
+                            <Button>Save changes</Button>
+                        </CardFooter>
+                    </Card>
+                </TabsContent>
+                <TabsContent value="password">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Password</CardTitle>
+                            <CardDescription>
+                                Change your password here. After saving, you&apos;ll be logged out.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="grid gap-6">
+                            <div className="grid gap-3">
+                                <Label htmlFor="tabs-demo-current">Current password</Label>
+                                <Input id="tabs-demo-current" type="password" />
+                            </div>
+                            <div className="grid gap-3">
+                                <Label htmlFor="tabs-demo-new">New password</Label>
+                                <Input id="tabs-demo-new" type="password" />
+                            </div>
+                        </CardContent>
+                        <CardFooter>
+                            <Button>Save password</Button>
+                        </CardFooter>
+                    </Card>
+                </TabsContent>
+            </Tabs>
         </div>
     );
 }

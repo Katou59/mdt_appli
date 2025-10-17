@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
-import { ToastProvider } from "@/lib/Contexts/ToastContext";
 import { Toaster } from "sonner";
 
 const robotoSans = Roboto({
@@ -17,7 +16,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
     return (
-        <html lang="en" className="dark">
+        <html lang="en" className="light">
             <body className={`${robotoSans.variable} antialiased min-h-screen h-screen`}>
                 <SessionProvider>
                     {children}
