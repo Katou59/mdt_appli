@@ -15,7 +15,7 @@ import PagerClass from "@/types/class/Pager";
 import Pager from "@/components/Pager";
 import { RankType } from "@/types/db/rank";
 import Loader from "@/components/Loader";
-import { DataTable } from "../../../../components/data-table";
+import { DataTable } from "./table";
 import { columns, UserColumns } from "./columns";
 import InputWithLabel from "@/components/InputWithLabel";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,7 @@ import Page from "@/components/Page";
 import SearchUserForm, { SearchUserFormOnSubmitType } from "./SearchUserForm";
 import { useAlert } from "@/lib/Contexts/AlertContext";
 import { set } from "zod";
+import { stringToNumber } from "@/lib/converters";
 
 type FilterType = {
     searchTerm: string | undefined;
@@ -90,15 +91,30 @@ export default function Users() {
     }, [user?.isAdmin]);
 
     const onSearchSubmit = async (e: SearchUserFormOnSubmitType) => {
-        setPager(
-            await getPager(pager, {
-                searchTerm: e.searchField,
-                isDisable: filter.isDisable,
-                jobId: e.jobId ? Number(e.jobId) : undefined,
-                rankId: e.rankId ? Number(e.rankId) : undefined,
-                roleId: e.roleId ? Number(e.roleId) : undefined,
-            })
-        );
+        const newFilter = {
+            searchTerm: e.searchField,
+            isDisable: e.isDisable,
+            jobId: stringToNumber(e.jobId),
+            rankId: stringToNumber(e.rankId),
+            roleId: stringToNumber(e.roleId),
+        };
+
+        try {
+            setPager(
+                await getPager(
+                    new PagerClass<User, UserType>([], pager.itemPerPage, pager.itemPerPage, 1),
+                    newFilter
+                )
+            );
+            setFilter(newFilter);
+        } catch (e) {
+            if (e instanceof Error) {
+                setAlert({ title: "Erreur", description: e.message });
+            } else {
+                setAlert({ title: "Erreur", description: "Erreur inconnue" });
+            }
+            return;
+        }
     };
 
     const handlePageChange = async (page: number) => {
@@ -138,6 +154,34 @@ export default function Users() {
                     }
                 }}
                 onSubmit={onSearchSubmit}
+                onCancel={async () => {
+                    setRanks([]);
+                    setFilter({
+                        searchTerm: undefined,
+                        isDisable: undefined,
+                        jobId: undefined,
+                        rankId: undefined,
+                        roleId: undefined,
+                    });
+
+                    setPager(
+                        await getPager(
+                            new PagerClass<User, UserType>(
+                                [],
+                                pager.itemPerPage,
+                                pager.itemPerPage,
+                                1
+                            ),
+                            {
+                                searchTerm: undefined,
+                                isDisable: undefined,
+                                jobId: undefined,
+                                rankId: undefined,
+                                roleId: undefined,
+                            }
+                        )
+                    );
+                }}
             />
             <div className="mt-10">
                 <div className="text-center opacity-50 mt-4 text-sm">
@@ -151,6 +195,7 @@ export default function Users() {
                     pageIndex={Number(pager.page)}
                     totalPage={Number(pager.pageCount)}
                     onPageChange={(page: number) => handlePageChange(page)}
+                    onRowClick={(value) => console.log(value)}
                 />
             </div>
         </Page>

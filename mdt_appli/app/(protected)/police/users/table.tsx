@@ -34,6 +34,7 @@ interface DataTableProps<TData, TValue> {
     totalPage: number;
     onPageChange: (pageIndex: number) => void;
     onPageSizeChange?: (pageSize: number) => void;
+    onRowClick: (id: string) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -43,6 +44,7 @@ export function DataTable<TData, TValue>({
     pageIndex,
     totalPage,
     onPageChange,
+    onRowClick,
 }: DataTableProps<TData, TValue>) {
     const table = useReactTable({
         data,
@@ -73,7 +75,7 @@ export function DataTable<TData, TValue>({
                     <TableBody>
                         {table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
-                                <TableRow key={row.id}>
+                                <TableRow key={row.id} onClick={() => onRowClick(row.getValue("discordId"))} className="cursor-pointer">
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell key={cell.id} className={isSmall ? "p-1" : ""}>
                                             {flexRender(

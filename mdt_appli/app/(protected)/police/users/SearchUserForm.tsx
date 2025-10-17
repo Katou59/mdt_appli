@@ -22,8 +22,8 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { UserToCreateType } from "@/types/db/user";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { on } from "events";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -54,12 +54,14 @@ export default function SearchUserForm({
     ranks,
     roles,
     onSubmit,
+    onCancel,
 }: {
     jobs: { label: string; value: string }[];
     ranks: { label: string; value: string }[];
     roles: { label: string; value: string }[];
     onJobChange: (value: string) => void;
     onSubmit: (values: SearchUserFormOnSubmitType) => Promise<void>;
+    onCancel: () => void;
 }) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -75,13 +77,14 @@ export default function SearchUserForm({
     });
 
     async function onSubmitInternal(values: z.infer<typeof formSchema>) {
+        console.log("values", values);
         if (onSubmit) {
             await onSubmit({
                 searchField: values.searchField,
                 jobId: values.jobId,
                 rankId: values.rankId,
                 roleId: values.roleId,
-                isDisable: values.isDisabled ? values.isDisabled === "true" : undefined,
+                isDisable: values.isDisabled === "none" ? undefined : values.isDisabled === "true",
             });
         }
     }
@@ -174,7 +177,9 @@ export default function SearchUserForm({
                                         onValueChange={(value) => {
                                             field.onChange(value);
                                         }}
-                                        disabled={!form.watch("jobId") || form.watch("jobId") === "none"}
+                                        disabled={
+                                            !form.watch("jobId") || form.watch("jobId") === "none"
+                                        }
                                     >
                                         <SelectTrigger
                                             aria-invalid={fieldState.invalid}
@@ -292,6 +297,7 @@ export default function SearchUserForm({
                         onCancel={() => {
                             form.reset();
                             form.clearErrors();
+                            onCancel();
                         }}
                     />
                 </div>
