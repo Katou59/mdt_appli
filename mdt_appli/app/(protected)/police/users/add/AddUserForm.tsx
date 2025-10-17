@@ -1,5 +1,6 @@
 "use client";
 
+import ButtonGroupForm from "@/components/ButtonGroup";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup, ButtonGroupSeparator } from "@/components/ui/button-group";
 import {
@@ -167,15 +168,10 @@ export function AddUserForm({
                         </FormItem>
                     )}
                 />
-                <ButtonGroup className="col-span-2 flex items-center justify-center w-full mt-4">
-                    <Button type="reset" className="w-30" variant={"cancel"}>
-                        Annuler
-                    </Button>
-                    <ButtonGroupSeparator />
-                    <Button type="submit" className="w-30" variant={"ok"}>
-                        Valider
-                    </Button>
-                </ButtonGroup>
+                <ButtonGroupForm onCancel={() => {
+                    form.clearErrors();
+                    form.reset();
+                }} />
             </form>
         </Form>
     );
