@@ -5,10 +5,15 @@ import dayjs from "dayjs";
 import React from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "./ui/card";
 import { Item, ItemContent, ItemDescription, ItemTitle } from "./ui/item";
+import { TableFooter } from "./ui/table";
+import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { ItemForm } from "./ItemForm";
 
 export default function UserConsult({ userToUpdate }: { userToUpdate: UserType }) {
     return (
-        <div className="flex w-full max-w-lg flex-col gap-6">
+        <div className="flex w-full max-w-lg flex-col gap-2">
             <Tabs defaultValue="hrp">
                 <TabsList>
                     <TabsTrigger value="hrp">Informations HRP</TabsTrigger>
@@ -23,36 +28,36 @@ export default function UserConsult({ userToUpdate }: { userToUpdate: UserType }
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="grid">
-                            <ItemCustom title="Id Discord" description={userToUpdate.id} />
-                            <ItemCustom
+                            <ItemForm title="Id Discord" description={userToUpdate.id} />
+                            <ItemForm
                                 title="Nom Discord"
                                 description={userToUpdate.name ?? "Vide"}
                             />
-                            <ItemCustom
+                            <ItemForm
                                 title="Adresse e-mail"
                                 description={userToUpdate.email ?? "Vide"}
                             />
-                            <ItemCustom
+                            <ItemForm
                                 title="Rôle"
                                 description={userToUpdate.role.value ?? "Vide"}
                             />
-                            <ItemCustom
+                            <ItemForm
                                 title="Statut"
                                 description={userToUpdate.isDisable ? "Actif" : "Inactif"}
                             />
-                            <ItemCustom
+                            <ItemForm
                                 title="Date de création"
                                 description={dayjs(userToUpdate.createdAt).format(
                                     "DD/MM/YYYY HH:mm:ss"
                                 )}
                             />
-                            <ItemCustom
+                            <ItemForm
                                 title="Première connexion"
                                 description={dayjs(userToUpdate.firstLogin).format(
                                     "DD/MM/YYYY HH:mm:ss"
                                 )}
                             />
-                            <ItemCustom
+                            <ItemForm
                                 title="Dernière connexion"
                                 description={
                                     userToUpdate.lastLogin
@@ -74,29 +79,29 @@ export default function UserConsult({ userToUpdate }: { userToUpdate: UserType }
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="grid">
-                            <ItemCustom
+                            <ItemForm
                                 title="Nom du personnage"
                                 description={userToUpdate.lastName ?? "Vide"}
                             />
-                            <ItemCustom
+                            <ItemForm
                                 title="Prénom du personnage"
                                 description={userToUpdate.firstName ?? "Vide"}
                             />
-                            <ItemCustom
+                            <ItemForm
                                 title="Matricule"
                                 description={
                                     userToUpdate.number ? String(userToUpdate.number) : "Vide"
                                 }
                             />
-                            <ItemCustom
+                            <ItemForm
                                 title="Numéro de téléphone"
                                 description={userToUpdate.phoneNumber ?? "Vide"}
                             />
-                            <ItemCustom
+                            <ItemForm
                                 title="Métier"
                                 description={userToUpdate.rank?.job?.name ?? "Vide"}
                             />
-                            <ItemCustom
+                            <ItemForm
                                 title="Grade"
                                 description={userToUpdate.rank?.name ?? "Vide"}
                             />
@@ -104,17 +109,11 @@ export default function UserConsult({ userToUpdate }: { userToUpdate: UserType }
                     </Card>
                 </TabsContent>
             </Tabs>
+            <div className="flex items-center justify-center">
+                <Button className="w-25" asChild>
+                    <Link href={`/police/users/${userToUpdate.id}/update`}>Modifier</Link>
+                </Button>
+            </div>
         </div>
-    );
-}
-
-function ItemCustom({ title, description }: { title: string; description: string }) {
-    return (
-        <Item className="py-3">
-            <ItemContent>
-                <ItemTitle>{title}</ItemTitle>
-                <ItemDescription>{description}</ItemDescription>
-            </ItemContent>
-        </Item>
     );
 }

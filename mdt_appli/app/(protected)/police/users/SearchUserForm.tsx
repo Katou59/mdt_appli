@@ -77,7 +77,6 @@ export default function SearchUserForm({
     });
 
     async function onSubmitInternal(values: z.infer<typeof formSchema>) {
-        console.log("values", values);
         if (onSubmit) {
             await onSubmit({
                 searchField: values.searchField,

@@ -5,8 +5,8 @@ import Rank from "@/types/class/Rank";
 import Repository from "./repository";
 
 export default class RankRepository extends Repository {
-    static async GetList(jobId: number): Promise<Rank[]> {
-        const ranks = await RankRepository.db
+    static async GetList(jobId?: number): Promise<Rank[]> {
+        const query = RankRepository.db
             .select({
                 id: ranksTable.id,
                 name: ranksTable.name,
@@ -25,8 +25,11 @@ export default class RankRepository extends Repository {
                 ranksTable.jobId,
                 jobsTable.name
             )
-            .orderBy(ranksTable.order)
-            .where(eq(ranksTable.jobId, jobId));
+            .orderBy(ranksTable.order);
+
+        if (jobId !== undefined) query.where(eq(ranksTable.jobId, jobId));
+
+        const ranks = await query;
 
         return ranks.map((rank) => {
             return new Rank({

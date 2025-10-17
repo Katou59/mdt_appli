@@ -3,7 +3,7 @@ import { KeyValueType } from "@/types/utils/keyValue";
 import Repository from "./repository";
 
 export default class RoleRepository extends Repository {
-    public static async getList(): Promise<KeyValueType<number, string>[]> {
+    public static async GetList(): Promise<KeyValueType<number, string>[]> {
         const query = RoleRepository.db.select().from(rolesTable).orderBy(rolesTable.id);
         const ranks = await query;
 

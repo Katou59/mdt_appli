@@ -14,8 +14,16 @@ import { KeyValueType } from "@/types/utils/keyValue";
 import Loader from "./Loader";
 import UserConsult from "./UserConsult";
 import UserUpdate from "./UserUpdate";
+import { Button } from "./ui/button";
 
-export default function UserComponent(props: { user: UserType; isConsult: boolean }) {
+export default function UserComponent(props: {
+    user: UserType;
+    isConsult: boolean;
+    isAdmin?: boolean;
+    jobs: { label: string; value: string }[];
+    ranks: { label: string; value: string }[];
+    onJobChange: (jobId: string) => void;
+}) {
     const [userToUpdate, setToUserToUpdate] = useState<User>(new User(props.user));
     const [isConsult, setIsConsult] = useState(props.isConsult);
     const [roles, setRoles] = useState<KeyValueType<number, string>[]>([]);
@@ -95,7 +103,13 @@ export default function UserComponent(props: { user: UserType; isConsult: boolea
             {props.isConsult ? (
                 <UserConsult userToUpdate={userToUpdate.toType()} />
             ) : (
-                <UserUpdate userToUpdate={userToUpdate.toType()} />
+                <UserUpdate
+                    userToUpdate={userToUpdate.toType()}
+                    isAdmin={props.isAdmin}
+                    jobs={props.jobs}
+                    ranks={props.ranks}
+                    onJobChange={props.onJobChange}
+                />
             )}
             {/* <div className="w-full h-full">
                 <h1 className="text-4xl font-bold text-primary text-center mb-4">
