@@ -72,7 +72,7 @@ export function AddUserForm({
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmitInternal)} className="grid grid-cols-2 gap-5">
+            <form onSubmit={form.handleSubmit(onSubmitInternal)} className="grid grid-cols-2 gap-5 w-full">
                 <FormField
                     control={form.control}
                     name="discordId"
