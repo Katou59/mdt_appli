@@ -129,7 +129,7 @@
 }
 
 [data-sonner-toast][data-type="success"] {
-    background-color: var(--accent) !important;
+    background-color: var(--secondary) !important;
     color: var(--success) !important;
     border-color: var(--success) !important;
 }

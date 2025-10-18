@@ -3,23 +3,23 @@
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import axiosClient, { getData } from "@/lib/axiosClient";
-import UserComponent from "@/components/UserComponent";
 import User from "@/types/class/User";
-import Alert from "@/components/Alert";
 import Loader from "@/components/Loader";
 import Page from "@/components/Page";
+import UserConsult from "@/components/UserConsult";
+import { useAlert } from "@/lib/Contexts/AlertContext";
 
 export default function UserId() {
     const params = useParams<{ id: string }>();
     const [user, setUser] = useState<User>();
     const [isLoaded, setIsLoaded] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
+    const { setAlert } = useAlert();
 
     useEffect(() => {
         async function init() {
             const result = await getData(axiosClient.get(`/users/${params.id}`));
             if (result.errorMessage) {
-                setErrorMessage(result.errorMessage);
+                setAlert({ title: "Erreur", description: result.errorMessage });
                 setIsLoaded(true);
                 return;
             }
@@ -35,8 +35,7 @@ export default function UserId() {
 
     return (
         <Page title={`Utilisateur ${user?.fullName || ""}`}>
-            <Alert message={errorMessage} />
-            {user && <UserComponent user={user!.toType()} isConsult={true} />}
+            {user && <UserConsult userToUpdate={user.toType()} />}
         </Page>
     );
 }

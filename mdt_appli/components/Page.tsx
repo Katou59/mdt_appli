@@ -6,11 +6,11 @@ type Props = {
 };
 export default function Page({ children, title }: Props) {
     return (
-        <>
+        <div>
             <h1 className="text-4xl font-bold text-center my-4">
                 {title}
             </h1>
-            <div>{children}</div>
-        </>
+            <div className="flex flex-col items-center justify-center">{children}</div>
+        </div>
     );
 }

@@ -1,11 +1,9 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UserType } from "@/types/db/user";
+import { UserToUpdateType, UserType } from "@/types/db/user";
 import dayjs from "dayjs";
 import React from "react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "./ui/card";
-import { Item, ItemContent, ItemDescription, ItemTitle } from "./ui/item";
 import z from "zod";
-import { useForm, UseFormReturn } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
 import { Input } from "./ui/input";
@@ -19,11 +17,11 @@ import {
     SelectValue,
 } from "./ui/select";
 import { cn } from "@/lib/utils";
-import { is } from "drizzle-orm";
 import { ItemForm } from "./ItemForm";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Label } from "./ui/label";
 import UserCard from "./UserCard";
+import { stringToNumber } from "@/lib/converters";
 
 const formSchema = z.object({
     firstName: z.string().max(50, "Le prénom ne peut pas dépasser 50 caractères").optional(),
@@ -43,13 +41,17 @@ export default function UserUpdate({
     ranks = [],
     roles = [],
     onJobChange,
+    onSubmit,
+    onCancel,
 }: {
     userToUpdate: UserType;
     isAdmin?: boolean;
-    jobs: { label: string; value: string }[];
-    ranks: { label: string; value: string }[];
-    roles: { label: string; value: string }[];
-    onJobChange: (jobId: string) => void;
+    jobs?: { label: string; value: string }[];
+    ranks?: { label: string; value: string }[];
+    roles?: { label: string; value: string }[];
+    onJobChange?: (jobId: string) => void;
+    onSubmit: (values: UserToUpdateType) => Promise<void>;
+    onCancel?: () => void;
 }) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -68,7 +70,17 @@ export default function UserUpdate({
     });
 
     async function onSubmitInternal(values: z.infer<typeof formSchema>) {
-        console.log("values", values);
+        await onSubmit({
+            firstName: values.firstName,
+            lastName: values.lastName,
+            number: values.number,
+            phoneNumber: values.phoneNumber,
+            jobId: stringToNumber(values.jobId),
+            rankId: stringToNumber(values.rankId),
+            isDisable: values.isDisable,
+            roleId: stringToNumber(values.roleId),
+            id: userToUpdate.id,
+        });
     }
 
     return (
@@ -325,7 +337,7 @@ export default function UserUpdate({
                                                     onValueChange={(value) => {
                                                         field.onChange(value);
                                                         form.setValue("rankId", "");
-                                                        onJobChange(value);
+                                                        onJobChange?.(value);
                                                     }}
                                                 >
                                                     <SelectTrigger
@@ -434,6 +446,7 @@ export default function UserUpdate({
                                     : "none",
                             });
                             form.clearErrors();
+                            onCancel?.();
                         }}
                     />
                 </Tabs>

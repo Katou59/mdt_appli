@@ -14,7 +14,6 @@ import { CitizenToCreateType, CitizenType } from "@/types/db/citizen";
 import Citizen from "@/types/class/Citizen";
 import { useRouter } from "next/navigation";
 import { uploadImage } from "@/lib/supabaseClient";
-import { useToast } from "@/lib/Contexts/ToastContext";
 
 type Lists = {
     genders: KeyValueType<number, string>[];
@@ -30,7 +29,6 @@ export default function AddCitizen() {
     const [errorMessage, setErrorMessage] = useState("");
     const [isLoaded, setIsLoaded] = useState(false);
     const router = useRouter();
-    const { addToast } = useToast();
 
     // Test autofill toggle
     const TEST_FILL = false;
@@ -146,25 +144,25 @@ export default function AddCitizen() {
                         <InputWithLabel
                             label="Nom"
                             name="lastname"
-                            placeHolder="Nom"
+                            placeholder="Nom"
                             type="text"
-                            maxLenght={50}
-                            minLenght={2}
+                            maxLength={50}
+                            minLength={2}
                             defaultValue={TEST_FILL ? testData.lastName : undefined}
                         />
                         <InputWithLabel
                             label="Prénom"
                             name="firstname"
-                            placeHolder="Prénom"
+                            placeholder="Prénom"
                             type="text"
-                            maxLenght={50}
-                            minLenght={1}
+                            maxLength={50}
+                            minLength={1}
                             defaultValue={TEST_FILL ? testData.firstName : undefined}
                         />
                         <InputWithLabel
                             label="Date de naissance"
                             name="birthDate"
-                            placeHolder="Date de naissance"
+                            placeholder="Date de naissance"
                             type="date"
                             defaultValue={TEST_FILL ? (testData.birthDate as string) : undefined}
                             required={false}
@@ -172,10 +170,10 @@ export default function AddCitizen() {
                         <InputWithLabel
                             label="Lieu de naissance"
                             name="birthPlace"
-                            placeHolder="Lieu de naissance"
+                            placeholder="Lieu de naissance"
                             type="text"
-                            maxLenght={50}
-                            minLenght={1}
+                            maxLength={50}
+                            minLength={1}
                             defaultValue={TEST_FILL ? (testData.birthPlace as string) : undefined}
                             required={false}
                         />

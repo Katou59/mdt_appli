@@ -24,12 +24,14 @@ export interface UserToUpdateType {
     firstName?: string;
     lastName?: string;
     phoneNumber?: string;
-    rank?: RankType;
     lastLogin?: Date | string;
     email?: string;
     name?: string;
     firstLogin?: Date | string;
-    role?: RoleType;
+    isDisable?: boolean;
+    jobId?: number;
+    rankId?: number;
+    roleId?: number;
 }
 
 export interface UserToCreateType {

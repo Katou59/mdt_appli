@@ -3,16 +3,18 @@ import { UserType } from "@/types/db/user";
 import dayjs from "dayjs";
 
 import React from "react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "./ui/card";
-import { Item, ItemContent, ItemDescription, ItemTitle } from "./ui/item";
-import { TableFooter } from "./ui/table";
 import { Button } from "./ui/button";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ItemForm } from "./ItemForm";
 import UserCard from "./UserCard";
 
-export default function UserConsult({ userToUpdate }: { userToUpdate: UserType }) {
+export default function UserConsult({
+    userToUpdate,
+    updateHref,
+}: {
+    userToUpdate: UserType;
+    updateHref?: string;
+}) {
     return (
         <div className="flex w-full max-w-lg flex-col gap-2">
             <Tabs defaultValue="hrp">
@@ -89,7 +91,11 @@ export default function UserConsult({ userToUpdate }: { userToUpdate: UserType }
             </Tabs>
             <div className="flex items-center justify-center">
                 <Button className="w-25" asChild>
-                    <Link href={`/police/users/${userToUpdate.id}/update`}>Modifier</Link>
+                    <Link
+                        href={updateHref ? updateHref : `/police/users/${userToUpdate.id}/update`}
+                    >
+                        Modifier
+                    </Link>
                 </Button>
             </div>
         </div>
