@@ -84,6 +84,7 @@ export default function UpdateUser() {
 
                         setRanks((prev) => ({ ...prev, currentRanks: filteredRanks }));
                     }}
+                    roles={roles.map((role) => ({ label: role.name, value: String(role.id) }))}
                 />
             )}
         </Page>

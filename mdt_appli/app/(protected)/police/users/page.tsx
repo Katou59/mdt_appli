@@ -25,6 +25,8 @@ import SearchUserForm, { SearchUserFormOnSubmitType } from "./SearchUserForm";
 import { useAlert } from "@/lib/Contexts/AlertContext";
 import { set } from "zod";
 import { stringToNumber } from "@/lib/converters";
+import { Divide } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 type FilterType = {
     searchTerm: string | undefined;
@@ -184,7 +186,8 @@ export default function Users() {
                     );
                 }}
             />
-            <div className="mt-10">
+            <Separator className="my-5 opacity-50"/>
+            <div >
                 <div className="text-center opacity-50 mt-4 text-sm">
                     {pager.itemCount} utilisateur{pager.itemCount > 1 ? "s" : ""}
                 </div>

@@ -22,6 +22,7 @@ export default function UserComponent(props: {
     isAdmin?: boolean;
     jobs: { label: string; value: string }[];
     ranks: { label: string; value: string }[];
+    roles: { label: string; value: string }[];
     onJobChange: (jobId: string) => void;
 }) {
     const [userToUpdate, setToUserToUpdate] = useState<User>(new User(props.user));
@@ -108,6 +109,7 @@ export default function UserComponent(props: {
                     isAdmin={props.isAdmin}
                     jobs={props.jobs}
                     ranks={props.ranks}
+                    roles={props.roles}
                     onJobChange={props.onJobChange}
                 />
             )}
