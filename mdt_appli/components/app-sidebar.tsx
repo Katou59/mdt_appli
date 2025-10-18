@@ -74,6 +74,7 @@ const data = {
         },
         {
             title: "Administration",
+            isAdmin: true,
             url: "#",
             icon: ShieldUser,
             items: [
@@ -108,7 +109,11 @@ const data = {
     ]
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({ isAdmin, ...props }: {isAdmin: boolean} & React.ComponentProps<typeof Sidebar>) {
+    if(!isAdmin) {
+        data.navMain = data.navMain.filter((item) => item.isAdmin !== true);
+    }
+
     return (
         <Sidebar collapsible="icon" {...props}>
             <SidebarHeader className="mb-5 flex items-center">
