@@ -130,7 +130,6 @@ export function AppSidebar({ isAdmin, ...props }: {isAdmin: boolean} & React.Com
             <SidebarFooter>
                 <NavUser links={data.userLinks}/>
             </SidebarFooter>
-            <SidebarRail />
         </Sidebar>
     );
 }
