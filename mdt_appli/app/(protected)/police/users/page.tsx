@@ -138,69 +138,71 @@ export default function Users() {
 
     return (
         <Page title="Liste des utilisateurs">
-            <SearchUserForm
-                jobs={jobs.map((x) => ({ value: String(x.id), label: x.name! }))}
-                roles={roles.map((x) => ({ value: String(x.id), label: x.name! }))}
-                ranks={ranks.map((x) => ({ value: String(x.id), label: x.name! }))}
-                onJobChange={async function (value: string): Promise<void> {
-                    if (value) {
-                        try {
-                            setRanks(await getRanks(Number(value)));
-                        } catch (error) {
-                            if (error instanceof Error) {
-                                setAlert({ title: "Erreur", description: error.message });
+            <div className="w-full">
+                <SearchUserForm
+                    jobs={jobs.map((x) => ({ value: String(x.id), label: x.name! }))}
+                    roles={roles.map((x) => ({ value: String(x.id), label: x.name! }))}
+                    ranks={ranks.map((x) => ({ value: String(x.id), label: x.name! }))}
+                    onJobChange={async function (value: string): Promise<void> {
+                        if (value) {
+                            try {
+                                setRanks(await getRanks(Number(value)));
+                            } catch (error) {
+                                if (error instanceof Error) {
+                                    setAlert({ title: "Erreur", description: error.message });
+                                }
+                                setRanks([]);
                             }
+                        } else {
                             setRanks([]);
                         }
-                    } else {
+                    }}
+                    onSubmit={onSearchSubmit}
+                    onCancel={async () => {
                         setRanks([]);
-                    }
-                }}
-                onSubmit={onSearchSubmit}
-                onCancel={async () => {
-                    setRanks([]);
-                    setFilter({
-                        searchTerm: undefined,
-                        isDisable: undefined,
-                        jobId: undefined,
-                        rankId: undefined,
-                        roleId: undefined,
-                    });
+                        setFilter({
+                            searchTerm: undefined,
+                            isDisable: undefined,
+                            jobId: undefined,
+                            rankId: undefined,
+                            roleId: undefined,
+                        });
 
-                    setPager(
-                        await getPager(
-                            new PagerClass<User, UserType>(
-                                [],
-                                pager.itemPerPage,
-                                pager.itemPerPage,
-                                1
-                            ),
-                            {
-                                searchTerm: undefined,
-                                isDisable: undefined,
-                                jobId: undefined,
-                                rankId: undefined,
-                                roleId: undefined,
-                            }
-                        )
-                    );
-                }}
-            />
-            <Separator className="my-5 opacity-50"/>
-            <div >
-                <div className="text-center opacity-50 mt-4 text-sm">
-                    {pager.itemCount} utilisateur{pager.itemCount > 1 ? "s" : ""}
-                </div>
-                <DataTable
-                    columns={columns}
-                    data={getRows(pager.items)}
-                    isSmall={true}
-                    pageSize={Number(pager.itemPerPage)}
-                    pageIndex={Number(pager.page)}
-                    totalPage={Number(pager.pageCount)}
-                    onPageChange={(page: number) => handlePageChange(page)}
-                    onRowClick={(value) => router.push(`/police/users/${value}`)}
+                        setPager(
+                            await getPager(
+                                new PagerClass<User, UserType>(
+                                    [],
+                                    pager.itemPerPage,
+                                    pager.itemPerPage,
+                                    1
+                                ),
+                                {
+                                    searchTerm: undefined,
+                                    isDisable: undefined,
+                                    jobId: undefined,
+                                    rankId: undefined,
+                                    roleId: undefined,
+                                }
+                            )
+                        );
+                    }}
                 />
+                <Separator className="my-5 opacity-50" />
+                <div>
+                    <div className="text-center opacity-50 mt-4 text-sm">
+                        {pager.itemCount} utilisateur{pager.itemCount > 1 ? "s" : ""}
+                    </div>
+                    <DataTable
+                        columns={columns}
+                        data={getRows(pager.items)}
+                        isSmall={true}
+                        pageSize={Number(pager.itemPerPage)}
+                        pageIndex={Number(pager.page)}
+                        totalPage={Number(pager.pageCount)}
+                        onPageChange={(page: number) => handlePageChange(page)}
+                        onRowClick={(value) => router.push(`/police/users/${value}`)}
+                    />
+                </div>
             </div>
         </Page>
     );
