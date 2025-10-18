@@ -13,7 +13,6 @@ import Textarea from "@/components/Textarea";
 import { CitizenToCreateType, CitizenType } from "@/types/db/citizen";
 import Citizen from "@/types/class/Citizen";
 import { useRouter } from "next/navigation";
-import { uploadImage } from "@/lib/supabaseClient";
 
 type Lists = {
     genders: KeyValueType<number, string>[];
@@ -83,6 +82,17 @@ export default function AddCitizen() {
             setImageFile(file);
             const url = URL.createObjectURL(file);
             setImage(url);
+            const formData = new FormData();
+            formData.append("file", file);
+            console.log(formData);
+            const res = await getData(
+                axiosClient.post("/upload", formData, {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                })
+            );
+            console.log("Upload réussi :", res);
         }
     };
 
@@ -90,46 +100,52 @@ export default function AddCitizen() {
         event.preventDefault();
         const form = new FormData(event.currentTarget);
 
-        let url = null;
         if (imageFile) {
-            url = await uploadImage(imageFile);
-        }
-
-        const citizenToCreate: CitizenToCreateType = {
-            firstName: form.get("firstname") as string,
-            lastName: form.get("lastname") as string,
-            birthDate: (form.get("birthDate") as string) ?? null,
-            birthPlace: (form.get("birthPlace") as string) ?? null,
-            genderId: toNullableNumber(form.get("genderId")),
-            phoneNumber: (form.get("phoneNumber") as string) ?? null,
-            job: (form.get("job") as string) ?? null,
-            description: (form.get("description") as string) ?? null,
-            isWanted: form.get("isWanted") === "on",
-            statusId: toNullableNumber(form.get("statusId")),
-            bloodTypeId: toNullableNumber(form.get("bloodTypeId")),
-            address: (form.get("address") as string) ?? null,
-            city: (form.get("city") as string) ?? null,
-            eyeColor: (form.get("eyeColor") as string) ?? null,
-            hairColor: (form.get("hairColor") as string) ?? null,
-            hasTattoo: form.get("hasTattoo") === "on",
-            originId: toNullableNumber(form.get("originId")),
-            height: toNullableNumber(form.get("height")),
-            weight: toNullableNumber(form.get("weight")),
-            photoUrl: url,
-        };
-
-        try {
-            const newCitizenId = await createAndGetCitizen(citizenToCreate);
-            addToast("Citoyen créé avec succés", "success");
-            router.push(`/police/citizens/${newCitizenId}`);
-        } catch (error) {
-            if (error instanceof Error) {
-                setErrorMessage(error.message);
+            const formData = new FormData();
+            formData.append("file", imageFile);
+            const res = await getData(axiosClient.post("/api/upload", formData));
+            if (res.errorMessage) {
+                setErrorMessage(res.errorMessage);
                 return;
             }
-            setErrorMessage("Une erreur est survenue");
-            return;
+            console.log("Upload réussi :", res);
         }
+
+        // const citizenToCreate: CitizenToCreateType = {
+        //     firstName: form.get("firstname") as string,
+        //     lastName: form.get("lastname") as string,
+        //     birthDate: (form.get("birthDate") as string) ?? null,
+        //     birthPlace: (form.get("birthPlace") as string) ?? null,
+        //     genderId: toNullableNumber(form.get("genderId")),
+        //     phoneNumber: (form.get("phoneNumber") as string) ?? null,
+        //     job: (form.get("job") as string) ?? null,
+        //     description: (form.get("description") as string) ?? null,
+        //     isWanted: form.get("isWanted") === "on",
+        //     statusId: toNullableNumber(form.get("statusId")),
+        //     bloodTypeId: toNullableNumber(form.get("bloodTypeId")),
+        //     address: (form.get("address") as string) ?? null,
+        //     city: (form.get("city") as string) ?? null,
+        //     eyeColor: (form.get("eyeColor") as string) ?? null,
+        //     hairColor: (form.get("hairColor") as string) ?? null,
+        //     hasTattoo: form.get("hasTattoo") === "on",
+        //     originId: toNullableNumber(form.get("originId")),
+        //     height: toNullableNumber(form.get("height")),
+        //     weight: toNullableNumber(form.get("weight")),
+        //     photoUrl: url,
+        // };
+
+        // try {
+        //     const newCitizenId = await createAndGetCitizen(citizenToCreate);
+        //     addToast("Citoyen créé avec succés", "success");
+        //     router.push(`/police/citizens/${newCitizenId}`);
+        // } catch (error) {
+        //     if (error instanceof Error) {
+        //         setErrorMessage(error.message);
+        //         return;
+        //     }
+        //     setErrorMessage("Une erreur est survenue");
+        //     return;
+        // }
     }
 
     return (
@@ -137,7 +153,7 @@ export default function AddCitizen() {
             <Alert message={errorMessage} />
             <h1 className="text-4xl font-bold text-primary text-center mb-4">Ajouter un citoyen</h1>
             <AddImage image={image} onPaste={handlePaste} delete={() => setImage("")} />
-            <form className="mt-4" onSubmit={handleSubmit}>
+            {/* <form className="mt-4" onSubmit={handleSubmit}>
                 <div>
                     <h2 className="text-xl text-primary">Identité</h2>
                     <div className="grid grid-cols-2 gap-x-6">
@@ -341,7 +357,7 @@ export default function AddCitizen() {
                         Valider
                     </button>
                 </div>
-            </form>
+            </form> */}
         </>
     );
 }
