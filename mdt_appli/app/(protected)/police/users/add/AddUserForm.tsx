@@ -153,6 +153,7 @@ export function AddUserForm({
                                             fieldState.invalid &&
                                                 "border-destructive focus:ring-destructive"
                                         )} w-full`}
+                                        disabled={!form.getValues("jobId")}
                                     >
                                         <SelectValue placeholder="Choisir..." />
                                     </SelectTrigger>
