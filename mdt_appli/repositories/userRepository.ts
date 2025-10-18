@@ -62,6 +62,12 @@ export class UserRepository extends Repository {
             orConditions.push(ilike(usersTable.firstName, `%${params.filter.searchTerm}%`));
             orConditions.push(ilike(usersTable.lastName, `%${params.filter.searchTerm}%`));
             orConditions.push(ilike(usersTable.name, `%${params.filter.searchTerm}%`));
+            orConditions.push(ilike(usersTable.email, `%${params.filter.searchTerm}%`));
+            orConditions.push(ilike(usersTable.phoneNumber, `%${params.filter.searchTerm}%`));
+
+            if (!isNaN(Number(params.filter.searchTerm))) {
+                orConditions.push(eq(usersTable.number, Number(params.filter.searchTerm)));
+            }
         }
 
         let query = UserRepository.db
@@ -93,7 +99,9 @@ export class UserRepository extends Repository {
             })
             .filter((user) => user !== null);
 
-        let countQuery = UserRepository.db.select({ count: sql<number>`count(*)` }).from(usersTable);
+        let countQuery = UserRepository.db
+            .select({ count: sql<number>`count(*)` })
+            .from(usersTable);
         countQuery = countQuery.where(and(...whereClause)) as typeof countQuery;
         const [{ count }] = await countQuery;
 
@@ -103,7 +111,12 @@ export class UserRepository extends Repository {
     public static async update(user: User): Promise<void> {
         await UserRepository.db
             .update(usersTable)
-            .set({ ...user, jobId: user.rank?.job?.id, rankId: user.rank?.id, roleId: user.role.key })
+            .set({
+                ...user,
+                jobId: user.rank?.job?.id,
+                rankId: user.rank?.id,
+                roleId: user.role.key,
+            })
             .where(eq(usersTable.id, user.id));
     }
 
