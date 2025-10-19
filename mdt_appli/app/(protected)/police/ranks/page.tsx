@@ -47,7 +47,7 @@ import { CirclePlus } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import DialogAddRank from "./DialogAddRank";
-import { AddRankFormType } from "./AddOrUpdateRankFrom";
+import { AddRankFormType } from "./AddRankForm";
 import Job from "@/types/class/Job";
 
 export default function Ranks() {

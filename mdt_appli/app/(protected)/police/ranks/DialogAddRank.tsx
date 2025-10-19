@@ -5,7 +5,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import React from "react";
-import AddOrUpdateRankFrom, { AddRankFormType } from "./AddOrUpdateRankFrom";
+import AddRankForm, { AddRankFormType } from "./AddRankForm";
 
 type Props = {
     children?: React.ReactNode;
@@ -21,7 +21,7 @@ export default function DialogAddRank({ children, isOpen, onClose, onSubmit }: P
                 <DialogHeader>
                     <DialogTitle>Création d&apos;un nouveau grade</DialogTitle>
                 </DialogHeader>
-                <AddOrUpdateRankFrom
+                <AddRankForm
                     onCancel={() => {
                         onClose();
                     }}

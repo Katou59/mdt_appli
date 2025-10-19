@@ -32,7 +32,7 @@ type Props = {
     rankToUpdate?: Rank;
 };
 
-export default function AddOrUpdateRankFrom({ onCancel, onSubmit, rankToUpdate }: Props) {
+export default function AddRankForm({ onCancel, onSubmit, rankToUpdate }: Props) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
