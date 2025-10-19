@@ -33,6 +33,7 @@ import { ButtonGroup } from "@/components/ui/button-group";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { CSS } from "@dnd-kit/utilities";
+import { CirclePlus } from "lucide-react";
 
 export default function Ranks() {
     const { user: currentUser } = useUser();
@@ -69,13 +70,9 @@ export default function Ranks() {
             setJobs(metaData.jobs);
 
             const selectedJob = metaData.jobs[0];
-            const selectedRanks = metaData
-                .ranks!.filter((x) => String(x.job!.id!) === selectedJobId!)
-                .map((x) => new Rank(x));
-
             setRanks({
                 originalRanks: metaData.ranks.map((x) => new Rank(x)),
-                selectedRanks: selectedRanks,
+                selectedRanks: getRanks(metaData.ranks, selectedJob.id!),
             });
 
             setSelectedJobId(String(selectedJob?.id) || "");
@@ -83,7 +80,7 @@ export default function Ranks() {
         };
 
         init();
-    }, [currentUser, router, selectedJobId, setAlert]);
+    }, [currentUser, router, setAlert]);
 
     if (isLoading) <Loader />;
 
@@ -109,6 +106,8 @@ export default function Ranks() {
             transition,
         };
 
+        console.log(rank.userCount);
+
         return (
             <li ref={setNodeRef} style={style}>
                 <ItemRank
@@ -117,6 +116,19 @@ export default function Ranks() {
                     className="bg-secondary w-80 px-3 py-1"
                     rankOrder={rank.order!}
                     dragListeners={{ ...listeners, ...attributes }}
+                    canUpdate={true}
+                    canDelete={
+                        !rank.userCount || isNaN(rank.userCount) || Number(rank.userCount) === 0
+                    }
+                    onDelete={() =>
+                        setRanks((prev) => ({
+                            ...prev,
+                            selectedRanks: getRanks(
+                                prev.selectedRanks.filter((x) => x.order !== rank.order),
+                                Number(selectedJobId)
+                            ),
+                        }))
+                    }
                 />
             </li>
         );
@@ -129,7 +141,15 @@ export default function Ranks() {
                 id="job"
                 items={jobs.map((x) => ({ value: String(x.id), label: x.name! }))}
                 value={selectedJobId}
-                onValueChange={(value) => setSelectedJobId(value)}
+                onValueChange={(value) => {
+                    const newRanks = getRanks(ranks.originalRanks, Number(value));
+                    setRanks((prev) => ({
+                        ...prev,
+                        selectedRanks: newRanks,
+                    }));
+
+                    setSelectedJobId(value);
+                }}
                 className="w-52"
             />
 
@@ -147,6 +167,11 @@ export default function Ranks() {
                             {ranks.selectedRanks.map((rank) => (
                                 <SortableRankItem key={rank.order} rank={rank} />
                             ))}
+                            <li className="bg-secondary rounded-lg">
+                                <Button variant={"default"} className="h-full w-full">
+                                    <CirclePlus />
+                                </Button>
+                            </li>
                         </ul>
                     </SortableContext>
                 </DndContext>
@@ -156,11 +181,10 @@ export default function Ranks() {
                     variant={"cancel"}
                     className="w-30"
                     onClick={() => {
+                        const newRanks = getRanks(ranks.originalRanks, Number(selectedJobId));
                         setRanks((prev) => ({
                             ...prev,
-                            selectedRanks: prev.originalRanks.filter(
-                                (x) => String(x.job!.id!) === selectedJobId
-                            ),
+                            selectedRanks: newRanks,
                         }));
                     }}
                 >
@@ -198,4 +222,8 @@ export default function Ranks() {
             </ButtonGroup>
         </Page>
     );
+}
+
+function getRanks(originalRanks: RankType[], jobId: number) {
+    return originalRanks.filter((x) => x.job?.id === jobId).map((x) => new Rank(x));
 }

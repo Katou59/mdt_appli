@@ -45,6 +45,8 @@ type Props = {
     onEdit?: () => void;
     onDelete?: () => void;
     dragListeners?: unknown;
+    canDelete?: boolean;
+    canUpdate?: boolean;
 };
 
 export default function ItemRank({
@@ -57,6 +59,8 @@ export default function ItemRank({
     onEdit,
     onDelete,
     dragListeners,
+    canDelete,
+    canUpdate,
 }: Props) {
     return (
         <Item className={className}>
@@ -73,30 +77,36 @@ export default function ItemRank({
                 {title && <ItemTitle>{title}</ItemTitle>}
                 {description && <ItemDescription>{description}</ItemDescription>}
             </ItemContent>
-            <ItemActions>
-                <DropdownMenu modal={false}>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" aria-label="Open menu" size="icon-sm">
-                            <MoreHorizontalIcon />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-40" align="end">
-                        <DropdownMenuGroup>
-                            <DropdownMenuItem onSelect={() => console.log("caca")}>
-                                Modifier
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                variant="destructive"
-                                onSelect={() => {
-                                    console.log("cacacacacacacacacacac");
-                                }}
-                            >
-                                Supprimer
-                            </DropdownMenuItem>
-                        </DropdownMenuGroup>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </ItemActions>
+            {(canDelete === true || canUpdate === true) && (
+                <ItemActions>
+                    <DropdownMenu modal={false}>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" aria-label="Open menu" size="icon-sm">
+                                <MoreHorizontalIcon />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-40" align="end">
+                            <DropdownMenuGroup>
+                                {canUpdate && (
+                                    <DropdownMenuItem onSelect={() => onEdit?.()}>
+                                        Modifier
+                                    </DropdownMenuItem>
+                                )}
+                                {canDelete && (
+                                    <DropdownMenuItem
+                                        variant="destructive"
+                                        onSelect={() => {
+                                            onDelete?.();
+                                        }}
+                                    >
+                                        Supprimer
+                                    </DropdownMenuItem>
+                                )}
+                            </DropdownMenuGroup>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </ItemActions>
+            )}
             {footer && <ItemFooter>{footer}</ItemFooter>}
         </Item>
     );
