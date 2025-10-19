@@ -2,296 +2,200 @@
 
 import { useUser } from "@/lib/Contexts/UserContext";
 import { useRouter } from "next/navigation";
-import { MouseEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axiosClient, { getData } from "@/lib/axiosClient";
-import Rank from "@/types/class/Rank";
 import { RankType } from "@/types/db/rank";
-import Alert from "@/components/Alert";
-import Job from "@/types/class/Job";
 import { JobType } from "@/types/db/job";
 import Loader from "@/components/Loader";
+import Page from "@/components/Page";
+import { useAlert } from "@/lib/Contexts/AlertContext";
+import { MetadataType } from "@/types/utils/metadata";
+import SelectWithLabel from "@/components/SelectWithLabel";
+import ItemRank from "@/components/ItemRank";
+import {
+    DndContext,
+    closestCenter,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+    DragEndEvent,
+} from "@dnd-kit/core";
+import {
+    arrayMove,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    verticalListSortingStrategy,
+    useSortable,
+} from "@dnd-kit/sortable";
+import Rank from "@/types/class/Rank";
+import { ButtonGroup } from "@/components/ui/button-group";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { CSS } from "@dnd-kit/utilities";
 
 export default function Ranks() {
-    const { user } = useUser();
+    const { user: currentUser } = useUser();
     const router = useRouter();
-    const [ranks, setRanks] = useState<Rank[]>([]);
-    const [jobs, setJobs] = useState<Job[]>([]);
+    const { setAlert } = useAlert();
+    const [ranks, setRanks] = useState<{
+        originalRanks: Rank[];
+        selectedRanks: Rank[];
+    }>({ originalRanks: [], selectedRanks: [] });
+    const [jobs, setJobs] = useState<JobType[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [errorMessage, setErrorMessage] = useState("");
-    const [selectedJobId, setSelectedJobId] = useState(0);
+    const [selectedJobId, setSelectedJobId] = useState<string>("");
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
+    );
 
     useEffect(() => {
-        if (!user?.isAdmin) {
+        if (!currentUser?.isAdmin) {
             return router.push("/police/dashboard");
         }
 
-        const fetchRanks = async () => {
-            const jobsResponse = await getData(axiosClient.get<JobType[]>("/jobs"));
-            if (jobsResponse.errorMessage) {
-                setErrorMessage(jobsResponse.errorMessage);
-            }
-
-            if (jobsResponse.data) {
-                setJobs(jobsResponse.data.map((x) => new Job(x)));
-            }
-
-            if (!jobsResponse.data) {
-                setIsLoading(false);
+        const init = async () => {
+            console.log("init");
+            const metadataResponse = await getData(axiosClient.get("/metadata"));
+            if (metadataResponse.errorMessage) {
+                setAlert({ title: "Erreur", description: metadataResponse.errorMessage });
                 return;
             }
 
-            setSelectedJobId(jobsResponse.data[0].id!);
+            const metaData = metadataResponse.data as MetadataType;
+            setJobs(metaData.jobs);
 
-            const ranksResponse = await getData(
-                axiosClient.get<RankType[]>(`/ranks/${jobsResponse.data[0].id!}`)
-            );
-            if (ranksResponse.errorMessage) {
-                setErrorMessage(ranksResponse.errorMessage);
-            }
+            const selectedJob = metaData.jobs[0];
+            const selectedRanks = metaData
+                .ranks!.filter((x) => String(x.job!.id!) === selectedJobId!)
+                .map((x) => new Rank(x));
 
-            if (ranksResponse.data) {
-                const results = ranksResponse.data
-                    .map((x) => new Rank(x))
-                    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-                setRanks(results);
-            }
+            setRanks({
+                originalRanks: metaData.ranks.map((x) => new Rank(x)),
+                selectedRanks: selectedRanks,
+            });
+
+            setSelectedJobId(String(selectedJob?.id) || "");
             setIsLoading(false);
         };
 
-        fetchRanks();
-    }, [router, user]);
+        init();
+    }, [currentUser, router, selectedJobId, setAlert]);
 
-    if (isLoading) return <Loader/>;
+    if (isLoading) <Loader />;
 
-    // 🔹 Drag start
-    const handleDragStart = (e: React.DragEvent<HTMLLIElement>, index: number) => {
-        e.dataTransfer.setData("dragIndex", index.toString());
-    };
+    function handleDragEnd(event: DragEndEvent) {
+        const { active, over } = event;
+        if (!active || !over) return;
 
-    // 🔹 Drop
-    const handleDrop = async (e: React.DragEvent<HTMLLIElement>, dropIndex: number) => {
-        e.preventDefault();
-        const dragIndex = Number(e.dataTransfer.getData("dragIndex"));
-        if (dragIndex === dropIndex) return;
-
-        const updated = [...ranks];
-        const [removed] = updated.splice(dragIndex, 1);
-        updated.splice(dropIndex, 0, removed);
-
-        let index = 0;
-        updated.forEach((u) => {
-            index++;
-            u.order = index;
+        setRanks((prev) => {
+            const oldIndex = prev.selectedRanks.findIndex((x) => x.order === active.id);
+            const newIndex = prev.selectedRanks.findIndex((x) => x.order === over.id);
+            const newOrder = arrayMove(prev.selectedRanks, oldIndex, newIndex);
+            return { ...prev, selectedRanks: newOrder };
         });
-
-        try {
-            const results = await axiosClient.put<RankType[]>(
-                "/ranks",
-                updated.map((r) => r.toRankType())
-            );
-
-            const ranksUpdated = results.data
-                .map((x) => new Rank(x))
-                .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-
-            setRanks(ranksUpdated);
-        } catch {
-            setErrorMessage("Erreur lors de la récupération des grades");
-        }
-    };
-
-    async function handleNewRankSubmit(event: React.FormEvent<HTMLFormElement>): Promise<void> {
-        event.preventDefault();
-
-        const data = new FormData(event.currentTarget);
-        const newRankName = data.get("newRankName");
-
-        const job = jobs.find((j) => j.id == selectedJobId)?.toJobType();
-
-        const updated = [
-            ...ranks,
-            new Rank({
-                id: null,
-                job: job ?? null,
-                order: getLastOrder(ranks) + 1,
-                name: newRankName as string,
-                userCount: undefined,
-            }),
-        ];
-
-        const result = await getData(
-            axiosClient.put<RankType[]>(
-                "/ranks",
-                updated.map((r) => r.toRankType())
-            )
-        );
-
-        if (result.errorMessage) {
-            setErrorMessage(result.errorMessage);
-            return;
-        }
-
-        const ranksUpdated = (result.data as RankType[])
-            .map((x) => new Rank(x))
-            .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-
-        setRanks(ranksUpdated);
-
-        const modal = document.getElementById("addRank") as HTMLDialogElement | null;
-        if (modal) {
-            modal.close();
-        }
     }
 
-    async function handleDeleteRank(e: MouseEvent<HTMLButtonElement>, id: number): Promise<void> {
-        e.preventDefault();
-        const result = await getData(axiosClient.delete(`/ranks/${id}`));
-        if (result.status === 409) {
-            setErrorMessage("Il y a des utilisateurs qui ont ce grade");
-            return;
-        } else if (result.errorMessage) {
-            setErrorMessage(result.errorMessage);
-            return;
-        }
+    function SortableRankItem({ rank }: { rank: Rank }) {
+        const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+            id: rank.order!,
+        });
 
-        setRanks((prev) => prev.filter((r) => r.id !== id));
+        const style = {
+            transform: CSS.Transform.toString(transform),
+            transition,
+        };
+
+        return (
+            <li ref={setNodeRef} style={style}>
+                <ItemRank
+                    title={`${rank.order}. ${rank.name}`}
+                    description={`${rank.userCount} utilisateurs`}
+                    className="bg-secondary w-80 px-3 py-1"
+                    rankOrder={rank.order!}
+                    dragListeners={{ ...listeners, ...attributes }}
+                />
+            </li>
+        );
     }
 
     return (
-        <>
-            <Alert message={errorMessage} />
-            <div className="flex flex-col justify-center items-center w-full">
-                <h1 className="text-4xl font-bold text-primary text-center mb-4">
-                    Liste des Rangs
-                </h1>
+        <Page title="Gestion des grades">
+            <SelectWithLabel
+                label="Filtrer par métier"
+                id="job"
+                items={jobs.map((x) => ({ value: String(x.id), label: x.name! }))}
+                value={selectedJobId}
+                onValueChange={(value) => setSelectedJobId(value)}
+                className="w-52"
+            />
 
-                <select
-                    className="select"
-                    value={selectedJobId}
-                    onChange={async (e) => {
-                        setSelectedJobId(Number(e.target.value));
-                        const ranksResponse = await getData(
-                            axiosClient.get<RankType[]>(`/ranks/${Number(e.target.value)}`)
+            <div className="mt-3">
+                <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                >
+                    <SortableContext
+                        items={ranks.selectedRanks.map((r) => r.order!)}
+                        strategy={verticalListSortingStrategy}
+                    >
+                        <ul className="grid gap-1">
+                            {ranks.selectedRanks.map((rank) => (
+                                <SortableRankItem key={rank.order} rank={rank} />
+                            ))}
+                        </ul>
+                    </SortableContext>
+                </DndContext>
+            </div>
+            <ButtonGroup className="mt-3">
+                <Button
+                    variant={"cancel"}
+                    className="w-30"
+                    onClick={() => {
+                        setRanks((prev) => ({
+                            ...prev,
+                            selectedRanks: prev.originalRanks.filter(
+                                (x) => String(x.job!.id!) === selectedJobId
+                            ),
+                        }));
+                    }}
+                >
+                    Annuler
+                </Button>
+                <Button
+                    variant={"ok"}
+                    className="w-30"
+                    onClick={async () => {
+                        const filteredRanks: RankType[] = [];
+                        ranks.selectedRanks.forEach((selectedRank, index) => {
+                            filteredRanks.push({ ...selectedRank, order: index + 1 });
+                        });
+
+                        const newRanksResult = await getData(
+                            axiosClient.put("/ranks", filteredRanks)
                         );
-
-                        if (ranksResponse.errorMessage) {
-                            setErrorMessage(ranksResponse.errorMessage);
+                        if (newRanksResult.errorMessage) {
+                            setAlert({ title: "Erreur", description: newRanksResult.errorMessage });
                             return;
                         }
 
-                        if (ranksResponse.data) {
-                            const results = ranksResponse.data
-                                .map((x) => new Rank(x))
-                                .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-                            setRanks(results);
-                        }
+                        const newRanks = (newRanksResult.data as RankType[]).map(
+                            (x) => new Rank(x)
+                        );
+                        setRanks({
+                            originalRanks: newRanks,
+                            selectedRanks: newRanks,
+                        });
+                        toast.success("Grades mis à jour");
                     }}
                 >
-                    {jobs.map((x) => (
-                        <option key={x.id} value={x.id!}>
-                            {x.name}
-                        </option>
-                    ))}
-                </select>
-
-                {/* Liste des rangs */}
-                <p className="text-xs text-center w-96 mt-4">
-                    {ranks.length > 0 ? "Drag & drop pour changer l'ordre" : "La liste est vide"}
-                </p>
-                <ul className="list bg-base-200 rounded-box shadow-md mt-2 w-96">
-                    {ranks.map((rank, index) => (
-                        <li
-                            key={rank.order}
-                            draggable
-                            onDragStart={(e) => handleDragStart(e, index)}
-                            onDragOver={(e) => e.preventDefault()}
-                            onDrop={(e) => handleDrop(e, index)}
-                            className="list-row hover:cursor-pointer h-13 flex items-center gap-2 px-2 hover:bg-base-300"
-                        >
-                            <div className="flex flex-row w-full">
-                                <div className="font-thin opacity-30 tabular-nums">
-                                    {rank.order}
-                                </div>
-                                <div className="list-col-grow grow ml-2">
-                                    {rank.name}
-                                    <span className="text-xs opacity-30 ml-1">
-                                        {rank.userCount} utilisateur
-                                        {rank.userCount && rank.userCount > 0 ? "s" : ""}
-                                    </span>
-                                </div>
-                                {!rank.userCount ||
-                                    (rank.userCount < 1 && (
-                                        <button
-                                            className="btn btn-xs btn-error rounded-xl"
-                                            onClick={(e) => handleDeleteRank(e, rank.id!)}
-                                        >
-                                            Supprimer
-                                        </button>
-                                    ))}
-                            </div>
-                        </li>
-                    ))}
-                </ul>
-
-                {/* Bouton ajouter */}
-                <button
-                    className="btn btn-info rounded-xl mt-2"
-                    onClick={() => {
-                        setErrorMessage("");
-                        const modal = document.getElementById(
-                            "addRank"
-                        ) as HTMLDialogElement | null;
-                        if (modal) {
-                            modal.showModal();
-                        }
-                    }}
-                >
-                    Ajouter
-                </button>
-
-                {/* Modal ajout */}
-                <dialog id="addRank" className="modal modal-bottom sm:modal-middle">
-                    <form onSubmit={handleNewRankSubmit} className="modal-box">
-                        <h3 className="font-bold text-lg">Ajout d&apos;un nouveau rang</h3>
-                        <fieldset className="fieldset">
-                            <legend className="fieldset-legend">Nom du rang</legend>
-                            <input
-                                type="text"
-                                className="input w-full"
-                                name="newRankName"
-                                placeholder="Nouveau rang"
-                                autoComplete="off"
-                                required
-                            />
-                        </fieldset>
-                        <div className="modal-action join gap-0 flex">
-                            <button
-                                type="reset"
-                                className="btn btn-error join-item"
-                                onClick={() => {
-                                    const modal = document.getElementById(
-                                        "addRank"
-                                    ) as HTMLDialogElement | null;
-                                    if (modal) {
-                                        modal.close();
-                                    }
-                                }}
-                            >
-                                Annuler
-                            </button>
-                            <button type="submit" className="btn btn-success join-item">
-                                Valider
-                            </button>
-                        </div>
-                    </form>
-                </dialog>
-            </div>
-        </>
+                    Valider
+                </Button>
+            </ButtonGroup>
+        </Page>
     );
-}
-
-function getLastOrder(ranks: Rank[]) {
-    if (ranks.length === 0) return 0;
-    const orders = ranks.map((r) => r.order ?? 0);
-    return Math.max(...orders);
 }
