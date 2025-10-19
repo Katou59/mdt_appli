@@ -13,6 +13,16 @@ import { MetadataType } from "@/types/utils/metadata";
 import SelectWithLabel from "@/components/SelectWithLabel";
 import ItemRank from "@/components/ItemRank";
 import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import {
     DndContext,
     closestCenter,
     KeyboardSensor,
@@ -34,6 +44,11 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { CSS } from "@dnd-kit/utilities";
 import { CirclePlus } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import DialogAddRank from "./DialogAddRank";
+import { AddRankFormType } from "./AddOrUpdateRankFrom";
+import Job from "@/types/class/Job";
 
 export default function Ranks() {
     const { user: currentUser } = useUser();
@@ -52,6 +67,7 @@ export default function Ranks() {
             coordinateGetter: sortableKeyboardCoordinates,
         })
     );
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     useEffect(() => {
         if (!currentUser?.isAdmin) {
@@ -59,7 +75,6 @@ export default function Ranks() {
         }
 
         const init = async () => {
-            console.log("init");
             const metadataResponse = await getData(axiosClient.get("/metadata"));
             if (metadataResponse.errorMessage) {
                 setAlert({ title: "Erreur", description: metadataResponse.errorMessage });
@@ -106,8 +121,6 @@ export default function Ranks() {
             transition,
         };
 
-        console.log(rank.userCount);
-
         return (
             <li ref={setNodeRef} style={style}>
                 <ItemRank
@@ -116,7 +129,7 @@ export default function Ranks() {
                     className="bg-secondary w-80 px-3 py-1"
                     rankOrder={rank.order!}
                     dragListeners={{ ...listeners, ...attributes }}
-                    canUpdate={true}
+                    canUpdate={!!rank.id && rank.id > 0}
                     canDelete={
                         !rank.userCount || isNaN(rank.userCount) || Number(rank.userCount) === 0
                     }
@@ -168,7 +181,11 @@ export default function Ranks() {
                                 <SortableRankItem key={rank.order} rank={rank} />
                             ))}
                             <li className="bg-secondary rounded-lg">
-                                <Button variant={"default"} className="h-full w-full">
+                                <Button
+                                    variant={"default"}
+                                    className="h-full w-full"
+                                    onClick={() => setIsDialogOpen(true)}
+                                >
                                     <CirclePlus />
                                 </Button>
                             </li>
@@ -212,7 +229,9 @@ export default function Ranks() {
                         );
                         setRanks({
                             originalRanks: newRanks,
-                            selectedRanks: newRanks,
+                            selectedRanks: newRanks.filter(
+                                (x) => String(x.job?.id) === selectedJobId
+                            ),
                         });
                         toast.success("Grades mis à jour");
                     }}
@@ -220,10 +239,36 @@ export default function Ranks() {
                     Valider
                 </Button>
             </ButtonGroup>
+            <DialogAddRank
+                isOpen={isDialogOpen}
+                onClose={() => setIsDialogOpen(false)}
+                onSubmit={(values: AddRankFormType) => {
+                    setIsDialogOpen(false);
+                    const rankToAdd: RankType = {
+                        name: values.name,
+                        order: getLastOrder(ranks.selectedRanks) + 1,
+                        id: null,
+                        job: new Job({ id: Number(selectedJobId), name: null }),
+                        userCount: 0,
+                    };
+
+                    const newRanks = [...ranks.selectedRanks, new Rank(rankToAdd)];
+                    setRanks((prev) => ({
+                        originalRanks: prev.originalRanks,
+                        selectedRanks: newRanks,
+                    }));
+                }}
+            />
         </Page>
     );
 }
 
 function getRanks(originalRanks: RankType[], jobId: number) {
     return originalRanks.filter((x) => x.job?.id === jobId).map((x) => new Rank(x));
+}
+
+function getLastOrder(ranks: RankType[]) {
+    if (ranks.length === 0) return 0;
+    const sorted = [...ranks].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    return sorted[sorted.length - 1]?.order ?? 0;
 }

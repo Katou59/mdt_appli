@@ -84,7 +84,6 @@ export default function AddCitizen() {
             setImage(url);
             const formData = new FormData();
             formData.append("file", file);
-            console.log(formData);
             const res = await getData(
                 axiosClient.post("/upload", formData, {
                     headers: {
@@ -92,7 +91,6 @@ export default function AddCitizen() {
                     },
                 })
             );
-            console.log("Upload réussi :", res);
         }
     };
 
@@ -108,7 +106,6 @@ export default function AddCitizen() {
                 setErrorMessage(res.errorMessage);
                 return;
             }
-            console.log("Upload réussi :", res);
         }
 
         // const citizenToCreate: CitizenToCreateType = {

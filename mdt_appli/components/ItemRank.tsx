@@ -96,7 +96,7 @@ export default function ItemRank({
                                     <DropdownMenuItem
                                         variant="destructive"
                                         onSelect={() => {
-                                            onDelete?.();
+                                            onDelete?.()
                                         }}
                                     >
                                         Supprimer

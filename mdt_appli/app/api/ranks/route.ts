@@ -8,16 +8,27 @@ import { auth } from "@/auth";
 import ErrorLogRepository from "@/repositories/errorLogRepository";
 
 export async function PUT(request: NextRequest) {
-    let body = null;
+    let body: Rank[] | null = null;
     try {
         const session = await auth();
         body = (await request.json()).map((r: RankType) => new Rank(r));
 
+        if (!body || !body[0]?.job?.id)
+            return NextResponse.json({ error: "Bad request" }, { status: HttpStatus.BAD_REQUEST });
+
         const oldRanks = await RankRepository.GetList(body[0].job.id);
+
+        // suppression des grades
+        for (const oldRank of oldRanks) {
+            const rankToKeep = body?.find((x) => x.id === oldRank.id);
+            if (!rankToKeep) {
+                await RankRepository.Delete(oldRank.id!);
+            }
+        }
 
         await RankRepository.AddOrUpdateList(body);
 
-        const results = await RankRepository.GetList(body[0].job.id);
+        const results = await RankRepository.GetList();
 
         const newRanks = results.map((r) => r.toRankType());
         HistoryRepository.Add({
