@@ -97,7 +97,7 @@ export default function Ranks() {
         init();
     }, [currentUser, router, setAlert]);
 
-    if (isLoading) <Loader />;
+    if (isLoading) return <Loader />;
 
     function handleDragEnd(event: DragEndEvent) {
         const { active, over } = event;
