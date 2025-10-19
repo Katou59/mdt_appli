@@ -77,7 +77,7 @@ export default function ItemRank({
                 {title && <ItemTitle>{title}</ItemTitle>}
                 {description && <ItemDescription>{description}</ItemDescription>}
             </ItemContent>
-            {(canDelete === true || canUpdate === true) && (
+            {canDelete === true && (
                 <ItemActions>
                     <DropdownMenu modal={false}>
                         <DropdownMenuTrigger asChild>
@@ -87,16 +87,16 @@ export default function ItemRank({
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="w-40" align="end">
                             <DropdownMenuGroup>
-                                {canUpdate && (
+                                {/* {canUpdate && (
                                     <DropdownMenuItem onSelect={() => onEdit?.()}>
                                         Modifier
                                     </DropdownMenuItem>
-                                )}
+                                )} */}
                                 {canDelete && (
                                     <DropdownMenuItem
                                         variant="destructive"
                                         onSelect={() => {
-                                            onDelete?.()
+                                            onDelete?.();
                                         }}
                                     >
                                         Supprimer
