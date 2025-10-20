@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import BloodTypeRepository from "@/repositories/bloodTypeRepository";
 import ErrorLogRepository from "@/repositories/errorLogRepository";
 import GenderRepository from "@/repositories/genderRepository";
 import JobRepository from "@/repositories/jobRepository";
@@ -18,6 +19,7 @@ export async function GET(request: NextRequest) {
         const roles = await RoleRepository.GetList();
         const nationalities = await NationalityRepository.GetList();
         const genders = await GenderRepository.GetList();
+        const bloodTypes = await BloodTypeRepository.GetList();
 
         const results: MetadataType = {
             jobs,
@@ -25,6 +27,7 @@ export async function GET(request: NextRequest) {
             roles,
             nationalities,
             genders,
+            bloodTypes,
         };
         return NextResponse.json(results, { status: HttpStatus.OK });
     } catch (error) {

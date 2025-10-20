@@ -8,4 +8,5 @@ export interface MetadataType {
     roles: KeyValueType<number, string>[];
     nationalities: KeyValueType<number, string>[];
     genders: KeyValueType<number, string>[];
+    bloodTypes: KeyValueType<number, string>[];
 }

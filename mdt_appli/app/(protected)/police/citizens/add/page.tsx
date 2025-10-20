@@ -139,6 +139,10 @@ export default function AddCitizen() {
                     value: x.value,
                 }))}
                 genders={metadata.genders.map((x) => ({ key: String(x.key), value: x.value }))}
+                bloodTypes={metadata.bloodTypes.map((x) => ({
+                    key: String(x.key),
+                    value: x.value,
+                }))}
             />
             {/* <form className="mt-4" onSubmit={handleSubmit}>
                 <div>

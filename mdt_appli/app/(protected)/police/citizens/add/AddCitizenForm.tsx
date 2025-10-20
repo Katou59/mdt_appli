@@ -27,14 +27,17 @@ const formSchema = z.object({
     weight: z.number().max(300).optional(),
     eyeColor: z.string().optional(),
     hairColor: z.string().optional(),
+    bloodTypeId: z.string().optional(),
 });
 
 export default function AddCitizenForm({
     nationalities,
     genders,
+    bloodTypes,
 }: {
     nationalities: KeyValueType[];
     genders: KeyValueType[];
+    bloodTypes: KeyValueType[];
 }) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -78,7 +81,6 @@ export default function AddCitizenForm({
                         name="nationalityId"
                         label="Nationalité"
                         items={nationalities}
-                        isRequired={true}
                     />
                     <SelectForm form={form} name="genderId" label="Sexe" items={genders} />
                 </div>
@@ -97,6 +99,12 @@ export default function AddCitizenForm({
                         label="Couleur des cheveux"
                         name="hairColor"
                         placeHolder="Couleur des cheveux"
+                    />
+                    <SelectForm
+                        form={form}
+                        label="Groupe sanguin"
+                        name="bloodTypeId"
+                        items={bloodTypes}
                     />
                 </div>
                 <div>
