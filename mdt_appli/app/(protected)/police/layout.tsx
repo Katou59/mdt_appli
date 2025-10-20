@@ -6,6 +6,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { SessionProvider } from "next-auth/react";
 import { AlertProvider } from "@/lib/Contexts/AlertContext";
+import { MetadataProvider } from "@/lib/Contexts/MetadataContext";
 
 export default async function ProtectedLayout({
     children,
@@ -22,16 +23,18 @@ export default async function ProtectedLayout({
 
     return (
         <SessionProvider>
-            <UserProvider initialUser={user.toType()}>
-                <SidebarProvider>
-                    <AppSidebar isAdmin={user.isAdmin} />
-                    <SidebarInset>
-                        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-                            <AlertProvider>{children}</AlertProvider>
-                        </div>
-                    </SidebarInset>
-                </SidebarProvider>
-            </UserProvider>
+            <MetadataProvider>
+                <UserProvider initialUser={user.toType()}>
+                    <SidebarProvider>
+                        <AppSidebar isAdmin={user.isAdmin} />
+                        <SidebarInset>
+                            <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+                                <AlertProvider>{children}</AlertProvider>
+                            </div>
+                        </SidebarInset>
+                    </SidebarProvider>
+                </UserProvider>
+            </MetadataProvider>
         </SessionProvider>
     );
 }

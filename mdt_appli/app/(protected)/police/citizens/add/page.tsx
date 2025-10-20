@@ -14,6 +14,7 @@ import { CitizenToCreateType, CitizenType } from "@/types/db/citizen";
 import Citizen from "@/types/class/Citizen";
 import { useRouter } from "next/navigation";
 import AddCitizenForm from "./AddCitizenForm";
+import { useMetadata } from "@/lib/Contexts/MetadataContext";
 
 type Lists = {
     genders: KeyValueType<number, string>[];
@@ -25,10 +26,10 @@ type Lists = {
 export default function AddCitizen() {
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [image, setImage] = useState<string | null>(null);
-    const [lists, setLists] = useState<Lists>();
     const [errorMessage, setErrorMessage] = useState("");
     const [isLoaded, setIsLoaded] = useState(false);
     const router = useRouter();
+    const { metadata } = useMetadata();
 
     // Test autofill toggle
     const TEST_FILL = false;
@@ -55,25 +56,7 @@ export default function AddCitizen() {
         weight: 92,
     } as const;
 
-    useEffect(() => {
-        async function init() {
-            try {
-                setLists(await getLists());
-            } catch (error) {
-                if (error instanceof Error) {
-                    setErrorMessage(error.message);
-                } else {
-                    setErrorMessage("Une erreur est survenue");
-                }
-            } finally {
-                setIsLoaded(true);
-            }
-        }
-
-        init();
-    }, []);
-
-    if (!isLoaded) return <Loader />;
+    if (!metadata) return <Loader />;
 
     const handlePaste = async (e: React.ClipboardEvent) => {
         const item = Array.from(e.clipboardData.items).find((i) => i.type.startsWith("image/"));
@@ -148,15 +131,14 @@ export default function AddCitizen() {
 
     return (
         <>
-            <Alert message={errorMessage} />
             <h1 className="text-4xl font-bold text-primary text-center mb-4">Ajouter un citoyen</h1>
             <AddImage image={image} onPaste={handlePaste} delete={() => setImage("")} />
             <AddCitizenForm
-                nationalities={lists!.nationalities.map((x) => ({
+                nationalities={metadata.nationalities.map((x) => ({
                     key: String(x.key),
                     value: x.value,
                 }))}
-                genders={lists!.genders.map((x) => ({ key: String(x.key), value: x.value }))}
+                genders={metadata.genders.map((x) => ({ key: String(x.key), value: x.value }))}
             />
             {/* <form className="mt-4" onSubmit={handleSubmit}>
                 <div>

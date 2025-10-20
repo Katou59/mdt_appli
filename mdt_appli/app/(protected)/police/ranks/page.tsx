@@ -9,19 +9,8 @@ import { JobType } from "@/types/db/job";
 import Loader from "@/components/Loader";
 import Page from "@/components/Page";
 import { useAlert } from "@/lib/Contexts/AlertContext";
-import { MetadataType } from "@/types/utils/metadata";
 import SelectWithLabel from "@/components/SelectWithLabel";
 import ItemRank from "@/components/ItemRank";
-import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
 import {
     DndContext,
     closestCenter,
@@ -44,11 +33,10 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { CSS } from "@dnd-kit/utilities";
 import { CirclePlus } from "lucide-react";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import DialogAddRank from "./DialogAddRank";
 import { AddRankFormType } from "./AddRankForm";
 import Job from "@/types/class/Job";
+import { useMetadata } from "@/lib/Contexts/MetadataContext";
 
 export default function Ranks() {
     const { user: currentUser } = useUser();
@@ -68,6 +56,7 @@ export default function Ranks() {
         })
     );
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const { metadata } = useMetadata();
 
     useEffect(() => {
         if (!currentUser?.isAdmin) {
@@ -75,19 +64,14 @@ export default function Ranks() {
         }
 
         const init = async () => {
-            const metadataResponse = await getData(axiosClient.get("/metadata"));
-            if (metadataResponse.errorMessage) {
-                setAlert({ title: "Erreur", description: metadataResponse.errorMessage });
-                return;
-            }
+            if (!metadata) return;
 
-            const metaData = metadataResponse.data as MetadataType;
-            setJobs(metaData.jobs);
+            setJobs(metadata.jobs);
 
-            const selectedJob = metaData.jobs[0];
+            const selectedJob = metadata.jobs[0];
             setRanks({
-                originalRanks: metaData.ranks.map((x) => new Rank(x)),
-                selectedRanks: getRanks(metaData.ranks, selectedJob.id!),
+                originalRanks: metadata.ranks.map((x) => new Rank(x)),
+                selectedRanks: getRanks(metadata.ranks, selectedJob.id!),
             });
 
             setSelectedJobId(String(selectedJob?.id) || "");
@@ -95,7 +79,7 @@ export default function Ranks() {
         };
 
         init();
-    }, [currentUser, router, setAlert]);
+    }, [currentUser, metadata, router, setAlert]);
 
     if (isLoading) return <Loader />;
 
