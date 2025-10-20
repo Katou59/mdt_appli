@@ -15,7 +15,7 @@ import PagerClass from "@/types/class/Pager";
 import Pager from "@/components/Pager";
 import { RankType } from "@/types/db/rank";
 import Loader from "@/components/Loader";
-import { DataTable } from "./table";
+import { DataTable } from "../../../../components/DataTable";
 import { columns, UserColumns } from "./columns";
 import InputWithLabel from "@/components/InputWithLabel";
 import { Button } from "@/components/ui/button";
@@ -201,6 +201,7 @@ export default function Users() {
                         totalPage={Number(pager.pageCount)}
                         onPageChange={(page: number) => handlePageChange(page)}
                         onRowClick={(value) => router.push(`/police/users/${value}`)}
+                        keyIndex="discordId"
                     />
                 </div>
             </div>

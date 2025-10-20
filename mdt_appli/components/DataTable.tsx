@@ -35,6 +35,8 @@ interface DataTableProps<TData, TValue> {
     onPageChange: (pageIndex: number) => void;
     onPageSizeChange?: (pageSize: number) => void;
     onRowClick: (id: string) => void;
+    keyIndex: keyof TData;
+    columnsToHide?: (keyof TData)[];
 }
 
 export function DataTable<TData, TValue>({
@@ -45,15 +47,20 @@ export function DataTable<TData, TValue>({
     totalPage,
     onPageChange,
     onRowClick,
+    keyIndex,
+    columnsToHide,
 }: DataTableProps<TData, TValue>) {
     const table = useReactTable({
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
+        state: {
+            columnVisibility: Object.fromEntries((columnsToHide ?? []).map((key) => [key, false])),
+        },
     });
 
     return (
-        <div>
+        <div className="w-full">
             <div className="overflow-hidden rounded-md border bg-base-100">
                 <Table className={isSmall ? "text-xs" : ""}>
                     <TableHeader>
@@ -75,7 +82,11 @@ export function DataTable<TData, TValue>({
                     <TableBody>
                         {table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
-                                <TableRow key={row.id} onClick={() => onRowClick(row.getValue("discordId"))} className="cursor-pointer">
+                                <TableRow
+                                    key={row.id}
+                                    onClick={() => onRowClick(row.getValue(String(keyIndex)))}
+                                    className="cursor-pointer"
+                                >
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell key={cell.id} className={isSmall ? "p-1" : ""}>
                                             {flexRender(

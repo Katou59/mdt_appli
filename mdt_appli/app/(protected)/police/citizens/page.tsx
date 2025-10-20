@@ -1,233 +1,138 @@
 "use client";
 
-import Alert from "@/components/Alert";
+import { DataTable } from "@/components/DataTable";
+import Page from "@/components/Page";
 import axiosClient, { getData } from "@/lib/axiosClient";
+import { useAlert } from "@/lib/Contexts/AlertContext";
 import Citizen from "@/types/class/Citizen";
 import Pager from "@/types/class/Pager";
 import { CitizenType } from "@/types/db/citizen";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { CitizenColumns, columns } from "./columns";
 import { PagerType } from "@/types/response/pagerType";
 import dayjs from "dayjs";
-import Image from "next/image";
-import React, { FormEvent, useEffect, useState } from "react";
-import PagerComponent from "@/components/Pager";
 import Loader from "@/components/Loader";
+import { Separator } from "@/components/ui/separator";
+import SearchCitizenForm, { SearchCitizenFormOnSubmitType } from "./SearchCitizenForm";
 
-export default function Citoyens() {
+type FilterType = {
+    searchTerm?: string;
+};
+
+export default function Citizens() {
+    const { setAlert } = useAlert();
+    const [pager, setPager] = useState<Pager<Citizen, CitizenType>>(new Pager([], 0, 20, 1));
     const [isLoaded, setIsLoaded] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
-    const [pager, setPager] = useState<Pager<Citizen, CitizenType>>();
-    const [filter, setFilter] = useState<FilterType>({
-        searchTerm: "",
-    });
+    const [filter, setFilter] = useState<FilterType>({});
 
     useEffect(() => {
         const init = async () => {
             try {
-                setPager(await getPager(1, 20, filter));
-            } catch (error) {
-                if (error instanceof Error) {
-                    setErrorMessage(error.message);
-                } else {
-                    setErrorMessage("Une erreur inconnue est survenue.");
-                }
+                setPager(await getPager(pager));
+            } catch {
+                setAlert({
+                    title: "Erreur",
+                    description: "Une erreur est survenue lors de la récupération des citoyens",
+                });
             } finally {
                 setIsLoaded(true);
             }
         };
 
         init();
-    }, [filter]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setAlert]);
 
-    if (!isLoaded || !pager) return <Loader/>
-
-    async function handlePageChange(page: number): Promise<void> {
-        setPager(await getPager(page, pager!.itemPerPage, filter));
-    }
-
-    function handleSearchSubmit(event: FormEvent<HTMLFormElement>): void {
-        event.preventDefault();
-
-        const formData = new FormData(event.currentTarget);
-        const searchTerm = (formData.get("search") as string) ?? "";
-
-        setFilter((prev) => ({ ...prev, searchTerm: searchTerm }));
-    }
-
-    function handleSearchReset(): void {
-        setFilter({ searchTerm: "" });
-    }
+    if (!isLoaded) return <Loader />;
 
     return (
-        <>
-            <Alert message={errorMessage} />
-            <div className="">
-                <h1 className="text-4xl font-bold text-primary text-center mb-4">
-                    Liste des citoyens
-                </h1>
-                <form
-                    onSubmit={handleSearchSubmit}
-                    onReset={handleSearchReset}
-                    className="flex flex-col items-center"
-                >
-                    <fieldset className="fieldset">
-                        <legend className="fieldset-legend p-0">Recherche</legend>
-                        <input
-                            type="text"
-                            name="search"
-                            placeholder="Recherche"
-                            className="input input-sm input-primary w-64"
-                            autoComplete="off"
-                            defaultValue=""
-                        />
-                    </fieldset>
-                    <div className="join mt-2">
-                        <button type="submit" className="btn btn-success btn-sm w-24 join-item">
-                            Rechercher
-                        </button>
-                        <button type="reset" className="btn btn-error btn-sm w-24 join-item">
-                            Annuler
-                        </button>
-                    </div>
-                </form>
+        <Page title="Liste des citoyens">
+            <div className="grid w-full">
+                <SearchCitizenForm
+                    onSubmit={async (values: SearchCitizenFormOnSubmitType) => {
+                        console.log(values);
+                        const newPager = new Pager<Citizen, CitizenType>([], 0, 20, 1);
+                        setPager(await getPager(newPager, { searchTerm: values.searchField }));
+                        setFilter((prev) => ({ ...prev, searchTerm: values.searchField }));
+                    }}
+                    onCancel={async () => {
+                        const newPager = new Pager<Citizen, CitizenType>([], 0, 20, 1);
+                        setPager(await getPager(newPager, filter));
+                        setFilter((prev) => ({ ...prev, searchTerm: undefined }));
+                    }}
+                />
 
-                <div className="text-center opacity-50 mt-4 text-sm">
-                    {pager!.itemCount} citoyen{pager!.itemCount > 1 ? "s" : ""}
-                </div>
+                <Separator className="my-5 opacity-50" />
 
-                <div className="overflow-visible">
-                    <table className="table table-xs">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Téléphone</th>
-                                <th>Créé par</th>
-                                <th>Modifié par</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {Number(pager.itemCount) === 0 ? (
-                                <tr>
-                                    <td colSpan={4} className="text-center text-sm font-bold">
-                                        Aucun citoyen
-                                    </td>
-                                </tr>
-                            ) : (
-                                pager?.items.map((citizen) => (
-                                    <tr key={citizen.id}>
-                                        <td>
-                                            <div className="flex items-center gap-3">
-                                                <div className="dropdown dropdown-hover dropdown-right dropdown-center">
-                                                    <div
-                                                        tabIndex={0}
-                                                        role="button"
-                                                        className="m-1 avatar"
-                                                    >
-                                                        <div className="mask mask-squircle h-8 w-8">
-                                                            <Image
-                                                                width={100}
-                                                                height={100}
-                                                                src={
-                                                                    citizen.photoUrl ?? "/Image.png"
-                                                                }
-                                                                alt="Photo de profil"
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div
-                                                        tabIndex={0}
-                                                        className="dropdown-content card card-sm bg-base-300 z-10 w-96 shadow-md"
-                                                    >
-                                                        <div className="card-body">
-                                                            <div className="flex flex-row gap-2 items-center">
-                                                                <div className="mask mask-squircle h-20 w-20 min-h-20 min-w-20">
-                                                                    <Image
-                                                                        width={100}
-                                                                        height={100}
-                                                                        src={
-                                                                            citizen.photoUrl ??
-                                                                            "/Image.png"
-                                                                        }
-                                                                        alt="Photo de profil"
-                                                                        className="object-cover w-full h-full"
-                                                                    />
-                                                                </div>
-                                                                <div className="grow flex flex-col">
-                                                                    <div className="text-md font-bold">
-                                                                        {citizen.firstName}{" "}
-                                                                        {citizen.lastName}
-                                                                    </div>
-                                                                    <div>{citizen.address}</div>
-                                                                    <div>{citizen.city}</div>
-                                                                    <div>{citizen.description}</div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <div className="font-bold">
-                                                        {citizen.fullName}
-                                                    </div>
-                                                    <div className="text-sm opacity-50">
-                                                        {citizen.gender?.value} /{" "}
-                                                        {citizen.status?.value}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>{citizen.phoneNumber}</td>
-                                        <td>
-                                            {citizen.createdBy.number} |{" "}
-                                            {citizen.createdBy.fullName} le{" "}
-                                            {dayjs(citizen.createdAt).format(
-                                                "DD/MM/YYYY à HH:mm:ss"
-                                            )}
-                                        </td>
-                                        <td>
-                                            {citizen.updatedBy.number} |{" "}
-                                            {citizen.updatedBy.fullName} le{" "}
-                                            {dayjs(citizen.updatedAt).format(
-                                                "DD/MM/YYYY à HH:mm:ss"
-                                            )}
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                    {pager!.pageCount > 1 && (
-                        <PagerComponent pager={pager!} onPageChange={handlePageChange} />
-                    )}
-                </div>
+                <DataTable
+                    columns={columns}
+                    data={getRows(pager.items)}
+                    keyIndex="id"
+                    pageIndex={pager.page}
+                    pageSize={pager.itemPerPage}
+                    totalPage={pager.pageCount}
+                    onPageChange={async (newPage) => {
+                        setPager(
+                            await getPager(
+                                new Pager<Citizen, CitizenType>(
+                                    [],
+                                    pager.itemCount,
+                                    pager.itemPerPage,
+                                    newPage
+                                ),
+                                filter
+                            )
+                        );
+                    }}
+                    onRowClick={(id) => {
+                        throw new Error("Not implemented");
+                    }}
+                    columnsToHide={["id"]}
+                />
             </div>
-        </>
+        </Page>
     );
 }
 
-async function getPager(
-    page: number,
-    itemPerPage: number,
-    filter: FilterType
-): Promise<Pager<Citizen, CitizenType>> {
+function getRows(citizens: Citizen[]): CitizenColumns[] {
+    return citizens.map((x) => ({
+        id: x.id,
+        fullname: x.fullName ?? "",
+        phoneNumber: x.phoneNumber ?? "",
+        photoUrl: x.photoUrl ?? "",
+        createdBy: `${x.createdBy.fullName} le ${dayjs(x.createdAt).format(
+            "DD/MM/YYYY à hh:mm:ss"
+        )}`,
+        updatedBy: `${x.updatedBy.fullName} le ${dayjs(x.updatedAt).format(
+            "DD/MM/YYYY à hh:mm:ss"
+        )}`,
+    }));
+}
+
+async function getPager(pager: Pager<Citizen, CitizenType>, filter?: FilterType) {
     const pagerResponse = await getData(
         axiosClient.get("/citizens", {
-            params: { page: page, result: itemPerPage ?? 20, search: filter.searchTerm },
+            params: {
+                page: pager.page,
+                itemPerPage: pager.itemPerPage,
+                searchTerm: filter?.searchTerm ?? "",
+            },
         })
     );
+
+    console.log(pagerResponse);
+
     if (pagerResponse.errorMessage) {
-        throw new Error(pagerResponse.errorMessage);
+        throw new Error("Une erreur est survenue lors de la récupération des citoyens");
     }
 
-    const pagerType = pagerResponse.data as PagerType<CitizenType>;
+    const pagerData = pagerResponse.data as PagerType<CitizenType>;
 
-    return new Pager(
-        pagerType.items.map((x) => new Citizen(x)),
-        pagerType.itemCount,
-        pagerType.itemPerPage,
-        pagerType.page
+    return new Pager<Citizen, CitizenType>(
+        pagerData.items.map((x) => new Citizen(x)),
+        pagerData.itemCount,
+        pagerData.itemPerPage,
+        pagerData.page
     );
 }
-
-type FilterType = {
-    searchTerm: string;
-};

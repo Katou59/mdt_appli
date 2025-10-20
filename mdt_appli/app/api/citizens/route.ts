@@ -11,14 +11,14 @@ export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
         const page = Number(searchParams.get("page"));
-        const result = Number(searchParams.get("result"));
-        const search = searchParams.get("search");
+        const itemPerPage = Number(searchParams.get("itemPerPage"));
+        const searchTerm = searchParams.get("searchTerm");
 
-        if (isNaN(page) || isNaN(result)) {
+        if (isNaN(page) || isNaN(itemPerPage)) {
             return NextResponse.json({ error: "Bad Request" }, { status: HttpStatus.BAD_REQUEST });
         }
 
-        const pager = await CitizenRepository.GetList(page, result, search ?? undefined);
+        const pager = await CitizenRepository.GetList(page, itemPerPage, searchTerm ?? undefined);
 
         return NextResponse.json(pager.toType());
     } catch (error) {
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
             userId: (await auth())!.user!.discordId!,
             method: request.method,
         });
-        
+
         if (error instanceof Error)
             return NextResponse.json(
                 { error: error.message },
