@@ -74,6 +74,7 @@ export default function AddCitizenForm({
                         name="nationalityId"
                         label="Nationalité"
                         items={nationalities}
+                        isRequired={true}
                     />
                     <SelectForm form={form} name="genderId" label="Sexe" items={genders} />
                 </div>

@@ -18,11 +18,13 @@ export function SelectForm<T extends object>({
     name,
     label,
     items,
+    isRequired,
 }: {
     form: UseFormReturn<T>;
     name: Path<T>;
     label: string;
     items: KeyValueType[];
+    isRequired?: boolean;
 }) {
     return (
         <FormField
@@ -51,8 +53,12 @@ export function SelectForm<T extends object>({
                                 <SelectValue placeholder="Choisir..." />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="none">Tous</SelectItem>
-                                <SelectSeparator />
+                                {!isRequired && (
+                                    <>
+                                        <SelectItem value="none">Aucun</SelectItem>
+                                        <SelectSeparator />
+                                    </>
+                                )}
                                 {items?.map((item) => (
                                     <SelectItem key={item.key} value={item.key}>
                                         {item.value}
