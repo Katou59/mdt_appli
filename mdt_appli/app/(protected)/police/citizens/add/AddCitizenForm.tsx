@@ -8,7 +8,7 @@ import { KeyValueType } from "@/types/utils/keyValue";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";
-import z from "zod";
+import z, { optional } from "zod";
 
 const formSchema = z.object({
     lastName: z
@@ -23,6 +23,10 @@ const formSchema = z.object({
     birthPlace: z.string().optional(),
     nationalityId: z.string().optional(),
     genderId: z.string().optional(),
+    height: z.number().max(300).optional(),
+    weight: z.number().max(300).optional(),
+    eyeColor: z.string().optional(),
+    hairColor: z.string().optional(),
 });
 
 export default function AddCitizenForm({
@@ -77,6 +81,23 @@ export default function AddCitizenForm({
                         isRequired={true}
                     />
                     <SelectForm form={form} name="genderId" label="Sexe" items={genders} />
+                </div>
+                <h2 className="text-xl text-primary w-full">Caractéristiques physiques</h2>
+                <div className="grid grid-cols-2 w-full gap-5">
+                    <InputForm form={form} label="Taille" name="height" placeHolder="Taille (cm)" />
+                    <InputForm form={form} label="Poids" name="weight" placeHolder="Poids (kg)" />
+                    <InputForm
+                        form={form}
+                        label="Couleur des yeux"
+                        name="eyeColor"
+                        placeHolder="Couleur des yeux"
+                    />
+                    <InputForm
+                        form={form}
+                        label="Couleur des cheveux"
+                        name="hairColor"
+                        placeHolder="Couleur des cheveux"
+                    />
                 </div>
                 <div>
                     <ButtonGroupForm
