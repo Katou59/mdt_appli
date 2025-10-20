@@ -13,6 +13,7 @@ import Textarea from "@/components/Textarea";
 import { CitizenToCreateType, CitizenType } from "@/types/db/citizen";
 import Citizen from "@/types/class/Citizen";
 import { useRouter } from "next/navigation";
+import AddCitizenForm from "./AddCitizenForm";
 
 type Lists = {
     genders: KeyValueType<number, string>[];
@@ -150,6 +151,13 @@ export default function AddCitizen() {
             <Alert message={errorMessage} />
             <h1 className="text-4xl font-bold text-primary text-center mb-4">Ajouter un citoyen</h1>
             <AddImage image={image} onPaste={handlePaste} delete={() => setImage("")} />
+            <AddCitizenForm
+                nationalities={lists!.nationalities.map((x) => ({
+                    key: String(x.key),
+                    value: x.value,
+                }))}
+                genders={lists!.genders.map((x) => ({ key: String(x.key), value: x.value }))}
+            />
             {/* <form className="mt-4" onSubmit={handleSubmit}>
                 <div>
                     <h2 className="text-xl text-primary">Identité</h2>

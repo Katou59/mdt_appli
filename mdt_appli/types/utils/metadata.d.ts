@@ -6,4 +6,6 @@ export interface MetadataType {
     jobs: JobType[];
     ranks: RankType[];
     roles: KeyValueType<number, string>[];
+    nationalities: KeyValueType<number, string>[];
+    genders: KeyValueType<number, string>[];
 }
