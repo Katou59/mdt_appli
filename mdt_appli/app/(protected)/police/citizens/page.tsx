@@ -58,8 +58,8 @@ export default function Citizens() {
                     }}
                     onCancel={async () => {
                         const newPager = new Pager<Citizen, CitizenType>([], 0, 20, 1);
-                        setPager(await getPager(newPager, filter));
                         setFilter((prev) => ({ ...prev, searchTerm: undefined }));
+                        setPager(await getPager(newPager, undefined));
                     }}
                 />
 
