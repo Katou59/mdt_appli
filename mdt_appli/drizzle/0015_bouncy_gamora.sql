@@ -1,0 +1,1 @@
+ALTER TABLE "citizens" ALTER COLUMN "description" SET DATA TYPE varchar(50);

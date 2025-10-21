@@ -67,7 +67,7 @@ const data = {
                     url: "/police/citizens",
                 },
                 {
-                    title: "Ajouter un citoyens",
+                    title: "Ajouter un citoyen",
                     url: "/police/citizens/add",
                 },
             ],

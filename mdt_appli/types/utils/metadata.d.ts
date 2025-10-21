@@ -9,4 +9,5 @@ export interface MetadataType {
     nationalities: KeyValueType<number, string>[];
     genders: KeyValueType<number, string>[];
     bloodTypes: KeyValueType<number, string>[];
+    statuses: KeyValueType<number, string>[];
 }

@@ -50,4 +50,5 @@ export interface CitizenToCreateType {
     originId: number | null;
     height: number | null;
     weight: number | null;
+    nationalityId: number | null;
 }
