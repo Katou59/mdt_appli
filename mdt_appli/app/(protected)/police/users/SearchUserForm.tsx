@@ -40,8 +40,8 @@ const formSchema = z.object({
 });
 
 const isDesactivatedItems = [
-    { label: "Oui", value: "true" },
-    { label: "Non", value: "false" },
+    { label: "Désactivé", value: "true" },
+    { label: "Actif", value: "false" },
 ];
 
 export default function SearchUserForm({
@@ -252,7 +252,7 @@ export default function SearchUserForm({
                                     {fieldState.error ? (
                                         <FormMessage />
                                     ) : (
-                                        <FormLabel>Est désactivé</FormLabel>
+                                        <FormLabel>Statut</FormLabel>
                                     )}
                                 </div>
                                 <FormControl>

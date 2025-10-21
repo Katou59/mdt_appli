@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
 
         const currentUser = await UserRepository.get(session!.user.discordId!);
 
-        const pager = await UserRepository.getList({
+        const pager = await UserRepository.GetList({
             itemPerPage,
             page,
             filter: {

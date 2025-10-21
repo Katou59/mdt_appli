@@ -30,7 +30,7 @@ export class UserRepository extends Repository {
         return User.getFromDb(users[0].users, users[0].ranks, users[0].jobs, users[0].roles!);
     }
 
-    public static async getList(params: {
+    public static async GetList(params: {
         rankId?: number;
         itemPerPage: number;
         page: number;

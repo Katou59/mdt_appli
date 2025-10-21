@@ -17,7 +17,7 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
 
         const rank = await RankRepository.Get(Number(id));
 
-        const pager = await UserRepository.getList({
+        const pager = await UserRepository.GetList({
             rankId: Number(id),
             itemPerPage: 20,
             page: 1,
