@@ -1,11 +1,6 @@
 "use client";
 
-import {
-    ColumnDef,
-    flexRender,
-    getCoreRowModel,
-    useReactTable,
-} from "@tanstack/react-table";
+import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import {
     Table,
     TableBody,
@@ -14,22 +9,15 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-    PaginationPrevious,
-    PaginationLink,
-    PaginationNext,
-} from "@/components/ui/pagination";
+import Pagination from "./Pagination";
+import Pager from "@/types/class/Pager";
+import IConverter from "@/types/interfaces/IConverter";
 
-interface DataTableProps<TData, TValue> {
+interface DataTableProps<TEntity extends IConverter<TType>, TType, TData, TValue> {
+    pager: Pager<TEntity, TType>;
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
     isSmall?: boolean;
-    pageIndex: number;
-    pageSize: number;
-    totalPage: number;
     onPageChange: (pageIndex: number) => void;
     onPageSizeChange?: (pageSize: number) => void;
     onRowClick: (id: string) => void;
@@ -37,17 +25,16 @@ interface DataTableProps<TData, TValue> {
     columnsToHide?: (keyof TData)[];
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TEntity extends IConverter<TType>, TType, TData, TValue>({
     columns,
     data,
     isSmall,
-    pageIndex,
-    totalPage,
     onPageChange,
     onRowClick,
     keyIndex,
     columnsToHide,
-}: DataTableProps<TData, TValue>) {
+    pager,
+}: DataTableProps<TEntity, TType, TData, TValue>) {
     const table = useReactTable({
         data,
         columns,
@@ -58,7 +45,7 @@ export function DataTable<TData, TValue>({
     });
 
     return (
-        <div className="w-full">
+        <div className="w-full grid gap-5">
             <div className="overflow-hidden rounded-md border bg-base-100">
                 <Table className={isSmall ? "text-xs" : ""}>
                     <TableHeader>
@@ -105,63 +92,7 @@ export function DataTable<TData, TValue>({
                     </TableBody>
                 </Table>
             </div>
-
-            {totalPage > 1 && (
-                <Pagination className="mt-4">
-                    <PaginationContent>
-                        <PaginationItem>
-                            <PaginationPrevious
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    onPageChange(pageIndex - 1);
-                                }}
-                                disabled={pageIndex <= 1}
-                            />
-                        </PaginationItem>
-
-                        {getPageNumbers(pageIndex, totalPage).map((page, index) => (
-                            <PaginationItem key={index}>
-                                {page === "..." ? (
-                                    <span className="px-3">...</span>
-                                ) : (
-                                    <PaginationLink
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            onPageChange(page as number);
-                                        }}
-                                        disabled={page === pageIndex}
-                                    >
-                                        {page}
-                                    </PaginationLink>
-                                )}
-                            </PaginationItem>
-                        ))}
-
-                        <PaginationItem>
-                            <PaginationNext
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    onPageChange(pageIndex + 1);
-                                }}
-                                disabled={pageIndex === totalPage}
-                            />
-                        </PaginationItem>
-                    </PaginationContent>
-                </Pagination>
-            )}
+            <Pagination onPageChange={onPageChange} pager={pager} />
         </div>
     );
-}
-
-function getPageNumbers(current: number, total: number) {
-    const pages = [];
-    if (total <= 7) {
-        for (let i = 1; i <= total; i++) pages.push(i);
-    } else {
-        if (current <= 4) pages.push(1, 2, 3, 4, 5, "...", total);
-        else if (current >= total - 3)
-            pages.push(1, "...", total - 4, total - 3, total - 2, total - 1, total);
-        else pages.push(1, "...", current - 1, current, current + 1, "...", total);
-    }
-    return pages;
 }

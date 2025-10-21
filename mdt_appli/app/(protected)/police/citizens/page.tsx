@@ -14,7 +14,7 @@ import dayjs from "dayjs";
 import Loader from "@/components/Loader";
 import { Separator } from "@/components/ui/separator";
 import SearchCitizenForm, { SearchCitizenFormOnSubmitType } from "./SearchCitizenForm";
-import TableCitizens from "./table";
+import TableCitizens from "./Table";
 
 type FilterType = {
     searchTerm?: string;
@@ -65,7 +65,22 @@ export default function Citizens() {
 
                 <Separator className="my-5 opacity-50" />
 
-                <TableCitizens pager={pager} />
+                <TableCitizens
+                    pager={pager}
+                    onPageChange={async (newPage) => {
+                        setPager(
+                            await getPager(
+                                new Pager<Citizen, CitizenType>(
+                                    [],
+                                    pager.itemCount,
+                                    pager.itemPerPage,
+                                    newPage
+                                ),
+                                filter
+                            )
+                        );
+                    }}
+                />
 
                 {/* <DataTable
                     columns={columns}

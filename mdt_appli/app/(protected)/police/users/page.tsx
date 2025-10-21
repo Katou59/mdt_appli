@@ -186,12 +186,10 @@ export default function Users() {
                         {pager.itemCount} utilisateur{pager.itemCount > 1 ? "s" : ""}
                     </div>
                     <DataTable
+                        pager={pager}
                         columns={columns}
                         data={getRows(pager.items)}
                         isSmall={true}
-                        pageSize={Number(pager.itemPerPage)}
-                        pageIndex={Number(pager.page)}
-                        totalPage={Number(pager.pageCount)}
                         onPageChange={(page: number) => handlePageChange(page)}
                         onRowClick={(value) => router.push(`/police/users/${value}`)}
                         keyIndex="discordId"

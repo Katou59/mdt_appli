@@ -1,7 +1,7 @@
 import IConverter from "../interfaces/IConverter";
 import { PagerType } from "../response/pagerType";
 
-export default class Pager<TEntity extends IConverter<TType>, TType>
+export default class    Pager<TEntity extends IConverter<TType>, TType>
     implements IConverter<PagerType<TType>>, PagerType<TEntity>
 {
     items: TEntity[];

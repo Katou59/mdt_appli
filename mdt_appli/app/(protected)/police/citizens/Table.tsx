@@ -1,3 +1,4 @@
+import Pagination from "@/components/Pagination";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
     Table,
@@ -12,56 +13,14 @@ import Pager from "@/types/class/Pager";
 import { CitizenType } from "@/types/db/citizen";
 import dayjs from "dayjs";
 
-const items = [
-    {
-        id: "1",
-        name: "Philip George",
-        src: "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-1.png",
-        fallback: "PG",
-        email: "philipgeorge20@gmail.com",
-        location: "Mumbai, India",
-        status: "Active",
-        balance: "$10,696.00",
-    },
-    {
-        id: "2",
-        name: "Tiana Curtis",
-        src: "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-2.png",
-        fallback: "TC",
-        email: "tiana12@yahoo.com",
-        location: "New York, US",
-        status: "applied",
-        balance: "$0.00",
-    },
-    {
-        id: "3",
-        name: "Jaylon Donin",
-        src: "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-3.png",
-        fallback: "JD",
-        email: "jaylon23d.@outlook.com",
-        location: "Washington, US",
-        status: "Active",
-        balance: "$569.00",
-    },
-    {
-        id: "4",
-        name: "Kim Yim",
-        src: "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-4.png",
-        fallback: "KY",
-        email: "kim96@gmail.com",
-        location: "Busan, South Korea",
-        status: "Inactive",
-        balance: "-$506.90",
-    },
-];
-
 type Props = {
     pager: Pager<Citizen, CitizenType>;
+    onPageChange: (newPage: number) => void;
 };
 
-const TableCitizens = ({ pager }: Props) => {
+export default function TableCitizens({ pager, onPageChange }: Props) {
     return (
-        <div className="w-full">
+        <div className="w-full grid gap-5">
             <div className="[&>div]:rounded-sm [&>div]:border">
                 <Table>
                     <TableHeader>
@@ -103,8 +62,7 @@ const TableCitizens = ({ pager }: Props) => {
                     </TableBody>
                 </Table>
             </div>
+            <Pagination pager={pager} onPageChange={onPageChange}/>
         </div>
     );
-};
-
-export default TableCitizens;
+}
