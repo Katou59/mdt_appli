@@ -1,6 +1,5 @@
 "use client";
 
-import { DataTable } from "@/components/DataTable";
 import Page from "@/components/Page";
 import axiosClient, { getData } from "@/lib/axiosClient";
 import { useAlert } from "@/lib/Contexts/AlertContext";
@@ -8,9 +7,7 @@ import Citizen from "@/types/class/Citizen";
 import Pager from "@/types/class/Pager";
 import { CitizenType } from "@/types/db/citizen";
 import { useEffect, useState } from "react";
-import { CitizenColumns, columns } from "./columns";
 import { PagerType } from "@/types/response/pagerType";
-import dayjs from "dayjs";
 import Loader from "@/components/Loader";
 import { Separator } from "@/components/ui/separator";
 import SearchCitizenForm, { SearchCitizenFormOnSubmitType } from "./SearchCitizenForm";
@@ -110,21 +107,6 @@ export default function Citizens() {
             </div>
         </Page>
     );
-}
-
-function getRows(citizens: Citizen[]): CitizenColumns[] {
-    return citizens.map((x) => ({
-        id: x.id,
-        fullname: x.fullName ?? "",
-        phoneNumber: x.phoneNumber ?? "",
-        photoUrl: x.photoUrl ?? "",
-        createdBy: `${x.createdBy.fullName} le ${dayjs(x.createdAt).format(
-            "DD/MM/YYYY à hh:mm:ss"
-        )}`,
-        updatedBy: `${x.updatedBy.fullName} le ${dayjs(x.updatedAt).format(
-            "DD/MM/YYYY à hh:mm:ss"
-        )}`,
-    }));
 }
 
 async function getPager(pager: Pager<Citizen, CitizenType>, filter?: FilterType) {
