@@ -56,7 +56,7 @@ export default function Ranks() {
         })
     );
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const { metadata } = useMetadata();
+    const { metadata, refresh: refreshMetadata } = useMetadata();
 
     useEffect(() => {
         if (!currentUser?.isAdmin) {
@@ -208,9 +208,8 @@ export default function Ranks() {
                             return;
                         }
 
-                        const newRanks = (newRanksResult.data as RankType[]).map(
-                            (x) => new Rank(x)
-                        );
+                        await refreshMetadata();
+                        const newRanks = (metadata?.ranks as RankType[]).map((x) => new Rank(x));
                         setRanks({
                             originalRanks: newRanks,
                             selectedRanks: newRanks.filter(
