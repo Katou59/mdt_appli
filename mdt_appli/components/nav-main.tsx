@@ -41,6 +41,9 @@ export function NavMain({
                         asChild
                         defaultOpen={item.isActive}
                         className="group/collapsible"
+                        open={
+                            item.items?.some((subItem) => pathname === subItem.url) || item.isActive
+                        }
                     >
                         <SidebarMenuItem>
                             <CollapsibleTrigger asChild>
