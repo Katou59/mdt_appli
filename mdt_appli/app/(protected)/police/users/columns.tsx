@@ -1,19 +1,17 @@
 "use client";
 
-import { UserType } from "@/types/db/user";
 import { ColumnDef } from "@tanstack/react-table";
 
-export type UserColumns = 
-{
-    discordId: string,
-    userName: string,
-    email: string,
-    number: number,
-    fullName: string,
-    jobRank: string,
-    role: string,
-    isDisable: string
-}
+export type UserColumns = {
+    discordId: string;
+    userName: string;
+    email: string;
+    number: number;
+    fullName: string;
+    jobRank: string;
+    role: string;
+    isDisable: string;
+};
 
 export const columns: ColumnDef<UserColumns>[] = [
     {

@@ -1,7 +1,5 @@
 import { Path, UseFormReturn } from "react-hook-form";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
-import { Input } from "./ui/input";
-import { HTMLInputTypeAttribute } from "react";
 import { Textarea } from "./ui/textarea";
 
 export function TextareaForm<T extends object>({

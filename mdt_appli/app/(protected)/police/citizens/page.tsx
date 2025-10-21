@@ -7,7 +7,6 @@ import { useAlert } from "@/lib/Contexts/AlertContext";
 import Citizen from "@/types/class/Citizen";
 import Pager from "@/types/class/Pager";
 import { CitizenType } from "@/types/db/citizen";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { CitizenColumns, columns } from "./columns";
 import { PagerType } from "@/types/response/pagerType";
@@ -85,7 +84,7 @@ export default function Citizens() {
                             )
                         );
                     }}
-                    onRowClick={(id) => {
+                    onRowClick={() => {
                         throw new Error("Not implemented");
                     }}
                     columnsToHide={["id"]}

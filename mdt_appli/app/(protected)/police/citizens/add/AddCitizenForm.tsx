@@ -6,14 +6,12 @@ import { RadioGroupForm } from "@/components/RadioGroupForm";
 import { SelectForm } from "@/components/SelectForm";
 import { TextareaForm } from "@/components/TextareaForm";
 import { Form } from "@/components/ui/form";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { CitizenToCreateType } from "@/types/db/citizen";
 import { KeyValueType } from "@/types/utils/keyValue";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";
-import z, { optional } from "zod";
+import z from "zod";
 
 const formSchema = z.object({
     lastName: z

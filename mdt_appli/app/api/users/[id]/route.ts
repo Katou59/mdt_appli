@@ -4,7 +4,6 @@ import { auth } from "@/auth";
 import { HttpStatus } from "@/types/enums/httpStatus";
 import ErrorLogRepository from "@/repositories/errorLogRepository";
 import HistoryRepository from "@/repositories/historyRepository";
-import { RoleType } from "@/types/enums/roleType";
 import { UserToUpdateType } from "@/types/db/user";
 import RankRepository from "@/repositories/rankRepository";
 
@@ -70,7 +69,7 @@ export async function PUT(request: NextRequest) {
         if (currentUser?.isAdmin) {
             const ranks = await RankRepository.GetList();
             const rank = ranks.find((r) => r.id === body!.rankId);
-            if(!rank) {
+            if (!rank) {
                 return NextResponse.json({ error: "Rank not found" }, { status: 400 });
             }
             userToUpdate.rank = rank;

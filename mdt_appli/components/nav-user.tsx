@@ -1,6 +1,6 @@
 "use client";
 
-import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, IconNode, LogOut, LucideIcon, Sparkles } from "lucide-react";
+import { ChevronsUpDown, LogOut, LucideIcon } from "lucide-react";
 
 import {
     DropdownMenu,

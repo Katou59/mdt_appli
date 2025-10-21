@@ -1,25 +1,15 @@
 "use client";
 
-import React, { FormEvent, useState } from "react";
+import React, { useState } from "react";
 import AddImage from "@/components/AddImage";
 import axiosClient, { getData } from "@/lib/axiosClient";
-import { KeyValueType } from "@/types/utils/keyValue";
 import Loader from "@/components/Loader";
-import { useRouter } from "next/navigation";
 import AddCitizenForm from "./AddCitizenForm";
 import { useMetadata } from "@/lib/Contexts/MetadataContext";
 import { useAlert } from "@/lib/Contexts/AlertContext";
 import { CitizenToCreateType } from "@/types/db/citizen";
 import { toast } from "sonner";
 import { UploadResponseType } from "@/types/response/uploadResponseType";
-import { ur } from "zod/v4/locales";
-
-type Lists = {
-    genders: KeyValueType<number, string>[];
-    bloodTypes: KeyValueType<number, string>[];
-    nationalities: KeyValueType<number, string>[];
-    statuses: KeyValueType<number, string>[];
-};
 
 export default function AddCitizen() {
     const [imageFile, setImageFile] = useState<File | null>(null);

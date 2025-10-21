@@ -2,7 +2,6 @@
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import axiosClient, { getData } from "@/lib/axiosClient";
-import UserComponent from "@/components/UserComponent";
 import User from "@/types/class/User";
 import Loader from "@/components/Loader";
 import Page from "@/components/Page";

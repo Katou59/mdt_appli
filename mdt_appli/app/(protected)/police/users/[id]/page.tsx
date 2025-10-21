@@ -29,6 +29,7 @@ export default function UserId() {
         }
 
         init();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [params.id]);
 
     if (!isLoaded) return <Loader />;

@@ -8,9 +8,7 @@ import RankRepository from "@/repositories/rankRepository";
 import RoleRepository from "@/repositories/roleRepository";
 import StatusRepository from "@/repositories/statusRepository";
 import { HttpStatus } from "@/types/enums/httpStatus";
-import { KeyValueType } from "@/types/utils/keyValue";
 import { MetadataType } from "@/types/utils/metadata";
-import { Key } from "lucide-react";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {

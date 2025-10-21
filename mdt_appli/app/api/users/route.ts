@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { UserToCreateType, UserToUpdateType } from "@/types/db/user";
+import { UserToCreateType } from "@/types/db/user";
 import { auth } from "@/auth";
 import { UserRepository } from "@/repositories/userRepository";
-import { RoleType } from "@/types/enums/roleType";
 import { HttpStatus } from "@/types/enums/httpStatus";
 import HistoryRepository from "@/repositories/historyRepository";
 import ErrorLogRepository from "@/repositories/errorLogRepository";

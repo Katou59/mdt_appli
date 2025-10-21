@@ -1,9 +1,7 @@
 "use client";
 
-import InputWithLabel from "@/components/InputWithLabel";
 import Loader from "@/components/Loader";
 import Page from "@/components/Page";
-import SelectWithLabel from "@/components/SelectWithLabel";
 import axiosClient, { getData } from "@/lib/axiosClient";
 import { useUser } from "@/lib/Contexts/UserContext";
 import Job from "@/types/class/Job";
@@ -44,6 +42,7 @@ export default function AddUser() {
         }
 
         init();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [router, user]);
 
     if (!isLoaded) return <Loader />;

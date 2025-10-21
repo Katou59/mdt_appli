@@ -3,18 +3,11 @@
 import * as React from "react";
 import {
     AudioWaveform,
-    BookOpen,
-    Bot,
     Command,
-    Frame,
     GalleryVerticalEnd,
     House,
-    Map,
     PersonStanding,
-    PieChart,
-    Settings2,
     ShieldUser,
-    SquareTerminal,
     User,
 } from "lucide-react";
 
@@ -26,10 +19,8 @@ import {
     SidebarContent,
     SidebarFooter,
     SidebarHeader,
-    SidebarRail,
 } from "@/components/ui/sidebar";
-import { useUser } from "@/lib/Contexts/UserContext";
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
 import Link from "next/link";
 
 // This is sample data.

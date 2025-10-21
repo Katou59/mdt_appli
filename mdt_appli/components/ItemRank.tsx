@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
     Item,
     ItemActions,
@@ -6,34 +6,17 @@ import {
     ItemDescription,
     ItemFooter,
     ItemHeader,
-    ItemMedia,
     ItemTitle,
 } from "./ui/item";
 import { Button } from "./ui/button";
 import { MoreHorizontalIcon, GripVertical } from "lucide-react";
 import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
-import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuGroup,
     DropdownMenuItem,
-    DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Field, FieldGroup, FieldLabel } from "./ui/field";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Textarea } from "./ui/textarea";
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 
 type Props = {
     header?: string;
@@ -50,17 +33,14 @@ type Props = {
 };
 
 export default function ItemRank({
-    rankOrder,
     description,
     footer,
     header,
     title,
     className,
-    onEdit,
     onDelete,
     dragListeners,
     canDelete,
-    canUpdate,
 }: Props) {
     return (
         <Item className={className}>

@@ -1,5 +1,4 @@
 import { RankType } from "@/types/db/rank";
-import { RoleType } from "@/types/db/enums/roleType";
 import { KeyValueType } from "../utils/keyValue";
 
 export interface UserType {

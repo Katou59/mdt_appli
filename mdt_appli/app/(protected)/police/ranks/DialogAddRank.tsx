@@ -1,20 +1,14 @@
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import React from "react";
 import AddRankForm, { AddRankFormType } from "./AddRankForm";
 
 type Props = {
-    children?: React.ReactNode;
     isOpen: boolean;
     onClose: () => void;
     onSubmit: (values: AddRankFormType) => void;
 };
 
-export default function DialogAddRank({ children, isOpen, onClose, onSubmit }: Props) {
+export default function DialogAddRank({ isOpen, onClose, onSubmit }: Props) {
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="sm:max-w-[425px]">

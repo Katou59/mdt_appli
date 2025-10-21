@@ -1,7 +1,5 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
-import type { UserType } from "@/types/db/user";
-import User from "@/types/class/User";
 import { MetadataType } from "@/types/utils/metadata";
 import axiosClient, { getData } from "../axiosClient";
 

@@ -2,7 +2,7 @@
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { CircleX, Terminal } from "lucide-react";
+import { CircleX } from "lucide-react";
 import { createContext, useState, Dispatch, SetStateAction, useContext } from "react";
 
 type AlertContextType = {
@@ -23,7 +23,9 @@ export function AlertProvider({ children }: { children: React.ReactNode }) {
                         <CircleX className="h-8 w-8 shrink-0" />
                         <div>
                             <AlertTitle className="font-extrabold">{alert.title}</AlertTitle>
-                            <AlertDescription className="text-destructive">{alert.description}</AlertDescription>
+                            <AlertDescription className="text-destructive">
+                                {alert.description}
+                            </AlertDescription>
                         </div>
                     </div>
                     <Button

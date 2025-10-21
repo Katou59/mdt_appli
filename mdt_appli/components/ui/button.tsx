@@ -42,7 +42,6 @@ function Button({
     variant,
     size,
     asChild = false,
-    groupPosisiton,
     ...props
 }: React.ComponentProps<"button"> &
     VariantProps<typeof buttonVariants> & {
