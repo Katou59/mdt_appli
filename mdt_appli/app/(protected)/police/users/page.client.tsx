@@ -37,9 +37,7 @@ type Props = {
 };
 
 export default function UsersClient({ metadata, pager: pagerServer }: Props) {
-    const { user } = useUser();
     const [ranks, setRanks] = useState<Rank[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
     const [filter, setFilter] = useState<FilterType>({
         searchTerm: undefined,
         isDisable: undefined,
