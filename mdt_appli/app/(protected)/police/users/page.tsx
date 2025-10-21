@@ -240,7 +240,7 @@ function getRows(users: User[]): UserColumns[] {
                 fullName: x.fullName,
                 jobRank: `${x.rank?.job?.name}/${x.rank?.name}`,
                 role: x.role.value,
-                isDisable: x.isDisable ? "Oui" : "Non",
+                status: x.isDisable ? "Désactivé" : "Actif",
             } as UserColumns)
     );
 }

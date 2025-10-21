@@ -10,7 +10,7 @@ export type UserColumns = {
     fullName: string;
     jobRank: string;
     role: string;
-    isDisable: string;
+    status: string;
 };
 
 export const columns: ColumnDef<UserColumns>[] = [
@@ -43,7 +43,7 @@ export const columns: ColumnDef<UserColumns>[] = [
         header: "Rôle",
     },
     {
-        accessorKey: "isDisable",
-        header: "Est désactivé",
+        accessorKey: "status",
+        header: "Statut",
     },
 ];
