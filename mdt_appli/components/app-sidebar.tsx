@@ -9,17 +9,13 @@ import {
     PersonStanding,
     ShieldUser,
     User,
+    Users2,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
-import { NavProjects } from "@/components/nav-projects";
+import { Nav } from "@/components/nav-projects";
 import { NavUser } from "@/components/nav-user";
-import {
-    Sidebar,
-    SidebarContent,
-    SidebarFooter,
-    SidebarHeader,
-} from "@/components/ui/sidebar";
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from "@/components/ui/sidebar";
 import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
 import Link from "next/link";
 
@@ -84,24 +80,32 @@ const data = {
             ],
         },
     ],
-    projects: [
+    links: [
         {
             name: "Accueil",
             url: "/police/dashboard",
             icon: House,
+        },
+        {
+            name: "Liste des agents",
+            url: "/police/agents",
+            icon: Users2,
         },
     ],
     userLinks: [
         {
             label: "Mon profil",
             href: "/police/users/me",
-            icon: User
-        }
-    ]
+            icon: User,
+        },
+    ],
 };
 
-export function AppSidebar({ isAdmin, ...props }: {isAdmin: boolean} & React.ComponentProps<typeof Sidebar>) {
-    if(!isAdmin) {
+export function AppSidebar({
+    isAdmin,
+    ...props
+}: { isAdmin: boolean } & React.ComponentProps<typeof Sidebar>) {
+    if (!isAdmin) {
         data.navMain = data.navMain.filter((item) => item.isAdmin !== true);
     }
 
@@ -115,11 +119,11 @@ export function AppSidebar({ isAdmin, ...props }: {isAdmin: boolean} & React.Com
                 </Link>
             </SidebarHeader>
             <SidebarContent>
-                <NavProjects projects={data.projects} />
+                <Nav links={data.links} />
                 <NavMain items={data.navMain} />
             </SidebarContent>
             <SidebarFooter>
-                <NavUser links={data.userLinks}/>
+                <NavUser links={data.userLinks} />
             </SidebarFooter>
         </Sidebar>
     );

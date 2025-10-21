@@ -11,10 +11,10 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export function NavProjects({
-    projects,
+export function Nav({
+    links: projects,
 }: {
-    projects: {
+    links: {
         name: string;
         url: string;
         icon: LucideIcon;
