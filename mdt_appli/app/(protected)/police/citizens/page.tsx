@@ -14,6 +14,7 @@ import dayjs from "dayjs";
 import Loader from "@/components/Loader";
 import { Separator } from "@/components/ui/separator";
 import SearchCitizenForm, { SearchCitizenFormOnSubmitType } from "./SearchCitizenForm";
+import TableCitizens from "./table";
 
 type FilterType = {
     searchTerm?: string;
@@ -64,7 +65,9 @@ export default function Citizens() {
 
                 <Separator className="my-5 opacity-50" />
 
-                <DataTable
+                <TableCitizens pager={pager} />
+
+                {/* <DataTable
                     columns={columns}
                     data={getRows(pager.items)}
                     keyIndex="id"
@@ -88,7 +91,7 @@ export default function Citizens() {
                         throw new Error("Not implemented");
                     }}
                     columnsToHide={["id"]}
-                />
+                /> */}
             </div>
         </Page>
     );
