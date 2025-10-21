@@ -1,5 +1,5 @@
 // ⚙️ Fichier généré automatiquement — ne pas modifier à la main
-// Dernière génération : 2025-10-21T15:08:22.594Z
+// Dernière génération : 2025-10-21T19:20:28.148Z
 
 export enum BloodTypeType {
   APositive = 1,

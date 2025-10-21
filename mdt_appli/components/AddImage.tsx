@@ -8,7 +8,7 @@ export default function AddImage(props: {
     title?: string;
 }) {
     return (
-        <div>
+        <div className="w-full">
             {!props.image ? (
                 <div
                     onPaste={props.onPaste}

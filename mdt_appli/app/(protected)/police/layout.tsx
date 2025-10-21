@@ -28,7 +28,7 @@ export default async function ProtectedLayout({
                     <SidebarProvider>
                         <AppSidebar isAdmin={user.isAdmin} />
                         <SidebarInset>
-                            <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+                            <div className="flex flex-1 flex-col gap-4 p-4 pt-0 h-full">
                                 <AlertProvider>{children}</AlertProvider>
                             </div>
                         </SidebarInset>

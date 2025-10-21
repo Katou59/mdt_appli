@@ -151,7 +151,7 @@ export default function AddCitizenForm({
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(onSubmitInternal)}
-                className="flex flex-col items-center w-full gap-5"
+                className="flex flex-col items-center w-full gap-5 mt-5"
             >
                 <h2 className="text-xl text-primary w-full">Identité</h2>
                 <div className="grid grid-cols-2 w-full gap-5">

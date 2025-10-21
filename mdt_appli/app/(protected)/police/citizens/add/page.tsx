@@ -10,6 +10,7 @@ import { useAlert } from "@/lib/Contexts/AlertContext";
 import { CitizenToCreateType } from "@/types/db/citizen";
 import { toast } from "sonner";
 import { UploadResponseType } from "@/types/response/uploadResponseType";
+import Page from "@/components/Page";
 
 export default function AddCitizen() {
     const [imageFile, setImageFile] = useState<File | null>(null);
@@ -32,8 +33,7 @@ export default function AddCitizen() {
     };
 
     return (
-        <>
-            <h1 className="text-4xl font-bold text-primary text-center mb-4">Ajouter un citoyen</h1>
+        <Page title="Ajouter un citoyen">
             <AddImage
                 image={image}
                 onPaste={handlePaste}
@@ -94,6 +94,6 @@ export default function AddCitizen() {
                     return true;
                 }}
             />
-        </>
+        </Page>
     );
 }
