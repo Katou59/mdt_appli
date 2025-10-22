@@ -1,0 +1,1 @@
+ALTER TABLE "citizens" RENAME COLUMN "photo_url" TO "photo_id";

@@ -51,11 +51,11 @@ export default function TableCitizens({ pager, onPageChange }: Props) {
                                 <TableCell>{citizen.phoneNumber}</TableCell>
                                 <TableCell>
                                     {citizen.createdBy.fullName}{" "}
-                                    {dayjs(citizen.createdAt).format("DD/MM/YYYY hh:mm:ss")}
+                                    {dayjs(citizen.createdAt).format("DD/MM/YYYY HH:mm:ss")}
                                 </TableCell>
                                 <TableCell>
                                     {citizen.updatedBy.fullName}{" "}
-                                    {dayjs(citizen.updatedAt).format("DD/MM/YYYY hh:mm:ss")}
+                                    {dayjs(citizen.updatedAt).format("DD/MM/YYYY HH:mm:ss")}
                                 </TableCell>
                             </TableRow>
                         ))}

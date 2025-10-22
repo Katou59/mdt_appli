@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
 
         await s3.send(
             new PutObjectCommand({
-                Bucket: "mdt", // crée ce bucket dans MinIO
+                Bucket: process.env.MINIO_BUCKET,
                 Key: fileName,
                 Body: bytes,
                 ContentType: file.type,
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json(
             {
-                url: `${process.env.MINIO_URL}${fileName}`,
+                url: `${fileName}`,
             },
             { status: HttpStatus.CREATED }
         );

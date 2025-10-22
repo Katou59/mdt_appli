@@ -120,6 +120,13 @@
       "when": 1761043646469,
       "tag": "0016_warm_ulik",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1761146096649,
+      "tag": "0017_jittery_power_pack",
+      "breakpoints": true
     }
   ]
 }
