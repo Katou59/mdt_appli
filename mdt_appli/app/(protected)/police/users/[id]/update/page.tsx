@@ -1,109 +1,49 @@
-"use client";
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import axiosClient, { getData } from "@/lib/axiosClient";
-import User from "@/types/class/User";
-import Loader from "@/components/Loader";
-import Page from "@/components/Page";
-import { UserToUpdateType, UserType } from "@/types/db/user";
-import { useUser } from "@/lib/Contexts/UserContext";
-import Rank from "@/types/class/Rank";
-import Job from "@/types/class/Job";
-import { useAlert } from "@/lib/Contexts/AlertContext";
+import { auth } from "@/auth";
+import Alert from "@/components/Alert";
+import { UserRepository } from "@/repositories/userRepository";
+import UpdateUserClient from "./page.client";
+import { createAxiosServer } from "@/lib/axiosServer";
 import { MetadataType } from "@/types/utils/metadata";
-import { toast } from "sonner";
-import UserUpdate from "@/components/UserUpdate";
 
-export default function UpdateUser() {
-    const params = useParams<{ id: string }>();
-    const [user, setUser] = useState<User>();
-    const [isLoaded, setIsLoaded] = useState(false);
-    const { user: currentUser } = useUser();
-    const { setAlert } = useAlert();
-    const [ranks, setRanks] = useState<{ initialRanks: Rank[]; currentRanks: Rank[] }>({
-        initialRanks: [],
-        currentRanks: [],
-    });
-    const [jobs, setJobs] = useState<Job[]>([]);
-    const [roles, setRoles] = useState<{ id: number; name: string }[]>([]);
-    const router = useRouter();
+export const metadata = {
+    title: "MDT - Modifier un utilisateur",
+    description: "Modification et gestion d'un utilisateur.",
+};
 
-    useEffect(() => {
-        async function init() {
-            const result = await getData(axiosClient.get(`/users/${params.id}`));
-            if (result.errorMessage) {
-                setAlert({ title: "Erreur", description: result.errorMessage });
-                setIsLoaded(true);
-                return;
-            }
+type Props = {
+    params: {
+        id: string;
+    };
+};
 
-            const user = new User(result.data);
-            setUser(user);
-
-            const metadataResult = await getData(axiosClient.get("/metadata"));
-            if (metadataResult.errorMessage) {
-                setAlert({ title: "Erreur", description: metadataResult.errorMessage });
-                return;
-            }
-            const metatadata = metadataResult.data as MetadataType;
-
-            setJobs(metatadata.jobs.map((job) => new Job(job)));
-            setRanks({
-                initialRanks: metatadata.ranks.map((rank) => new Rank(rank)),
-                currentRanks: metatadata.ranks
-                    .map((rank) => new Rank(rank))
-                    .filter((rank) => rank.job?.id === user.rank?.job?.id),
-            });
-            setRoles(metatadata.roles.map((role) => ({ id: role.key, name: role.value })));
-            setIsLoaded(true);
+export default async function UpdateUser({ params }: Props) {
+    try {
+        const userId = (await params)?.id;
+        if (!userId) {
+            return <Alert type="invalidParameter" />;
         }
 
-        init();
-    }, [params.id, setAlert]);
-
-    if (!isLoaded) return <Loader />;
-
-    async function onSubmit(updatedUser: UserToUpdateType): Promise<void> {
-        const userResponse = await getData(axiosClient.put(`/users/${params.id}`, updatedUser));
-        if (userResponse.errorMessage) {
-            setAlert({ title: "Erreur", description: userResponse.errorMessage });
-            return Promise.reject();
+        const user = await UserRepository.Get(userId);
+        if (!user) {
+            return <Alert type="invalidParameter" />;
         }
 
-        const resultUser = new User(userResponse.data as UserType);
-        setUser(resultUser);
-        toast.success("Utilisateur mis à jour avec succès");
-        router.push(`/police/users/${resultUser.id}`);
-        return Promise.resolve();
+        const session = await auth();
+        if (!session?.user?.discordId) {
+            return <Alert type="invalidParameter" />;
+        }
+
+        const currentUser = await UserRepository.Get(session?.user.discordId);
+        if (!currentUser?.isAdmin && userId !== currentUser?.id) {
+            return <Alert type="unauthorized" />;
+        }
+
+        const axios = await createAxiosServer();
+        const response = await axios.get("/metadata");
+        const metadata = response.data as MetadataType;
+
+        return <UpdateUserClient metadata={metadata} user={user.toType()} />;
+    } catch {
+        return <Alert />;
     }
-
-    function onCancel() {
-        router.push(`/police/users/${user?.id}`);
-    }
-
-    return (
-        <Page title={`Modification ${user?.fullName || ""}`}>
-            {user && (
-                <UserUpdate
-                    userToUpdate={user!.toType()}
-                    isAdmin={currentUser!.isAdmin}
-                    jobs={jobs.map((job) => ({ label: job.name!, value: String(job.id) }))}
-                    ranks={ranks.currentRanks.map((rank) => ({
-                        label: rank.name!,
-                        value: String(rank.id),
-                    }))}
-                    onJobChange={async (jobId: string) => {
-                        const filteredRanks = ranks.initialRanks.filter(
-                            (rank) => rank.job?.id === Number(jobId)
-                        );
-
-                        setRanks((prev) => ({ ...prev, currentRanks: filteredRanks }));
-                    }}
-                    roles={roles.map((role) => ({ label: role.name, value: String(role.id) }))}
-                    onSubmit={onSubmit}
-                    onCancel={onCancel}
-                />
-            )}
-        </Page>
-    );
 }

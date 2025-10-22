@@ -6,7 +6,7 @@ import React, { useEffect } from "react";
 type Props = {
     title?: string;
     descrition?: string;
-    type?: "unauthorized";
+    type?: "unauthorized" | "invalidParameter";
 };
 
 export default function Alert({
@@ -20,6 +20,9 @@ export default function Alert({
             switch (type) {
                 case "unauthorized":
                     setAlert({ title: "Erreur", description: "Vous n'êtes pas authorisé" });
+                    return;
+                case "invalidParameter":
+                    setAlert({ title: "Erreur", description: "Paramètre invalide" });
                     return;
                 default:
                     setAlert({ title: "Erreur", description: "Une erreur est survenue" });

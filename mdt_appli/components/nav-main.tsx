@@ -38,7 +38,6 @@ export function NavMain({
                     <Collapsible
                         key={item.title}
                         asChild
-                        defaultOpen={item.isActive}
                         className="group/collapsible"
                         open={
                             item.items?.some((subItem) => pathname === subItem.url) || item.isActive
