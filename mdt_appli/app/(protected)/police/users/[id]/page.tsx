@@ -1,42 +1,32 @@
-"use client";
+import UserIdClient from "./page.client";
+import { UserRepository } from "@/repositories/userRepository";
+import Alert from "@/components/Alert";
 
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import axiosClient, { getData } from "@/lib/axiosClient";
-import User from "@/types/class/User";
-import Loader from "@/components/Loader";
-import Page from "@/components/Page";
-import UserConsult from "@/components/UserConsult";
-import { useAlert } from "@/lib/Contexts/AlertContext";
+export const metadata = {
+    title: "MDT - Consulter un utilisateur",
+    description: "Consultation et gestion d'un utilisateur.",
+};
 
-export default function UserId() {
-    const params = useParams<{ id: string }>();
-    const [user, setUser] = useState<User>();
-    const [isLoaded, setIsLoaded] = useState(false);
-    const { setAlert } = useAlert();
+type Props = {
+    params: {
+        id: string;
+    };
+};
 
-    useEffect(() => {
-        async function init() {
-            const result = await getData(axiosClient.get(`/users/${params.id}`));
-            if (result.errorMessage) {
-                setAlert({ title: "Erreur", description: result.errorMessage });
-                setIsLoaded(true);
-                return;
-            }
-
-            setUser(new User(result.data));
-            setIsLoaded(true);
+export default async function UserId({ params }: Props) {
+    try {
+        const userId = (await params)?.id;
+        if (!userId) {
+            return <Alert descrition="Paramètre invalide" />;
         }
 
-        init();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [params.id]);
+        const user = await UserRepository.Get(userId);
+        if (!user) {
+            return <Alert descrition="Paramètre invalide" />;
+        }
 
-    if (!isLoaded) return <Loader />;
-
-    return (
-        <Page title={`Utilisateur ${user?.fullName || ""}`}>
-            {user && <UserConsult userToUpdate={user.toType()} />}
-        </Page>
-    );
+        return <UserIdClient user={user.toType()} />;
+    } catch {
+        return <Alert />;
+    }
 }
