@@ -1,91 +1,33 @@
-"use client";
+import { auth } from "@/auth";
+import Alert from "@/components/Alert";
+import { createAxiosServer } from "@/lib/axiosServer";
+import { UserRepository } from "@/repositories/userRepository";
+import { MetadataType } from "@/types/utils/metadata";
+import AddUserClient from "./page.client";
 
-import Loader from "@/components/Loader";
-import Page from "@/components/Page";
-import axiosClient, { getData } from "@/lib/axiosClient";
-import { useUser } from "@/lib/Contexts/UserContext";
-import Job from "@/types/class/Job";
-import Rank from "@/types/class/Rank";
-import { JobType } from "@/types/db/job";
-import { RankType } from "@/types/db/rank";
-import { UserToCreateType } from "@/types/db/user";
-import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import { AddUserForm } from "./AddUserForm";
-import { toast } from "sonner";
-import { useAlert } from "@/lib/Contexts/AlertContext";
+export const metadata = {
+    title: "MDT - Ajouter un utilisateur",
+    description: "Ajout d'un utilisateur.",
+};
 
-export default function AddUser() {
-    const { user } = useUser();
-    const router = useRouter();
-    const [isLoaded, setIsLoaded] = useState(false);
-    const [jobs, setJobs] = useState<Job[]>([]);
-    const [ranks, setRanks] = useState<Rank[]>([]);
-    const { setAlert } = useAlert();
-
-    useEffect(() => {
-        async function init() {
-            if (!user?.isAdmin) {
-                router.push("/police/dashboard");
-                return;
-            }
-
-            const jobsResponse = await getData(axiosClient.get("/jobs"));
-            if (jobsResponse.errorMessage) {
-                setAlert({ title: "Erreur", description: jobsResponse.errorMessage });
-                setIsLoaded(true);
-                return;
-            }
-
-            setJobs((jobsResponse.data as JobType[]).map((x) => new Job(x)));
-            setIsLoaded(true);
+export default async function AddUser() {
+    try {
+        const session = await auth();
+        if (!session?.user?.discordId) {
+            return <Alert type="invalidParameter" />;
         }
 
-        init();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [router, user]);
-
-    if (!isLoaded) return <Loader />;
-
-    async function onSubmit(values: UserToCreateType): Promise<boolean> {
-        const userCreated = await getData(axiosClient.post("/users", values));
-
-        if (userCreated.status === 409) {
-            setAlert({ title: "Erreur", description: "Un utilisateur avec cet id éxiste déjà" });
-            return false;
-        }
-        if (userCreated.errorMessage) {
-            setAlert({ title: "Erreur", description: userCreated.errorMessage });
-            return false;
+        const currentUser = await UserRepository.Get(session?.user.discordId);
+        if (!currentUser?.isAdmin) {
+            return <Alert type="unauthorized" />;
         }
 
-        toast.success("Utilisateur créé avec succés", {
-            className: "bg-red-500",
-        });
+        const axios = await createAxiosServer();
+        const response = await axios.get("/metadata");
+        const metadata = response.data as MetadataType;
 
-        return true;
+        return <AddUserClient metadata={metadata} />;
+    } catch {
+        return <Alert />;
     }
-
-    return (
-        <Page title="Ajouter un nouvel utilisateur">
-            <AddUserForm
-                onSubmit={onSubmit}
-                jobs={jobs.map((x) => ({ value: String(x.id), label: x.name! }))}
-                ranks={ranks.map((x) => ({ value: String(x.id), label: x.name! }))}
-                onJobChange={async (e: string) => {
-                    const value = e ? Number(e) : undefined;
-
-                    const ranksResponse = await getData(axiosClient.get(`/ranks/${value}`));
-                    if (ranksResponse.errorMessage) {
-                        setAlert({ title: "Erreur", description: ranksResponse.errorMessage });
-                        return;
-                    }
-
-                    const ranks = (ranksResponse.data as RankType[]).map((x) => new Rank(x));
-
-                    setRanks(ranks);
-                }}
-            />
-        </Page>
-    );
 }

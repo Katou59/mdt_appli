@@ -46,9 +46,11 @@ export default function UserConsult({
                         />
                         <ItemForm
                             title="Première connexion"
-                            description={dayjs(userToUpdate.firstLogin).format(
-                                "DD/MM/YYYY HH:mm:ss"
-                            )}
+                            description={
+                                userToUpdate.firstLogin
+                                    ? dayjs(userToUpdate.firstLogin).format("DD/MM/YYYY HH:mm:ss")
+                                    : "Jamais connecté"
+                            }
                         />
                         <ItemForm
                             title="Dernière connexion"

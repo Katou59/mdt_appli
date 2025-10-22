@@ -37,7 +37,6 @@ export function NavMain({
                 {items.map((item) => (
                     <Collapsible
                         key={item.title}
-                        asChild
                         className="group/collapsible"
                         open={
                             item.items?.some((subItem) => pathname === subItem.url) || item.isActive
