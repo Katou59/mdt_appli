@@ -1,6 +1,6 @@
 "use client";
 
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { UserType } from "@/types/db/user";
 import { RoleType } from "@/types/enums/roleType";
 import { useUser } from "@/lib/Contexts/UserContext";
@@ -32,11 +32,12 @@ type FilterType = {
 };
 
 type Props = {
-    metadata: MetadataType;
-    pager: PagerType<UserType>;
+    metadata?: MetadataType;
+    pager?: PagerType<UserType>;
+    error?: string;
 };
 
-export default function UsersClient({ metadata, pager: pagerServer }: Props) {
+export default function UsersClient({ metadata, pager: pagerServer, error }: Props) {
     const [ranks, setRanks] = useState<Rank[]>([]);
     const [filter, setFilter] = useState<FilterType>({
         searchTerm: undefined,
@@ -47,14 +48,48 @@ export default function UsersClient({ metadata, pager: pagerServer }: Props) {
     });
     const [pager, setPager] = useState<PagerClass<User, UserType>>(
         new PagerClass(
-            pagerServer.items.map((x) => new User(x)),
-            pagerServer.itemCount,
-            pagerServer.itemPerPage,
-            pagerServer.page
+            pagerServer?.items?.map((x) => new User(x)) ?? [],
+            pagerServer?.itemCount ?? 0,
+            pagerServer?.itemPerPage ?? 0,
+            pagerServer?.page ?? 0
         )
     );
     const { setAlert } = useAlert();
     const router = useRouter();
+    const [hasError, setHasError] = useState<boolean>(false);
+    const [isLoaded, setIsLoaded] = useState(false);
+
+    useEffect(() => {
+        if (error) {
+            setAlert({
+                title: "Erreur",
+                description: error,
+            });
+            setHasError(true);
+            setIsLoaded(true);
+            return;
+        }
+
+        if (!metadata || !pagerServer) {
+            setAlert({
+                title: "Erreur",
+                description: "Une erreur est survenue lors du chargement de la page",
+            });
+            setHasError(true);
+            setIsLoaded(true);
+            return;
+        }
+
+        setIsLoaded(true);
+    }, [error, metadata, pagerServer, setAlert]);
+
+    if (!isLoaded) {
+        return <Loader />;
+    }
+
+    if (hasError) {
+        return <></>;
+    }
 
     const onSearchSubmit = async (e: SearchUserFormOnSubmitType) => {
         const newFilter = {
@@ -97,18 +132,21 @@ export default function UsersClient({ metadata, pager: pagerServer }: Props) {
         }
     };
 
-    // if (isLoading) return <Loader />;
-
     return (
         <Page title="Liste des utilisateurs">
             <div className="w-full">
                 <SearchUserForm
-                    jobs={metadata.jobs.map((x) => ({ value: String(x.id), label: x.name! }))}
-                    roles={metadata.roles.map((x) => ({ value: String(x.key), label: x.value! }))}
+                    jobs={
+                        metadata?.jobs?.map((x) => ({ value: String(x.id), label: x.name! })) ?? []
+                    }
+                    roles={
+                        metadata?.roles?.map((x) => ({ value: String(x.key), label: x.value! })) ??
+                        []
+                    }
                     ranks={ranks.map((x) => ({ value: String(x.id), label: x.name! }))}
                     onJobChange={async function (value: string): Promise<void> {
-                        const newRanks = metadata.ranks.filter((x) => x.job?.id === Number(value));
-                        setRanks(newRanks.map((x) => new Rank(x)));
+                        const newRanks = metadata?.ranks.filter((x) => x.job?.id === Number(value));
+                        setRanks(newRanks?.map((x) => new Rank(x)) ?? []);
                     }}
                     onSubmit={onSearchSubmit}
                     onCancel={async () => {

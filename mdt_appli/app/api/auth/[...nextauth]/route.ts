@@ -8,7 +8,7 @@ const auth = NextAuth({
 		async signIn({ user, profile }) {
 			if (!profile?.id) return false;
 
-			const userDb = await UserRepository.get(profile.id);
+			const userDb = await UserRepository.Get(profile.id);
 
 			if (!userDb || userDb.isDisable) return false;
 

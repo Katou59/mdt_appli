@@ -15,7 +15,7 @@ export default async function ProtectedLayout({
 
     if (!session?.user?.discordId) return redirect("/");
 
-    const user = await UserRepository.get(session.user.discordId);
+    const user = await UserRepository.Get(session.user.discordId);
 
     if (user?.isDisable || (user?.rank?.job?.id !== 1 && !user?.isAdmin)) {
         return redirect("/");

@@ -14,12 +14,12 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
         if (!session?.user?.discordId)
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-        const currentUser = await UserRepository.get(session.user.discordId);
+        const currentUser = await UserRepository.Get(session.user.discordId);
         if (!currentUser) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
         const { id } = await context.params;
 
-        const userResult = await UserRepository.get(id);
+        const userResult = await UserRepository.Get(id);
 
         if (!userResult) {
             return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -54,12 +54,12 @@ export async function PUT(request: NextRequest) {
     let body: UserToUpdateType | null = null;
     try {
         const session = await auth();
-        const currentUser = await UserRepository.get(session!.user.discordId!);
+        const currentUser = await UserRepository.Get(session!.user.discordId!);
 
         body = (await request.json()) as UserToUpdateType;
         if (!body?.id) return NextResponse.json({ error: "Bad Request" }, { status: 400 });
 
-        const userToUpdate = await UserRepository.get(body.id);
+        const userToUpdate = await UserRepository.Get(body.id);
         if (!userToUpdate?.id) return NextResponse.json({ error: "Bad Request" }, { status: 400 });
 
         const userToUpdateCopy = { ...userToUpdate };
@@ -88,7 +88,7 @@ export async function PUT(request: NextRequest) {
 
         await UserRepository.update(userToUpdate);
 
-        const userUpdated = await UserRepository.get(userToUpdate.id);
+        const userUpdated = await UserRepository.Get(userToUpdate.id);
 
         HistoryRepository.Add({
             action: "update",

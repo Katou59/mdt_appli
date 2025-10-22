@@ -3,6 +3,8 @@ import UsersClient from "./page.client";
 import { createAxiosServer } from "@/lib/axiosServer";
 import { MetadataType } from "@/types/utils/metadata";
 import { UserRepository } from "@/repositories/userRepository";
+import { auth } from "@/auth";
+import { RoleType } from "@/types/enums/roleType";
 
 export const metadata = {
     title: "MDT - Liste des utilisateurs",
@@ -10,25 +12,40 @@ export const metadata = {
 };
 
 export default async function Users() {
-    const axios = await createAxiosServer();
-    const response = await axios.get("/metadata");
-    const metadata = response.data as MetadataType;
+    try {
+        const session = await auth();
+        if (!session?.user?.discordId) {
+            return <UsersClient error="Vous n'êtes pas autorisé" />;
+        }
 
-    const pagerUsers = await UserRepository.GetList({
-        itemPerPage: 20,
-        page: 1,
-    });
+        const currentUser = await UserRepository.Get(session.user.discordId);
+        if (!currentUser?.isAdmin) {
+            console.log(currentUser?.role?.key);
+            return <UsersClient error="Vous n'êtes pas autorisé" />;
+        }
 
-    return (
-        <UsersClient
-            metadata={metadata}
-            pager={{
-                itemCount: pagerUsers.itemCount,
-                itemPerPage: pagerUsers.itemPerPage,
-                items: pagerUsers.items.map((x) => x.toType()),
-                page: pagerUsers.page,
-                pageCount: pagerUsers.pageCount,
-            }}
-        />
-    );
+        const axios = await createAxiosServer();
+        const response = await axios.get("/metadata");
+        const metadata = response.data as MetadataType;
+
+        const users = await UserRepository.GetList({
+            itemPerPage: 20,
+            page: 1,
+        });
+
+        return (
+            <UsersClient
+                metadata={metadata}
+                pager={{
+                    itemCount: users.itemCount,
+                    itemPerPage: users.itemPerPage,
+                    items: users.items.map((x) => x.toType()),
+                    page: users.page,
+                    pageCount: users.pageCount,
+                }}
+            />
+        );
+    } catch {
+        return <UsersClient />;
+    }
 }

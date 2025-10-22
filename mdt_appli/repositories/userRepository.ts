@@ -14,7 +14,7 @@ type FilterType = {
 };
 
 export class UserRepository extends Repository {
-    public static async get(discordId: string): Promise<User | null> {
+    public static async Get(discordId: string): Promise<User | null> {
         const users = await UserRepository.db
             .select()
             .from(usersTable)

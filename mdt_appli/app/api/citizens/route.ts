@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
     try {
         const session = await auth();
-        const user = await UserRepository.get(session!.user!.discordId!);
+        const user = await UserRepository.Get(session!.user!.discordId!);
 
         if (!user) {
             return NextResponse.json(

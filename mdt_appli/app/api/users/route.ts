@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: "Bad Request" }, { status: HttpStatus.BAD_REQUEST });
         }
 
-        const currentUser = await UserRepository.get(session!.user.discordId!);
+        const currentUser = await UserRepository.Get(session!.user.discordId!);
 
         const pager = await UserRepository.GetList({
             itemPerPage,
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
         body = (await request.json()) as UserToCreateType;
         await UserRepository.add(body);
 
-        const userCreated = (await UserRepository.get(body.id))?.toType();
+        const userCreated = (await UserRepository.Get(body.id))?.toType();
 
         HistoryRepository.Add({
             action: "create",
