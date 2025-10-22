@@ -1,181 +1,33 @@
-"use client";
-
+import { auth } from "@/auth";
 import Alert from "@/components/Alert";
-import Loader from "@/components/Loader";
-import axiosClient, { getData } from "@/lib/axiosClient";
-import { useToast } from "@/lib/Contexts/ToastContext";
-import { useUser } from "@/lib/Contexts/UserContext";
-import Job from "@/types/class/Job";
-import Rank from "@/types/class/Rank";
-import { JobType } from "@/types/db/job";
-import { RankType } from "@/types/db/rank";
-import { UserToCreateType } from "@/types/db/user";
-import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import { createAxiosServer } from "@/lib/axiosServer";
+import { UserRepository } from "@/repositories/userRepository";
+import { MetadataType } from "@/types/utils/metadata";
+import AddUserClient from "./page.client";
 
-export default function AddUser() {
-    const { user } = useUser();
-    const router = useRouter();
-    const [isLoaded, setIsLoaded] = useState(false);
-    const [jobs, setJobs] = useState<Job[]>([]);
-    const [ranks, setRanks] = useState<Rank[]>([]);
-    const [errorMessage, setErrorMessage] = useState("");
-    const { addToast } = useToast();
-    const [userToCreate, setUserToCreate] = useState<UserToCreateType>({
-        id: "",
-        jobId: null,
-        rankId: null,
-    });
+export const metadata = {
+    title: "MDT - Ajouter un utilisateur",
+    description: "Ajout d'un utilisateur.",
+};
 
-    useEffect(() => {
-        async function init() {
-            if (!user?.isAdmin) {
-                router.push("/police/dashboard");
-                return;
-            }
-
-            const jobsResponse = await getData(axiosClient.get("/jobs"));
-            if (jobsResponse.errorMessage) {
-                setErrorMessage(jobsResponse.errorMessage);
-                setIsLoaded(true);
-            }
-
-            setJobs((jobsResponse.data as JobType[]).map((x) => new Job(x)));
-            setIsLoaded(true);
+export default async function AddUser() {
+    try {
+        const session = await auth();
+        if (!session?.user?.discordId) {
+            return <Alert type="invalidParameter" />;
         }
 
-        init();
-    }, [router, user]);
-
-    if (!isLoaded) return <Loader />;
-
-    async function handleSubmit(event: React.FormEvent<HTMLFormElement>): Promise<void> {
-        event.preventDefault();
-
-        const userCreated = await getData(axiosClient.post("/users", userToCreate));
-
-        if (userCreated.status === 409) {
-            setErrorMessage("Un utilisateur avec cet id éxiste déjà");
-            return;
-        }
-        if (userCreated.errorMessage) {
-            setErrorMessage(userCreated.errorMessage);
-            return;
+        const currentUser = await UserRepository.Get(session?.user.discordId);
+        if (!currentUser?.isAdmin) {
+            return <Alert type="unauthorized" />;
         }
 
-        setErrorMessage("");
-        setUserToCreate({ id: "", jobId: null, rankId: null });
-        addToast("Utilisateur créé avec succés", "success");
+        const axios = await createAxiosServer();
+        const response = await axios.get("/metadata");
+        const metadata = response.data as MetadataType;
+
+        return <AddUserClient metadata={metadata} />;
+    } catch {
+        return <Alert />;
     }
-
-    return (
-        <>
-            <Alert message={errorMessage} />
-            <form
-                className="flex flex-col justify-center"
-                onSubmit={handleSubmit}
-                onReset={() => {
-                    setErrorMessage("");
-                    setUserToCreate({ id: "", jobId: null, rankId: null });
-                }}
-            >
-                <h1 className="text-4xl font-bold text-primary text-center mb-4">
-                    Ajouter un nouvel utilisateur
-                </h1>
-                <div className="grid grid-cols-2 gap-2">
-                    <fieldset className="fieldset col-span-2 w-1/2 pr-1">
-                        <legend className="fieldset-legend">Id Discord</legend>
-                        <input
-                            type="text"
-                            name="discordId"
-                            className="input w-full"
-                            placeholder="Id Discord"
-                            value={userToCreate.id}
-                            onChange={(e) => {
-                                setUserToCreate({ ...userToCreate, id: e.target.value });
-                            }}
-                            autoComplete="off"
-                            required={true}
-                        />
-                    </fieldset>
-                    <fieldset className="fieldset">
-                        <legend className="fieldset-legend">Métier</legend>
-                        <select
-                            className="select w-full"
-                            value={userToCreate.jobId ?? ""}
-                            onChange={async (e) => {
-                                e.preventDefault();
-                                const value = Number(e.target.value);
-
-                                const ranksResponse = await getData(
-                                    axiosClient.get(`/ranks/${value}`)
-                                );
-                                if (ranksResponse.errorMessage) {
-                                    setErrorMessage(ranksResponse.errorMessage);
-                                    return;
-                                }
-
-                                const ranks = (ranksResponse.data as RankType[]).map(
-                                    (x) => new Rank(x)
-                                );
-
-                                setUserToCreate((prev) => ({
-                                    ...prev,
-                                    jobId: Number(value),
-                                    rankId: null,
-                                }));
-
-                                setRanks(ranks);
-                            }}
-                            required={true}
-                        >
-                            <option value="" disabled={true}>
-                                Choisir
-                            </option>
-                            {jobs?.map((x) => {
-                                return (
-                                    <option key={x.id} value={x.id!}>
-                                        {x.name}
-                                    </option>
-                                );
-                            })}
-                        </select>
-                    </fieldset>
-                    <fieldset className="fieldset">
-                        <legend className="fieldset-legend">Grade</legend>
-                        <select
-                            className="select w-full"
-                            value={userToCreate.rankId ?? ""}
-                            onChange={(e) => {
-                                setUserToCreate({
-                                    ...userToCreate,
-                                    rankId: Number(e.target.value),
-                                });
-                            }}
-                            required={true}
-                        >
-                            <option value="" disabled={true}>
-                                Choisir
-                            </option>
-                            {ranks?.map((x) => {
-                                return (
-                                    <option key={x.id} value={x.id!}>
-                                        {x.name}
-                                    </option>
-                                );
-                            })}
-                        </select>
-                    </fieldset>
-                </div>
-                <div className="flex justify-center join mt-4">
-                    <button type="reset" className="btn btn-error join-item w-30">
-                        Annuler
-                    </button>
-                    <button type="submit" className="btn btn-success join-item w-30">
-                        Valider
-                    </button>
-                </div>
-            </form>
-        </>
-    );
 }

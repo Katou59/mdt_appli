@@ -1,41 +1,32 @@
-"use client";
-
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import axiosClient, { getData } from "@/lib/axiosClient";
-import UserComponent from "@/components/UserComponent";
-import User from "@/types/class/User";
+import UserIdClient from "./page.client";
+import { UserRepository } from "@/repositories/userRepository";
 import Alert from "@/components/Alert";
-import Loader from "@/components/Loader";
 
-export default function UserId() {
-	const params = useParams<{ id: string }>();
-	const [user, setUser] = useState<User>();
-	const [isLoaded, setIsLoaded] = useState(false);
-	const [errorMessage, setErrorMessage] = useState("");
+export const metadata = {
+    title: "MDT - Consulter un utilisateur",
+    description: "Consultation et gestion d'un utilisateur.",
+};
 
-	useEffect(() => {
-		async function init() {
-			const result = await getData(axiosClient.get(`/users/${params.id}`));
-			if (result.errorMessage) {
-				setErrorMessage(result.errorMessage);
-				setIsLoaded(true);
-				return;
-			}
+type Props = {
+    params: {
+        id: string;
+    };
+};
 
-			setUser(new User(result.data));
-			setIsLoaded(true);
-		}
+export default async function UserId({ params }: Props) {
+    try {
+        const userId = (await params)?.id;
+        if (!userId) {
+            return <Alert descrition="Paramètre invalide" />;
+        }
 
-		init();
-	}, [params.id]);
+        const user = await UserRepository.Get(userId);
+        if (!user) {
+            return <Alert descrition="Paramètre invalide" />;
+        }
 
-	if (!isLoaded) return <Loader/>;
-
-	return (
-		<>
-			<Alert message={errorMessage} />
-			{user && <UserComponent user={user!.toType()} isConsult={true} />}
-		</>
-	);
+        return <UserIdClient user={user.toType()} />;
+    } catch {
+        return <Alert />;
+    }
 }

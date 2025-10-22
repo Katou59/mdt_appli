@@ -5,16 +5,17 @@ export default function AddImage(props: {
     image: string | null;
     onPaste: (event: React.ClipboardEvent<HTMLDivElement>) => void;
     delete: () => void;
+    title?: string;
 }) {
     return (
-        <div>
+        <div className="w-full">
             {!props.image ? (
                 <div
                     onPaste={props.onPaste}
                     tabIndex={0}
                     className="w-full h-[200px] border-2 border-dashed flex items-center justify-center cursor-pointer rounded-xl"
                 >
-                    Colle une image ici
+                    {props.title ? props.title : "Colle une image ici"}
                 </div>
             ) : (
                 <>

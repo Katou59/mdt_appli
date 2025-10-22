@@ -26,7 +26,7 @@ export async function middleware(req: NextRequest) {
 
 	// Vérification des droits d'admin pour certaines routes API sensibles
 	if (apiAdmins.some((x) => req.nextUrl.pathname.startsWith(x.path) && x.method === req.method)) {
-		const user = await UserRepository.get(session!.user.discordId!);
+		const user = await UserRepository.Get(session!.user.discordId!);
 
 		// Si l'utilisateur n'est pas admin, renvoyer une erreur 401 Unauthorized
 		if (!user?.isAdmin) {
@@ -40,7 +40,7 @@ export async function middleware(req: NextRequest) {
 	}
 
 	// Vérifier si l'utilisateur est désactivé dans la base de données
-	const userDb = await UserRepository.get(session.user.discordId);
+	const userDb = await UserRepository.Get(session.user.discordId);
 	if (userDb?.isDisable) {
 		return NextResponse.redirect(new URL("/", req.url));
 	}

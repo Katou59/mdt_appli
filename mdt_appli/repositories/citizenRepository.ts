@@ -98,8 +98,8 @@ export default class CitizenRepository extends Repository {
 
         const [{ count }] = await countQuery;
 
-        const citizens = dbCitizens
-            .map((dbCitizen) =>
+        const citizensData = await Promise.all(
+            dbCitizens.map(async (dbCitizen) =>
                 Citizen.getFromDb(
                     dbCitizen.citizens,
                     dbCitizen.genders,
@@ -115,7 +115,9 @@ export default class CitizenRepository extends Repository {
                     dbCitizen.updated_by_user_roles!
                 )
             )
-            .filter((x): x is Citizen => x !== null);
+        );
+
+        const citizens = citizensData.filter((x): x is Citizen => x !== null);
 
         return new Pager(citizens, count, valuePerPage, page);
     }

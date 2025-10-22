@@ -1,72 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { UserToCreateType, UserToUpdateType } from "@/types/db/user";
+import { UserToCreateType } from "@/types/db/user";
 import { auth } from "@/auth";
 import { UserRepository } from "@/repositories/userRepository";
-import { RoleType } from "@/types/enums/roleType";
 import { HttpStatus } from "@/types/enums/httpStatus";
 import HistoryRepository from "@/repositories/historyRepository";
 import ErrorLogRepository from "@/repositories/errorLogRepository";
-
-export async function PUT(request: NextRequest) {
-    let body = null;
-    try {
-        const session = await auth();
-        const currentUser = await UserRepository.get(session!.user.discordId!);
-
-        body = (await request.json()) as UserToUpdateType;
-        if (!body?.id)
-            return NextResponse.json({ error: "Bad Request" }, { status: 400 });
-
-        const userToUpdate = await UserRepository.get(body.id);
-        if (!userToUpdate?.id) return NextResponse.json({ error: "Bad Request" }, { status: 400 });
-
-        const userToUpdateCopy = { ...userToUpdate };
-
-        userToUpdate.update(
-            body,
-            currentUser?.isAdmin,
-            currentUser?.role.key === RoleType.SuperAdmin
-        );
-
-        const isSelf = session!.user.discordId === userToUpdate.id;
-
-        if (currentUser?.isDisable || (!currentUser?.isAdmin && !isSelf)) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
-
-        await UserRepository.update(userToUpdate);
-
-        const userUpdated = await UserRepository.get(userToUpdate.id);
-
-        HistoryRepository.Add({
-            action: "update",
-            entityId: userUpdated?.id ?? null,
-            entityType: "user",
-            newData: userUpdated,
-            oldData: userToUpdateCopy,
-            userId: session!.user!.discordId!,
-        });
-
-        return NextResponse.json(userUpdated);
-    } catch (error) {
-        ErrorLogRepository.Add({
-            error: error,
-            path: request.nextUrl.href,
-            request: body,
-            userId: (await auth())!.user!.discordId!,
-            method: request.method,
-        });
-        if (error instanceof Error)
-            return NextResponse.json(
-                { error: error.message },
-                { status: HttpStatus.INTERNAL_SERVER_ERROR }
-            );
-        return NextResponse.json(
-            { error: "Internal server error" },
-            { status: HttpStatus.INTERNAL_SERVER_ERROR }
-        );
-    }
-}
 
 export async function GET(request: NextRequest) {
     try {
@@ -89,9 +27,9 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: "Bad Request" }, { status: HttpStatus.BAD_REQUEST });
         }
 
-        const currentUser = await UserRepository.get(session!.user.discordId!);
+        const currentUser = await UserRepository.Get(session!.user.discordId!);
 
-        const pager = await UserRepository.getList({
+        const pager = await UserRepository.GetList({
             itemPerPage,
             page,
             filter: {
@@ -138,7 +76,7 @@ export async function POST(request: NextRequest) {
         body = (await request.json()) as UserToCreateType;
         await UserRepository.add(body);
 
-        const userCreated = (await UserRepository.get(body.id))?.toType();
+        const userCreated = (await UserRepository.Get(body.id))?.toType();
 
         HistoryRepository.Add({
             action: "create",

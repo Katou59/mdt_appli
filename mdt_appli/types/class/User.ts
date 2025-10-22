@@ -44,7 +44,7 @@ export default class User implements IConverter<UserType> {
             this.firstName && this.lastName ? `${this.firstName} ${this.lastName}` : null;
     }
 
-    update(user: UserToUpdateType, currentUserIsAdmin = false, currentUserIsSuperAdmin = false) {
+    update(user: UserToUpdateType) {
         if (user.number !== undefined) {
             this.number = user.number;
         }
@@ -68,18 +68,6 @@ export default class User implements IConverter<UserType> {
         }
         if (user.firstLogin !== undefined) {
             this.firstLogin = user.firstLogin ? new Date(user.firstLogin) : null;
-        }
-
-        if (!currentUserIsAdmin) return;
-
-        if (user.rank !== undefined) {
-            this.rank = new Rank(user.rank);
-        }
-
-        if (!currentUserIsSuperAdmin) return;
-
-        if (user.role) {
-            this.role = user.role;
         }
     }
 

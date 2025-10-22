@@ -12,6 +12,7 @@ import { CitizenType } from "../db/citizen";
 import { KeyValueType } from "../utils/keyValue";
 import User from "./User";
 import IConverter from "../interfaces/IConverter";
+import { getSignedFileUrl } from "@/lib/minio";
 
 export default class Citizen implements CitizenType, IConverter<CitizenType> {
     id: string;
@@ -70,7 +71,7 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
         this.weight = citizen.weight;
     }
 
-    static getFromDb(
+    static async getFromDb(
         citizenDb: typeof citizensTable.$inferSelect,
         genderDb: typeof gendersTable.$inferSelect | null,
         statusDb: typeof statusesTable.$inferSelect | null,
@@ -83,7 +84,7 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
         updatedByRankDb: typeof ranksTable.$inferSelect,
         updatedByJobDb: typeof jobsTable.$inferSelect,
         updatedByRoleDb: typeof rolesTable.$inferSelect
-    ): Citizen {
+    ): Promise<Citizen> {
         const createdBy = User.getFromDb(
             createdByDb,
             createdByRankDb,
@@ -109,7 +110,7 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
             isWanted: citizenDb.isWanted ?? false,
             status: statusDb ? { key: statusDb.id, value: statusDb.name } : null,
             bloodType: bloodTypeDb ? { key: bloodTypeDb.id, value: bloodTypeDb.name } : null,
-            photoUrl: citizenDb.photoUrl,
+            photoUrl: citizenDb.photoId ? await getSignedFileUrl(citizenDb.photoId) : null,
             createdBy: createdBy,
             createdAt: new Date(citizenDb.createdAt),
             updatedAt: new Date(citizenDb.updatedAt),
@@ -142,10 +143,10 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
             status: this.status,
             bloodType: this.bloodType,
             photoUrl: this.photoUrl,
-            createdBy: this.createdBy,
+            createdBy: this.createdBy.toType(),
             createdAt: this.createdAt,
             updatedAt: this.updatedAt,
-            updatedBy: this.updatedBy,
+            updatedBy: this.updatedBy.toType(),
             address: this.address,
             city: this.city,
             eyeColor: this.eyeColor,
@@ -154,7 +155,7 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
             origin: this.origin,
             birthPlace: this.birthPlace,
             height: this.height,
-            weight: this.weight
+            weight: this.weight,
         };
     }
 }

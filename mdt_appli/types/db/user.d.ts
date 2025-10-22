@@ -1,5 +1,4 @@
 import { RankType } from "@/types/db/rank";
-import { RoleType } from "@/types/db/enums/roleType";
 import { KeyValueType } from "../utils/keyValue";
 
 export interface UserType {
@@ -24,12 +23,14 @@ export interface UserToUpdateType {
     firstName?: string;
     lastName?: string;
     phoneNumber?: string;
-    rank?: RankType;
     lastLogin?: Date | string;
     email?: string;
     name?: string;
     firstLogin?: Date | string;
-    role?: RoleType;
+    isDisable?: boolean;
+    jobId?: number;
+    rankId?: number;
+    roleId?: number;
 }
 
 export interface UserToCreateType {

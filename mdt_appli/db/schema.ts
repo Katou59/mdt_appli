@@ -55,7 +55,7 @@ export const citizensTable = pgTable("citizens", {
     isWanted: boolean("is_wanted").default(false),
     description: text("description"),
     hasTattoo: boolean("has_tattoo"),
-    photoUrl: text("photo_url"),
+    photoId: text("photo_id"),
     createdBy: varchar("created_by", { length: 50 })
         .references(() => usersTable.id)
         .notNull(),

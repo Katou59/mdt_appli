@@ -1,33 +1,38 @@
-export default function Alert(props: { message?: string }) {
-	if (!props.message) return null;
+"use client";
 
-	let message = "";
+import { useAlert } from "@/lib/Contexts/AlertContext";
+import React, { useEffect } from "react";
 
-	switch (props.message) {
-		case "AccessDenied":
-			message = "Vous n'êtes pas authorisé";
-			break;
-		default:
-			message = props.message;
-			break;
-	}
+type Props = {
+    title?: string;
+    descrition?: string;
+    type?: "unauthorized" | "invalidParameter";
+};
 
-	return (
-		<div role="alert" className="alert alert-error mb-4">
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				className="h-6 w-6 shrink-0 stroke-current"
-				fill="none"
-				viewBox="0 0 24 24"
-			>
-				<path
-					strokeLinecap="round"
-					strokeLinejoin="round"
-					strokeWidth="2"
-					d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-				/>
-			</svg>
-			<span>{message}</span>
-		</div>
-	);
+export default function Alert({
+    title = "Erreur",
+    descrition = "Une erreur est survenue",
+    type,
+}: Props) {
+    const { setAlert } = useAlert();
+    useEffect(() => {
+        if (type) {
+            switch (type) {
+                case "unauthorized":
+                    setAlert({ title: "Erreur", description: "Vous n'êtes pas authorisé" });
+                    return;
+                case "invalidParameter":
+                    setAlert({ title: "Erreur", description: "Paramètre invalide" });
+                    return;
+                default:
+                    setAlert({ title: "Erreur", description: "Une erreur est survenue" });
+                    return;
+            }
+        }
+        if (title || descrition) {
+            setAlert({ title, description: descrition });
+        }
+    }, [type, title, descrition, setAlert]);
+
+    return <></>;
 }
