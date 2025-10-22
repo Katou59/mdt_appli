@@ -4,7 +4,6 @@ import { createAxiosServer } from "@/lib/axiosServer";
 import { MetadataType } from "@/types/utils/metadata";
 import { UserRepository } from "@/repositories/userRepository";
 import { auth } from "@/auth";
-import { RoleType } from "@/types/enums/roleType";
 
 export const metadata = {
     title: "MDT - Liste des utilisateurs",
@@ -20,7 +19,6 @@ export default async function Users() {
 
         const currentUser = await UserRepository.Get(session.user.discordId);
         if (!currentUser?.isAdmin) {
-            console.log(currentUser?.role?.key);
             return <UsersClient error="Vous n'êtes pas autorisé" />;
         }
 
