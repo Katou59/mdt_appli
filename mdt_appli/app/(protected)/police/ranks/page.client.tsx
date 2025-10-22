@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axiosClient, { getData } from "@/lib/axiosClient";
 import { RankType } from "@/types/db/rank";
 import Loader from "@/components/Loader";
@@ -40,7 +40,7 @@ export default function RanksClient() {
     const { setAlert } = useAlert();
     const [ranks, setRanks] = useState<Rank[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [selectedJobId, setSelectedJobId] = useState<string>("");
+    const [selectedJobId, setSelectedJobId] = useState<number>(0);
     const sensors = useSensors(
         useSensor(PointerSensor),
         useSensor(KeyboardSensor, {
@@ -53,14 +53,19 @@ export default function RanksClient() {
     useEffect(() => {
         if (!metadata) return;
 
-        const selectedJob = metadata.jobs[0];
+        let selectedJobIdValue = selectedJobId;
+        console.log(selectedJobIdValue);
+        if (!selectedJobIdValue) {
+            selectedJobIdValue = metadata.jobs[0].id ?? 0;
+        }
+
         setRanks(
-            metadata.ranks.filter((x) => x.job?.id === selectedJob.id).map((x) => new Rank(x))
+            metadata.ranks.filter((x) => x.job?.id === selectedJobIdValue).map((x) => new Rank(x))
         );
 
-        setSelectedJobId(String(selectedJob?.id) || "");
+        setSelectedJobId(selectedJobIdValue);
         setIsLoading(false);
-    }, [metadata]);
+    }, [metadata, selectedJobId]);
 
     if (!metadata && !isLoading) return <Alert />;
 
@@ -116,12 +121,12 @@ export default function RanksClient() {
                 label="Filtrer par métier"
                 id="job"
                 items={metadata?.jobs.map((x) => ({ value: String(x.id), label: x.name! })) || []}
-                value={selectedJobId}
+                value={String(selectedJobId)}
                 onValueChange={(value) => {
                     const newRanks = getRanks(metadata?.ranks || [], Number(value));
                     setRanks(newRanks);
 
-                    setSelectedJobId(value);
+                    setSelectedJobId(Number(value));
                 }}
                 className="w-52"
             />
@@ -183,7 +188,7 @@ export default function RanksClient() {
 
                         await refreshMetadata();
                         const newRanks = (metadata?.ranks as RankType[]).map((x) => new Rank(x));
-                        setRanks(newRanks.filter((x) => String(x.job?.id) === selectedJobId));
+                        setRanks(newRanks.filter((x) => x.job?.id === selectedJobId));
                         toast.success("Grades mis à jour");
                     }}
                 >
