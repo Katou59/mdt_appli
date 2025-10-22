@@ -142,10 +142,10 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
             status: this.status,
             bloodType: this.bloodType,
             photoUrl: this.photoUrl,
-            createdBy: this.createdBy,
+            createdBy: this.createdBy.toType(),
             createdAt: this.createdAt,
             updatedAt: this.updatedAt,
-            updatedBy: this.updatedBy,
+            updatedBy: this.updatedBy.toType(),
             address: this.address,
             city: this.city,
             eyeColor: this.eyeColor,
@@ -154,7 +154,7 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
             origin: this.origin,
             birthPlace: this.birthPlace,
             height: this.height,
-            weight: this.weight
+            weight: this.weight,
         };
     }
 }

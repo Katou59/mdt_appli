@@ -25,7 +25,7 @@ export default class    Pager<TEntity extends IConverter<TType>, TType>
             items: this.items.map((x) => x.toType()),
             pageCount: this.pageCount,
             page: this.page,
-            itemCount: this.itemCount,
+            itemCount: Number(this.itemCount),
         };
     }
 }
