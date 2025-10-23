@@ -2,12 +2,12 @@ import { auth } from "@/auth";
 import Alert from "@/components/Alert";
 import { UserRepository } from "@/repositories/userRepository";
 import RanksClient from "./page.client";
+import UserService from "@/services/userService";
 
 export const metadata = {
     title: "MDT - Gestion des grades",
     description: "Gestion des grades.",
 };
-
 
 export default async function Ranks() {
     try {
@@ -16,7 +16,8 @@ export default async function Ranks() {
             return <Alert type="unauthorized" />;
         }
 
-        const currentUser = await UserRepository.Get(session.user.discordId);
+        const userService = await UserService.create(session.user.discordId);
+        const currentUser = await userService.get(session.user.discordId);
         if (!currentUser?.isAdmin) {
             return <Alert type="unauthorized" />;
         }

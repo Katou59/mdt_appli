@@ -6,6 +6,8 @@ import ErrorLogRepository from "@/repositories/errorLogRepository";
 import HistoryRepository from "@/repositories/historyRepository";
 import { UserToUpdateType } from "@/types/db/user";
 import RankRepository from "@/repositories/rankRepository";
+import UserService from "@/services/userService";
+import CustomError from "@/types/errors/CustomError";
 
 export async function GET(request: NextRequest, context: { params: Promise<{ id: string }> }) {
     try {
@@ -14,22 +16,12 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
         if (!session?.user?.discordId)
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-        const currentUser = await UserRepository.Get(session.user.discordId);
-        if (!currentUser) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
         const { id } = await context.params;
 
-        const userResult = await UserRepository.Get(id);
+        const userService = await UserService.create(session.user.discordId);
+        const user = await userService.get(id);
 
-        if (!userResult) {
-            return NextResponse.json({ error: "User not found" }, { status: 404 });
-        }
-
-        if (!currentUser.isAdmin && currentUser.id !== userResult.id) {
-            userResult.email = null;
-        }
-
-        return NextResponse.json(userResult);
+        return NextResponse.json(user.toType(), { status: HttpStatus.OK });
     } catch (error) {
         ErrorLogRepository.Add({
             error: error,
@@ -38,6 +30,9 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
             userId: (await auth())!.user!.discordId!,
             method: request.method,
         });
+        if (error instanceof CustomError) {
+            return NextResponse.json({ error: error.message }, { status: error.status });
+        }
         if (error instanceof Error)
             return NextResponse.json(
                 { error: error.message },
@@ -54,52 +49,20 @@ export async function PUT(request: NextRequest) {
     let body: UserToUpdateType | null = null;
     try {
         const session = await auth();
-        const currentUser = await UserRepository.Get(session!.user.discordId!);
+        if (!session?.user?.discordId) {
+            return NextResponse.json(
+                { error: "Not authorized" },
+                { status: HttpStatus.UNAUTHORIZED }
+            );
+        }
 
         body = (await request.json()) as UserToUpdateType;
         if (!body?.id) return NextResponse.json({ error: "Bad Request" }, { status: 400 });
 
-        const userToUpdate = await UserRepository.Get(body.id);
-        if (!userToUpdate?.id) return NextResponse.json({ error: "Bad Request" }, { status: 400 });
+        const userService = await UserService.create(session.user.discordId);
+        const userUpdated = await userService.update(body);
 
-        const userToUpdateCopy = { ...userToUpdate };
-
-        userToUpdate.update(body);
-
-        if (currentUser?.isAdmin) {
-            const ranks = await RankRepository.GetList();
-            const rank = ranks.find((r) => r.id === body!.rankId);
-            if (!rank) {
-                return NextResponse.json({ error: "Rank not found" }, { status: 400 });
-            }
-            userToUpdate.rank = rank;
-            userToUpdate.isDisable = body.isDisable ?? userToUpdate.isDisable;
-            userToUpdate.role = {
-                key: body.roleId!,
-                value: "", // The value will be set in the repository based on the key
-            };
-        }
-
-        const isSelf = session!.user.discordId === userToUpdate.id;
-
-        if (currentUser?.isDisable || (!currentUser?.isAdmin && !isSelf)) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
-
-        await UserRepository.update(userToUpdate);
-
-        const userUpdated = await UserRepository.Get(userToUpdate.id);
-
-        HistoryRepository.Add({
-            action: "update",
-            entityId: userUpdated?.id ?? null,
-            entityType: "user",
-            newData: userUpdated,
-            oldData: userToUpdateCopy,
-            userId: session!.user!.discordId!,
-        });
-
-        return NextResponse.json(userUpdated);
+        return NextResponse.json(userUpdated.toType(), { status: HttpStatus.OK });
     } catch (error) {
         ErrorLogRepository.Add({
             error: error,
@@ -108,6 +71,9 @@ export async function PUT(request: NextRequest) {
             userId: (await auth())!.user!.discordId!,
             method: request.method,
         });
+        if (error instanceof CustomError) {
+            return NextResponse.json({ error: error.message }, { status: error.status });
+        }
         if (error instanceof Error)
             return NextResponse.json(
                 { error: error.message },

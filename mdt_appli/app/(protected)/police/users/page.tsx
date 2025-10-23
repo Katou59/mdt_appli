@@ -2,8 +2,8 @@ import React from "react";
 import UsersClient from "./page.client";
 import { createAxiosServer } from "@/lib/axiosServer";
 import { MetadataType } from "@/types/utils/metadata";
-import { UserRepository } from "@/repositories/userRepository";
 import { auth } from "@/auth";
+import UserService from "@/services/userService";
 
 export const metadata = {
     title: "MDT - Liste des utilisateurs",
@@ -17,7 +17,8 @@ export default async function Users() {
             return <UsersClient error="Vous n'êtes pas autorisé" />;
         }
 
-        const currentUser = await UserRepository.Get(session.user.discordId);
+        const userService = await UserService.create(session.user.discordId);
+        const currentUser = await userService.get(session.user.discordId);
         if (!currentUser?.isAdmin) {
             return <UsersClient error="Vous n'êtes pas autorisé" />;
         }
@@ -26,10 +27,7 @@ export default async function Users() {
         const response = await axios.get("/metadata");
         const metadata = response.data as MetadataType;
 
-        const users = await UserRepository.GetList({
-            itemPerPage: 20,
-            page: 1,
-        });
+        const users = await userService.getList(1, 20);
 
         return (
             <UsersClient

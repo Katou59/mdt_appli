@@ -1,6 +1,8 @@
 import UserIdClient from "./page.client";
 import { UserRepository } from "@/repositories/userRepository";
 import Alert from "@/components/Alert";
+import UserService from "@/services/userService";
+import { auth } from "@/auth";
 
 export const metadata = {
     title: "MDT - Consulter un utilisateur",
@@ -15,12 +17,18 @@ type Props = {
 
 export default async function UserId({ params }: Props) {
     try {
+        const session = await auth();
+        if (!session?.user?.discordId) {
+            return <Alert type="unauthorized" />;
+        }
+
         const userId = (await params)?.id;
         if (!userId) {
             return <Alert descrition="Paramètre invalide" />;
         }
 
-        const user = await UserRepository.Get(userId);
+        const userService = await UserService.create(session.user.discordId);
+        const user = await userService.get(userId);
         if (!user) {
             return <Alert descrition="Paramètre invalide" />;
         }

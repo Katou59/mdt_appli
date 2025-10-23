@@ -4,6 +4,7 @@ import { createAxiosServer } from "@/lib/axiosServer";
 import { UserRepository } from "@/repositories/userRepository";
 import { MetadataType } from "@/types/utils/metadata";
 import AddUserClient from "./page.client";
+import UserService from "@/services/userService";
 
 export const metadata = {
     title: "MDT - Ajouter un utilisateur",
@@ -17,7 +18,8 @@ export default async function AddUser() {
             return <Alert type="invalidParameter" />;
         }
 
-        const currentUser = await UserRepository.Get(session?.user.discordId);
+        const userService = await UserService.create(session.user.discordId);
+        const currentUser = await userService.get(session?.user.discordId);
         if (!currentUser?.isAdmin) {
             return <Alert type="unauthorized" />;
         }

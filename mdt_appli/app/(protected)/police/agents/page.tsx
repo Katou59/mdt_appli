@@ -3,6 +3,7 @@ import Alert from "@/components/Alert";
 import { UserRepository } from "@/repositories/userRepository";
 import React from "react";
 import AgentsClient from "./page.client";
+import UserService from "@/services/userService";
 
 export default async function Agents() {
     try {
@@ -11,22 +12,19 @@ export default async function Agents() {
             return <Alert type="unauthorized" />;
         }
 
-        const user = await UserRepository.Get(session.user.discordId);
-        if (!user?.id) {
+        const userService = await UserService.create(session.user.discordId);
+        const currentUser = await userService.get(session.user.discordId);
+        if (!currentUser?.id) {
             return <Alert type="unauthorized" />;
         }
 
-        if (!user.rank?.job?.id) {
+        if (!currentUser.rank?.job?.id) {
             return <Alert descrition="Métier introuvable" />;
         }
 
-        const pager = await UserRepository.GetList({
-            page: 1,
-            itemPerPage: 20,
-            filter: {
-                isDisable: false,
-                jobId: user.rank?.job?.id,
-            },
+        const pager = await userService.getList(1, 20, {
+            isDisable: false,
+            jobId: currentUser.rank.job.id,
         });
 
         return <AgentsClient pager={pager.toType()} />;

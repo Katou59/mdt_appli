@@ -8,6 +8,7 @@ export const config = {
 import { auth } from "@/auth";
 import { NextRequest, NextResponse } from "next/server";
 import { UserRepository } from "@/repositories/userRepository";
+import UserService from "./services/userService";
 
 // Liste des routes API nécessitant des droits d'admin spécifiques
 const apiAdmins = [
@@ -17,15 +18,20 @@ const apiAdmins = [
 ];
 
 export async function middleware(req: NextRequest) {
-    // Récupération de la session utilisateur via authentification
-    const session = await auth();
-
     // Autoriser les requêtes vers les endpoints d'authentification sans restriction
     if (req.nextUrl.pathname.startsWith("/api/auth/")) return NextResponse.next();
 
+    // Récupération de la session utilisateur via authentification
+    const session = await auth();
+    if (!session?.user?.discordId) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const userService = await UserService.create(session.user.discordId);
+
     // Vérification des droits d'admin pour certaines routes API sensibles
     if (apiAdmins.some((x) => req.nextUrl.pathname.startsWith(x.path) && x.method === req.method)) {
-        const user = await UserRepository.Get(session!.user.discordId!);
+        const user = await userService.get(session!.user.discordId!);
 
         // Si l'utilisateur n'est pas admin, renvoyer une erreur 401 Unauthorized
         if (!user?.isAdmin) {
@@ -39,7 +45,7 @@ export async function middleware(req: NextRequest) {
     }
 
     // Vérifier si l'utilisateur est désactivé dans la base de données
-    const userDb = await UserRepository.Get(session.user.discordId);
+    const userDb = await userService.get(session.user.discordId);
     if (userDb?.isDisable) {
         return NextResponse.redirect(new URL("/", req.url));
     }

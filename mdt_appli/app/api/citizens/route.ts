@@ -3,6 +3,7 @@ import CitizenRepository from "@/repositories/citizenRepository";
 import ErrorLogRepository from "@/repositories/errorLogRepository";
 import HistoryRepository from "@/repositories/historyRepository";
 import { UserRepository } from "@/repositories/userRepository";
+import UserService from "@/services/userService";
 import { CitizenToCreateType } from "@/types/db/citizen";
 import { HttpStatus } from "@/types/enums/httpStatus";
 import { NextRequest, NextResponse } from "next/server";
@@ -45,7 +46,15 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
     try {
         const session = await auth();
-        const user = await UserRepository.Get(session!.user!.discordId!);
+        if (!session?.user?.discordId) {
+            return NextResponse.json(
+                { error: "Not authorized" },
+                { status: HttpStatus.UNAUTHORIZED }
+            );
+        }
+
+        const userService = await UserService.create(session.user.discordId);
+        const user = await userService.get(session!.user!.discordId!);
 
         if (!user) {
             return NextResponse.json(

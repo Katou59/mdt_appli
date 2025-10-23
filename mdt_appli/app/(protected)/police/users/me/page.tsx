@@ -4,6 +4,7 @@ import Page from "@/components/Page";
 import UserConsult from "@/components/UserConsult";
 import { useUser } from "@/lib/Contexts/UserContext";
 import { UserRepository } from "@/repositories/userRepository";
+import UserService from "@/services/userService";
 
 export const metadata = {
     title: "MDT - Mon profil",
@@ -15,7 +16,9 @@ export default async function Me() {
     if (!session?.user?.discordId) {
         return <Alert type="unauthorized" />;
     }
-    const user = await UserRepository.Get(session.user.discordId);
+
+    const userService = await UserService.create(session.user.discordId);
+    const user = await userService.get(session.user.discordId);
     if (!user) {
         return <Alert type="unauthorized" />;
     }

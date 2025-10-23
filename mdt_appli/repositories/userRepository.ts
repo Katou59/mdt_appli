@@ -4,6 +4,7 @@ import User from "@/types/class/User";
 import { UserToCreateType, UserType } from "@/types/db/user";
 import Pager from "@/types/class/Pager";
 import Repository from "./repository";
+import { id } from "zod/v4/locales";
 
 type FilterType = {
     searchTerm?: string;
@@ -14,7 +15,7 @@ type FilterType = {
 };
 
 export class UserRepository extends Repository {
-    public static async Get(discordId: string): Promise<User | null> {
+    public static async get(discordId: string): Promise<User | null> {
         const users = await UserRepository.db
             .select()
             .from(usersTable)
@@ -30,7 +31,7 @@ export class UserRepository extends Repository {
         return User.getFromDb(users[0].users, users[0].ranks, users[0].jobs, users[0].roles!);
     }
 
-    public static async GetList(params: {
+    public static async getList(params: {
         rankId?: number;
         itemPerPage: number;
         page: number;
@@ -122,11 +123,16 @@ export class UserRepository extends Repository {
             .where(eq(usersTable.id, user.id));
     }
 
-    public static async add(userToCreate: UserToCreateType): Promise<void> {
-        await UserRepository.db.insert(usersTable).values({
-            id: userToCreate.id,
-            jobId: userToCreate.jobId,
-            rankId: userToCreate.rankId,
-        });
+    public static async add(userToCreate: UserToCreateType): Promise<string> {
+        const [inserted] = await UserRepository.db
+            .insert(usersTable)
+            .values({
+                id: userToCreate.id,
+                jobId: userToCreate.jobId,
+                rankId: userToCreate.rankId,
+            })
+            .returning({ id: usersTable.id });
+
+        return inserted.id;
     }
 }

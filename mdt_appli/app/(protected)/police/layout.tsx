@@ -7,15 +7,18 @@ import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { SessionProvider } from "next-auth/react";
 import { AlertProvider } from "@/lib/Contexts/AlertContext";
 import { MetadataProvider } from "@/lib/Contexts/MetadataContext";
+import UserService from "@/services/userService";
+import Alert from "@/components/Alert";
 
 export default async function ProtectedLayout({
     children,
 }: Readonly<{ children: React.ReactNode }>) {
     const session = await auth();
 
-    if (!session?.user?.discordId) return redirect("/");
+    if (!session?.user?.discordId) return <Alert type="unauthorized" />;
 
-    const user = await UserRepository.Get(session.user.discordId);
+    const userService = await UserService.create(session.user.discordId);
+    const user = await userService.get(session.user.discordId);
 
     if (user?.isDisable || (user?.rank?.job?.id !== 1 && !user?.isAdmin)) {
         return redirect("/");
