@@ -66,7 +66,9 @@ export class UserRepository extends Repository {
             orConditions.push(ilike(usersTable.phoneNumber, `%${params.filter.searchTerm}%`));
 
             if (!isNaN(Number(params.filter.searchTerm))) {
-                orConditions.push(eq(usersTable.number, Number(params.filter.searchTerm)));
+                orConditions.push(
+                    ilike(sql`CAST(${usersTable.number} AS TEXT)`, `%${params.filter.searchTerm}%`)
+                );
             }
         }
 

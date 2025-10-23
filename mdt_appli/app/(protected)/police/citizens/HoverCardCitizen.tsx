@@ -12,13 +12,13 @@ export function HoverCardCitizen({ children, citizen }: Props) {
     return (
         <HoverCard openDelay={0} closeDelay={0}>
             <HoverCardTrigger asChild>{children}</HoverCardTrigger>
-            <HoverCardContent className="" side="right" align="start">
+            <HoverCardContent side="right" align="start">
                 <div className="flex flex-col justify-between items-center gap-4">
                     <Avatar className="w-15 h-15 rounded-full">
                         <AvatarImage src={citizen.photoUrl ?? ""} />
                         <AvatarFallback>{citizen?.firstName[0] ?? "I"}</AvatarFallback>
                     </Avatar>
-                    <div className="space-y-1 grow">
+                    <div className="space-y-1 grow w-full">
                         <h4 className="text-sm font-semibold">{citizen.fullName}</h4>
                         <p className="text-sm">{citizen.gender?.value}</p>
                         <p className="text-sm">{citizen.status?.value}</p>

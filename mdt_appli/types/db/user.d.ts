@@ -38,3 +38,11 @@ export interface UserToCreateType {
     jobId: number | null;
     rankId: number | null;
 }
+
+export interface UsersForSeachType {
+    jobId?: number;
+    page: number;
+    itemPerPage: number;
+    isDisable?: boolean;
+    searchTerm?: string;
+}

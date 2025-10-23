@@ -44,6 +44,10 @@ export default class User implements IConverter<UserType> {
             this.firstName && this.lastName ? `${this.firstName} ${this.lastName}` : null;
     }
 
+    static getFromType(type: UserType): User {
+        return new User(type);
+    }
+
     update(user: UserToUpdateType) {
         if (user.number !== undefined) {
             this.number = user.number;

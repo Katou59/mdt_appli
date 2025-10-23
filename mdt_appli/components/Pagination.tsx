@@ -8,9 +8,10 @@ import {
 } from "@/components/ui/pagination";
 import Pager from "@/types/class/Pager";
 import IConverter from "@/types/interfaces/IConverter";
+import { PagerType } from "@/types/response/pagerType";
 
 type Props<TEntity extends IConverter<TType>, TType> = {
-    pager: Pager<TEntity, TType>;
+    pager: PagerType<TType>;
     onPageChange: (newPage: number) => void;
 };
 

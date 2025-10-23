@@ -7,6 +7,7 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 import { ItemForm } from "./ItemForm";
 import UserCard from "./UserCard";
+import { useUser } from "@/lib/Contexts/UserContext";
 
 export default function UserConsult({
     userToUpdate,
@@ -15,6 +16,8 @@ export default function UserConsult({
     userToUpdate: UserType;
     updateHref?: string;
 }) {
+    const { user } = useUser();
+
     return (
         <div className="flex w-full max-w-lg flex-col gap-2">
             <Tabs defaultValue="hrp">
@@ -91,15 +94,19 @@ export default function UserConsult({
                     </UserCard>
                 </TabsContent>
             </Tabs>
-            <div className="flex items-center justify-center">
-                <Button className="w-25" asChild>
-                    <Link
-                        href={updateHref ? updateHref : `/police/users/${userToUpdate.id}/update`}
-                    >
-                        Modifier
-                    </Link>
-                </Button>
-            </div>
+            {user?.isAdmin && (
+                <div className="flex items-center justify-center">
+                    <Button className="w-25" asChild>
+                        <Link
+                            href={
+                                updateHref ? updateHref : `/police/users/${userToUpdate.id}/update`
+                            }
+                        >
+                            Modifier
+                        </Link>
+                    </Button>
+                </div>
+            )}
         </div>
     );
 }

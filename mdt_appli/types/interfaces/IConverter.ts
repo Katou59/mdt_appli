@@ -1,3 +1,3 @@
-export default interface IConverter<T> {
-    toType(): T;
+export default interface IConverter<TType> {
+    toType(): TType;
 }
