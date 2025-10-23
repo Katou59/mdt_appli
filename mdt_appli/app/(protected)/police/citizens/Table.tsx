@@ -12,6 +12,7 @@ import Citizen from "@/types/class/Citizen";
 import Pager from "@/types/class/Pager";
 import { CitizenType } from "@/types/db/citizen";
 import dayjs from "dayjs";
+import { HoverCardCitizen } from "./HoverCardCitizen";
 
 type Props = {
     pager: Pager<Citizen, CitizenType>;
@@ -34,20 +35,22 @@ export default function TableCitizens({ pager, onPageChange }: Props) {
                     <TableBody>
                         {pager.items.map((citizen) => (
                             <TableRow key={citizen.id}>
-                                <TableCell>
-                                    <div className="flex items-center gap-3">
-                                        <Avatar>
-                                            <AvatarImage
-                                                src={citizen.photoUrl ?? ""}
-                                                alt={citizen.fullName}
-                                            />
-                                            <AvatarFallback className="text-xs">
-                                                {citizen.fullName[0]}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                        <div className="font-medium">{citizen.fullName}</div>
-                                    </div>
-                                </TableCell>
+                                <HoverCardCitizen citizen={citizen}>
+                                    <TableCell>
+                                        <div className="flex items-center gap-3">
+                                            <Avatar>
+                                                <AvatarImage
+                                                    src={citizen.photoUrl ?? ""}
+                                                    alt={citizen.fullName}
+                                                />
+                                                <AvatarFallback className="text-xs">
+                                                    {citizen.fullName[0]}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                            <div className="font-medium">{citizen.fullName}</div>
+                                        </div>
+                                    </TableCell>
+                                </HoverCardCitizen>
                                 <TableCell>{citizen.phoneNumber}</TableCell>
                                 <TableCell>
                                     {citizen.createdBy.fullName}{" "}
@@ -62,7 +65,7 @@ export default function TableCitizens({ pager, onPageChange }: Props) {
                     </TableBody>
                 </Table>
             </div>
-            <Pagination pager={pager} onPageChange={onPageChange}/>
+            <Pagination pager={pager} onPageChange={onPageChange} />
         </div>
     );
 }
