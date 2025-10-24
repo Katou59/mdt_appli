@@ -1,13 +1,13 @@
 import { auth } from "@/auth";
-import { redirect } from "next/navigation";
-import { UserProvider } from "@/lib/Contexts/UserContext";
+import Alert from "@/components/alert";
 import { AppSidebar } from "@/components/app-sidebar";
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import { SessionProvider } from "next-auth/react";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AlertProvider } from "@/lib/Contexts/AlertContext";
 import { MetadataProvider } from "@/lib/Contexts/MetadataContext";
-import UserService from "@/services/userService";
-import Alert from "@/components/Alert";
+import { UserProvider } from "@/lib/Contexts/UserContext";
+import UserService from "@/services/user-service";
+import { SessionProvider } from "next-auth/react";
+import { redirect } from "next/navigation";
 
 export default async function ProtectedLayout({
     children,

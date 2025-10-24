@@ -1,10 +1,10 @@
-import HistoryRepository from "@/repositories/historyRepository";
-import RankRepository from "@/repositories/rankRepository";
+import HistoryRepository from "@/repositories/history-repository";
+import RankRepository from "@/repositories/rank-repository";
 import Rank from "@/types/class/Rank";
 import User from "@/types/class/User";
-import { HttpStatus } from "@/types/enums/httpStatus";
+import { HttpStatus } from "@/types/enums/http-status-enum";
 import CustomError from "@/types/errors/CustomError";
-import UserService from "./userService";
+import UserService from "./user-service";
 
 export default class RankService {
     public readonly currentUser;

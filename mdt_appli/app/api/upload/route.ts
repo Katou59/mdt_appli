@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { s3 } from "@/lib/minio";
-import { nextResponseApiError } from "@/lib/nextResponseApiError";
-import { HttpStatus } from "@/types/enums/httpStatus";
+import { nextResponseApiError } from "@/lib/next-response-api-error";
+import { HttpStatus } from "@/types/enums/http-status-enum";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { NextRequest, NextResponse } from "next/server";
 

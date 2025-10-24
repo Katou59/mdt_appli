@@ -1,8 +1,8 @@
+import { KeyValueType } from "@/types/utils/key-value";
 import { Path, UseFormReturn } from "react-hook-form";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
-import { KeyValueType } from "@/types/utils/keyValue";
-import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Label } from "./ui/label";
+import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 
 export function RadioGroupForm<T extends object>({
     form,
@@ -28,8 +28,7 @@ export function RadioGroupForm<T extends object>({
                         <RadioGroup
                             value={field.value}
                             onValueChange={field.onChange}
-                            className="flex flex-row"
-                        >
+                            className="flex flex-row">
                             {items.map((item) => (
                                 <div key={item.key} className="flex items-center gap-3">
                                     <RadioGroupItem value={item.key} id={item.key} />

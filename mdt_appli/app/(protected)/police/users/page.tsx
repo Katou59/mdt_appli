@@ -1,9 +1,8 @@
-import React from "react";
-import UsersClient from "./page.client";
-import { createAxiosServer } from "@/lib/axiosServer";
-import { MetadataType } from "@/types/utils/metadata";
 import { auth } from "@/auth";
-import UserService from "@/services/userService";
+import { createAxiosServer } from "@/lib/axios-server";
+import UserService from "@/services/user-service";
+import { MetadataType } from "@/types/utils/metadata";
+import UsersClient from "./page.client";
 
 export const metadata = {
     title: "MDT - Liste des utilisateurs",

@@ -1,16 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
-import AddImage from "@/components/AddImage";
-import axiosClient, { getData } from "@/lib/axiosClient";
-import Loader from "@/components/Loader";
-import AddCitizenForm from "./AddCitizenForm";
-import { useMetadata } from "@/lib/Contexts/MetadataContext";
+import AddImage from "@/components/add-image";
+import Loader from "@/components/loader";
+import Page from "@/components/page";
+import axiosClient, { getData } from "@/lib/axios-client";
 import { useAlert } from "@/lib/Contexts/AlertContext";
+import { useMetadata } from "@/lib/Contexts/MetadataContext";
 import { CitizenToCreateType } from "@/types/db/citizen";
+import { UploadResponseType } from "@/types/response/upload-response-type";
+import React, { useState } from "react";
 import { toast } from "sonner";
-import { UploadResponseType } from "@/types/response/uploadResponseType";
-import Page from "@/components/Page";
+import AddCitizenForm from "./AddCitizenForm";
 
 export default function AddCitizenClient() {
     const [imageFile, setImageFile] = useState<File | null>(null);

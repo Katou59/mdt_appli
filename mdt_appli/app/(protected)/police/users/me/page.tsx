@@ -1,8 +1,8 @@
 import { auth } from "@/auth";
-import Alert from "@/components/Alert";
-import Page from "@/components/Page";
-import UserConsult from "@/components/UserConsult";
-import UserService from "@/services/userService";
+import Alert from "@/components/alert";
+import Page from "@/components/page";
+import UserConsult from "@/components/user-consult";
+import UserService from "@/services/user-service";
 
 export const metadata = {
     title: "MDT - Mon profil",

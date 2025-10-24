@@ -1,7 +1,7 @@
-import UserIdClient from "./page.client";
-import Alert from "@/components/Alert";
-import UserService from "@/services/userService";
 import { auth } from "@/auth";
+import Alert from "@/components/alert";
+import UserService from "@/services/user-service";
+import UserIdClient from "./page.client";
 
 export const metadata = {
     title: "MDT - Consulter un utilisateur",

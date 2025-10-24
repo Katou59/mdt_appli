@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
-import ErrorLogRepository from "@/repositories/errorLogRepository";
-import StatusRepository from "@/repositories/statusRepository";
-import { HttpStatus } from "@/types/enums/httpStatus";
+import ErrorLogRepository from "@/repositories/error-log-repository";
+import StatusRepository from "@/repositories/status-repository";
+import { HttpStatus } from "@/types/enums/http-status-enum";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {

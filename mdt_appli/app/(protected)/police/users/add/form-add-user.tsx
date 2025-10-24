@@ -1,6 +1,6 @@
 "use client";
 
-import ButtonGroupForm from "@/components/ButtonGroup";
+import ButtonGroupForm from "@/components/button-group";
 import {
     Form,
     FormControl,
@@ -68,7 +68,9 @@ export function AddUserForm({
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmitInternal)} className="grid grid-cols-2 gap-5 w-full">
+            <form
+                onSubmit={form.handleSubmit(onSubmitInternal)}
+                className="grid grid-cols-2 gap-5 w-full">
                 <FormField
                     control={form.control}
                     name="discordId"
@@ -103,16 +105,14 @@ export function AddUserForm({
                                         field.onChange(value);
                                         form.setValue("rankId", "");
                                         onJobChange(value);
-                                    }}
-                                >
+                                    }}>
                                     <SelectTrigger
                                         aria-invalid={fieldState.invalid}
                                         className={`${cn(
                                             "min-w-[120px]",
                                             fieldState.invalid &&
                                                 "border-destructive focus:ring-destructive"
-                                        )} w-full`}
-                                    >
+                                        )} w-full`}>
                                         <SelectValue placeholder="Choisir..." />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -140,8 +140,7 @@ export function AddUserForm({
                                     value={field.value}
                                     onValueChange={(value) => {
                                         field.onChange(value);
-                                    }}
-                                >
+                                    }}>
                                     <SelectTrigger
                                         aria-invalid={fieldState.invalid}
                                         className={`${cn(
@@ -149,8 +148,7 @@ export function AddUserForm({
                                             fieldState.invalid &&
                                                 "border-destructive focus:ring-destructive"
                                         )} w-full`}
-                                        disabled={!form.getValues("jobId")}
-                                    >
+                                        disabled={!form.getValues("jobId")}>
                                         <SelectValue placeholder="Choisir..." />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -165,7 +163,7 @@ export function AddUserForm({
                         </FormItem>
                     )}
                 />
-                <div className="flex items-center col-span-2" >
+                <div className="flex items-center col-span-2">
                     <ButtonGroupForm
                         onCancel={() => {
                             form.clearErrors();

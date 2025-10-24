@@ -1,4 +1,4 @@
-import Pagination from "@/components/Pagination";
+import Pagination from "@/components/pagination";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
     Table,

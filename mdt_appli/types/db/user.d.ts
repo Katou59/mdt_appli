@@ -1,5 +1,5 @@
 import { RankType } from "@/types/db/rank";
-import { KeyValueType } from "../utils/keyValue";
+import { KeyValueType } from "../utils/key-value";
 
 export interface UserType {
     id: string;

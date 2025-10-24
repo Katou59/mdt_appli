@@ -1,5 +1,4 @@
-import { KeyValueType } from "@/types/utils/keyValue";
-import React from "react";
+import { KeyValueType } from "@/types/utils/key-value";
 
 type Props = {
     label: string;

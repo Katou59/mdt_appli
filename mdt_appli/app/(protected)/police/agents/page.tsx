@@ -1,8 +1,7 @@
 import { auth } from "@/auth";
-import Alert from "@/components/Alert";
-import React from "react";
+import Alert from "@/components/alert";
+import UserService from "@/services/user-service";
 import AgentsClient from "./page.client";
-import UserService from "@/services/userService";
 
 export default async function Agents() {
     try {

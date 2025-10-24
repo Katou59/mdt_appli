@@ -1,15 +1,14 @@
 "use client";
 
-import ButtonGroupForm from "@/components/ButtonGroup";
-import { InputForm } from "@/components/InputForm";
-import { RadioGroupForm } from "@/components/RadioGroupForm";
-import { SelectForm } from "@/components/SelectForm";
-import { TextareaForm } from "@/components/TextareaForm";
+import ButtonGroupForm from "@/components/button-group";
+import { InputForm } from "@/components/input-form";
+import { RadioGroupForm } from "@/components/radio-group-form";
+import { SelectForm } from "@/components/select-form";
+import { TextareaForm } from "@/components/textarea-form";
 import { Form } from "@/components/ui/form";
 import { CitizenToCreateType } from "@/types/db/citizen";
-import { KeyValueType } from "@/types/utils/keyValue";
+import { KeyValueType } from "@/types/utils/key-value";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 
@@ -151,8 +150,7 @@ export default function AddCitizenForm({
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(onSubmitInternal)}
-                className="flex flex-col items-center w-full gap-5 mt-5"
-            >
+                className="flex flex-col items-center w-full gap-5 mt-5">
                 <h2 className="text-xl text-primary w-full">Identité</h2>
                 <div className="grid grid-cols-2 w-full gap-5">
                     <InputForm form={form} label="Nom" name="lastName" placeHolder="Nom" />

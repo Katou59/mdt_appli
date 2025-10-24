@@ -1,7 +1,7 @@
 "use client";
 
-import Page from "@/components/Page";
-import UserConsult from "@/components/UserConsult";
+import Page from "@/components/page";
+import UserConsult from "@/components/user-consult";
 import User from "@/types/class/User";
 import { UserType } from "@/types/db/user";
 

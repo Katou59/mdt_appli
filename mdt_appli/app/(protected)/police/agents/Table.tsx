@@ -1,6 +1,6 @@
 "use client";
 
-import Pagination from "@/components/Pagination";
+import Pagination from "@/components/pagination";
 import {
     Table,
     TableBody,
@@ -11,9 +11,8 @@ import {
 } from "@/components/ui/table";
 import User from "@/types/class/User";
 import { UserType } from "@/types/db/user";
-import { PagerType } from "@/types/response/pagerType";
+import { PagerType } from "@/types/response/pager-type";
 import { useRouter } from "next/navigation";
-import React from "react";
 
 type Props = {
     pager: PagerType<UserType>;
@@ -41,8 +40,7 @@ export default function TableAgents({ pager, onPageChange }: Props) {
                                 <TableRow
                                     key={user.id}
                                     className="hover:cursor-pointer"
-                                    onClick={() => router.push(`/police/users/${user.id}`)}
-                                >
+                                    onClick={() => router.push(`/police/users/${user.id}`)}>
                                     <TableCell>
                                         <div className="flex items-center gap-3">
                                             <div className="font-medium">

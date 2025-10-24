@@ -1,13 +1,17 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { stringToNumber } from "@/lib/converters";
+import { cn } from "@/lib/utils";
 import { UserToUpdateType, UserType } from "@/types/db/user";
-import dayjs from "dayjs";
-import React from "react";
-import z from "zod";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import dayjs from "dayjs";
+import { useForm } from "react-hook-form";
+import z from "zod";
+import ButtonGroupForm from "./button-group";
+import { ItemForm } from "./item-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
 import { Input } from "./ui/input";
-import ButtonGroupForm from "./ButtonGroup";
+import { Label } from "./ui/label";
+import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import {
     Select,
     SelectContent,
@@ -16,12 +20,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "./ui/select";
-import { cn } from "@/lib/utils";
-import { ItemForm } from "./ItemForm";
-import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
-import { Label } from "./ui/label";
-import UserCard from "./UserCard";
-import { stringToNumber } from "@/lib/converters";
+import UserCard from "./user-card";
 
 const formSchema = z.object({
     firstName: z.string().max(50, "Le prénom ne peut pas dépasser 50 caractères").optional(),
@@ -87,8 +86,7 @@ export default function UserUpdate({
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(onSubmitInternal)}
-                className="flex w-full max-w-lg flex-col gap-6"
-            >
+                className="flex w-full max-w-lg flex-col gap-6">
                 <Tabs defaultValue="hrp">
                     <TabsList>
                         <TabsTrigger value="hrp">Informations HRP</TabsTrigger>
@@ -97,8 +95,7 @@ export default function UserUpdate({
                     <TabsContent value="hrp">
                         <UserCard
                             title="Informations HRP"
-                            description="Informations relatives à la gestion du compte utilisateur."
-                        >
+                            description="Informations relatives à la gestion du compte utilisateur.">
                             <ItemForm title="Id Discord" description={userToUpdate.id} />
                             <ItemForm
                                 title="Nom Discord"
@@ -120,8 +117,7 @@ export default function UserUpdate({
                                     render={({ field, fieldState }) => (
                                         <FormItem
                                             data-invalid={fieldState.invalid}
-                                            className="gap-0"
-                                        >
+                                            className="gap-0">
                                             <div className="h-5">
                                                 {fieldState.error ? (
                                                     <FormMessage />
@@ -134,24 +130,21 @@ export default function UserUpdate({
                                                     value={field.value}
                                                     onValueChange={(value) => {
                                                         field.onChange(value);
-                                                    }}
-                                                >
+                                                    }}>
                                                     <SelectTrigger
                                                         aria-invalid={fieldState.invalid}
                                                         className={`${cn(
                                                             "min-w-[120px]",
                                                             fieldState.invalid &&
                                                                 "border-destructive focus:ring-destructive"
-                                                        )} w-full`}
-                                                    >
+                                                        )} w-full`}>
                                                         <SelectValue placeholder="Choisir..." />
                                                     </SelectTrigger>
                                                     <SelectContent>
                                                         {roles.map((role) => (
                                                             <SelectItem
                                                                 key={role.value}
-                                                                value={role.value}
-                                                            >
+                                                                value={role.value}>
                                                                 {role.label}
                                                             </SelectItem>
                                                         ))}
@@ -174,8 +167,7 @@ export default function UserUpdate({
                                     render={({ field, fieldState }) => (
                                         <FormItem
                                             data-invalid={fieldState.invalid}
-                                            className="gap-0"
-                                        >
+                                            className="gap-0">
                                             <div className="h-5">
                                                 {fieldState.error ? (
                                                     <FormMessage />
@@ -189,8 +181,7 @@ export default function UserUpdate({
                                                     onValueChange={(value) => {
                                                         field.onChange(value === "true");
                                                     }}
-                                                    className="flex gap-8"
-                                                >
+                                                    className="flex gap-8">
                                                     <div className="flex items-center gap-3">
                                                         <RadioGroupItem value="true" id="r1" />
                                                         <Label htmlFor="r1">Désactivé</Label>
@@ -232,8 +223,7 @@ export default function UserUpdate({
                     <TabsContent value="rp">
                         <UserCard
                             title="Informations RP"
-                            description="Informations relatives au personnage."
-                        >
+                            description="Informations relatives au personnage.">
                             <FormField
                                 control={form.control}
                                 name="lastName"
@@ -322,8 +312,7 @@ export default function UserUpdate({
                                     render={({ field, fieldState }) => (
                                         <FormItem
                                             data-invalid={fieldState.invalid}
-                                            className="gap-0"
-                                        >
+                                            className="gap-0">
                                             <div className="h-5">
                                                 {fieldState.error ? (
                                                     <FormMessage />
@@ -338,24 +327,21 @@ export default function UserUpdate({
                                                         field.onChange(value);
                                                         form.setValue("rankId", "");
                                                         onJobChange?.(value);
-                                                    }}
-                                                >
+                                                    }}>
                                                     <SelectTrigger
                                                         aria-invalid={fieldState.invalid}
                                                         className={`${cn(
                                                             "min-w-[120px]",
                                                             fieldState.invalid &&
                                                                 "border-destructive focus:ring-destructive"
-                                                        )} w-full`}
-                                                    >
+                                                        )} w-full`}>
                                                         <SelectValue placeholder="Choisir..." />
                                                     </SelectTrigger>
                                                     <SelectContent>
                                                         {jobs.map((job) => (
                                                             <SelectItem
                                                                 key={job.value}
-                                                                value={job.value}
-                                                            >
+                                                                value={job.value}>
                                                                 {job.label}
                                                             </SelectItem>
                                                         ))}
@@ -378,8 +364,7 @@ export default function UserUpdate({
                                     render={({ field, fieldState }) => (
                                         <FormItem
                                             data-invalid={fieldState.invalid}
-                                            className="gap-0"
-                                        >
+                                            className="gap-0">
                                             <div className="h-5">
                                                 {fieldState.error ? (
                                                     <FormMessage />
@@ -396,16 +381,14 @@ export default function UserUpdate({
                                                     disabled={
                                                         !form.watch("jobId") ||
                                                         form.watch("jobId") === "none"
-                                                    }
-                                                >
+                                                    }>
                                                     <SelectTrigger
                                                         aria-invalid={fieldState.invalid}
                                                         className={`${cn(
                                                             "min-w-[120px]",
                                                             fieldState.invalid &&
                                                                 "border-destructive focus:ring-destructive"
-                                                        )} w-full`}
-                                                    >
+                                                        )} w-full`}>
                                                         <SelectValue placeholder="Choisir..." />
                                                     </SelectTrigger>
                                                     <SelectContent>
@@ -414,8 +397,7 @@ export default function UserUpdate({
                                                         {ranks.map((rank) => (
                                                             <SelectItem
                                                                 key={rank.value}
-                                                                value={rank.value}
-                                                            >
+                                                                value={rank.value}>
                                                                 {rank.label}
                                                             </SelectItem>
                                                         ))}

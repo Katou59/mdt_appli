@@ -1,12 +1,12 @@
 "use client";
 
-import Page from "@/components/Page";
-import axiosClient, { getData } from "@/lib/axiosClient";
+import Page from "@/components/page";
+import axiosClient, { getData } from "@/lib/axios-client";
 import { useAlert } from "@/lib/Contexts/AlertContext";
 import Pager from "@/types/class/Pager";
 import User from "@/types/class/User";
 import { UsersForSeachType, UserType } from "@/types/db/user";
-import { PagerType } from "@/types/response/pagerType";
+import { PagerType } from "@/types/response/pager-type";
 import { useState } from "react";
 import SearchAgentForm from "./search-agent-form";
 import TableAgents from "./table";

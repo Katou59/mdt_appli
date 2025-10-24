@@ -1,7 +1,7 @@
 "use client";
 
-import Page from "@/components/Page";
-import axiosClient, { getData } from "@/lib/axiosClient";
+import Page from "@/components/page";
+import axiosClient, { getData } from "@/lib/axios-client";
 import { useAlert } from "@/lib/Contexts/AlertContext";
 import Rank from "@/types/class/Rank";
 import { UserToCreateType } from "@/types/db/user";

@@ -1,4 +1,4 @@
-import ButtonGroupForm from "@/components/ButtonGroup";
+import ButtonGroupForm from "@/components/button-group";
 import {
     Form,
     FormControl,
@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 
@@ -48,8 +47,7 @@ export default function SearchAgentForm({
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(onSubmitInternal)}
-                className="flex flex-col items-center"
-            >
+                className="flex flex-col items-center">
                 <FormField
                     control={form.control}
                     name="searchField"

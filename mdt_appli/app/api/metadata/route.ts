@@ -1,13 +1,13 @@
 import { auth } from "@/auth";
-import BloodTypeRepository from "@/repositories/bloodTypeRepository";
-import ErrorLogRepository from "@/repositories/errorLogRepository";
-import GenderRepository from "@/repositories/genderRepository";
-import JobRepository from "@/repositories/jobRepository";
-import NationalityRepository from "@/repositories/nationalityRepository";
-import RoleRepository from "@/repositories/roleRepository";
-import StatusRepository from "@/repositories/statusRepository";
-import RankService from "@/services/rankService";
-import { HttpStatus } from "@/types/enums/httpStatus";
+import BloodTypeRepository from "@/repositories/blood-type-repository";
+import ErrorLogRepository from "@/repositories/error-log-repository";
+import GenderRepository from "@/repositories/gender-repository";
+import JobRepository from "@/repositories/job-repository";
+import NationalityRepository from "@/repositories/nationality-repository";
+import RoleRepository from "@/repositories/role-repository";
+import StatusRepository from "@/repositories/status-repository";
+import RankService from "@/services/ranks-service";
+import { HttpStatus } from "@/types/enums/http-status-enum";
 import { MetadataType } from "@/types/utils/metadata";
 import { NextRequest, NextResponse } from "next/server";
 

@@ -8,11 +8,11 @@ import {
     statusesTable,
     usersTable,
 } from "@/db/schema";
-import { CitizenType } from "../db/citizen";
-import { KeyValueType } from "../utils/keyValue";
-import User from "./User";
-import IConverter from "../interfaces/IConverter";
 import { getSignedFileUrl } from "@/lib/minio";
+import { CitizenType } from "../db/citizen";
+import IConverter from "../interfaces/IConverter";
+import { KeyValueType } from "../utils/key-value";
+import User from "./User";
 
 export default class Citizen implements CitizenType, IConverter<CitizenType> {
     id: string;

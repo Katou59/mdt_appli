@@ -1,5 +1,5 @@
 import { nationalitiesTable } from "@/db/schema";
-import { KeyValueType } from "@/types/utils/keyValue";
+import { KeyValueType } from "@/types/utils/key-value";
 import Repository from "./repository";
 
 export default class NationalityRepository extends Repository {

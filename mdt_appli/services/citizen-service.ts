@@ -1,11 +1,11 @@
-import CitizenRepository from "@/repositories/citizenRepository";
-import HistoryRepository from "@/repositories/historyRepository";
+import CitizenRepository from "@/repositories/citizen-repository";
+import HistoryRepository from "@/repositories/history-repository";
 import Citizen from "@/types/class/Citizen";
 import User from "@/types/class/User";
 import { CitizenToCreateType } from "@/types/db/citizen";
-import { HttpStatus } from "@/types/enums/httpStatus";
+import { HttpStatus } from "@/types/enums/http-status-enum";
 import CustomError from "@/types/errors/CustomError";
-import UserService from "./userService";
+import UserService from "./user-service";
 
 export default class CitizenService {
     public readonly currentUser;

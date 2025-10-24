@@ -1,5 +1,5 @@
 import { bloodTypesTable } from "@/db/schema";
-import { KeyValueType } from "@/types/utils/keyValue";
+import { KeyValueType } from "@/types/utils/key-value";
 import Repository from "./repository";
 
 export default class BloodTypeRepository extends Repository {

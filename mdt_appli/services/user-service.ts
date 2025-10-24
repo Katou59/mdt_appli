@@ -1,10 +1,10 @@
-import HistoryRepository from "@/repositories/historyRepository";
-import { UserRepository } from "@/repositories/userRepository";
+import HistoryRepository from "@/repositories/history-repository";
+import { UserRepository } from "@/repositories/user-repository";
 import User from "@/types/class/User";
 import { UserToCreateType, UserToUpdateType } from "@/types/db/user";
-import { HttpStatus } from "@/types/enums/httpStatus";
+import { HttpStatus } from "@/types/enums/http-status-enum";
 import CustomError from "@/types/errors/CustomError";
-import RankService from "./rankService";
+import RankService from "./ranks-service";
 
 type FilterType = {
     searchTerm?: string;

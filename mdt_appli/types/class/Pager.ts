@@ -1,5 +1,5 @@
 import IConverter from "../interfaces/IConverter";
-import { PagerType } from "../response/pagerType";
+import { PagerType } from "../response/pager-type";
 
 export default class Pager<TEntity extends IConverter<TType>, TType>
     implements IConverter<PagerType<TType>>, PagerType<TEntity>

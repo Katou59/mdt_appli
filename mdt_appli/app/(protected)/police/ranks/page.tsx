@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
-import Alert from "@/components/Alert";
+import Alert from "@/components/alert";
+import UserService from "@/services/user-service";
 import RanksClient from "./page.client";
-import UserService from "@/services/userService";
 
 export const metadata = {
     title: "MDT - Gestion des grades",

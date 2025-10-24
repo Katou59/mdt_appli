@@ -1,3 +1,5 @@
+import { cn } from "@/lib/utils";
+import { KeyValueType } from "@/types/utils/key-value";
 import { Path, UseFormReturn } from "react-hook-form";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
 import {
@@ -8,8 +10,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from "./ui/select";
-import { cn } from "@/lib/utils";
-import { KeyValueType } from "@/types/utils/keyValue";
 
 export function SelectForm<T extends object>({
     form,
@@ -38,16 +38,14 @@ export function SelectForm<T extends object>({
                             value={field.value}
                             onValueChange={(value) => {
                                 field.onChange(value);
-                            }}
-                        >
+                            }}>
                             <SelectTrigger
                                 aria-invalid={fieldState.invalid}
                                 className={cn(
                                     "min-w-[120px] w-full data-[state=open]:ring-1 data-[state=open]:ring-ring",
                                     fieldState.invalid &&
                                         "border-destructive focus:ring-destructive"
-                                )}
-                            >
+                                )}>
                                 <SelectValue placeholder="Choisir..." />
                             </SelectTrigger>
                             <SelectContent>

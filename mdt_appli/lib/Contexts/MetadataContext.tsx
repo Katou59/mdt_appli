@@ -1,7 +1,7 @@
 "use client";
-import { createContext, useContext, useEffect, useState } from "react";
 import { MetadataType } from "@/types/utils/metadata";
-import axiosClient, { getData } from "../axiosClient";
+import { createContext, useContext, useEffect, useState } from "react";
+import axiosClient, { getData } from "../axios-client";
 
 type MetadataContextValue = {
     metadata: MetadataType | undefined;

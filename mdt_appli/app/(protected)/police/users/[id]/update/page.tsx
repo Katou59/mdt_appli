@@ -1,9 +1,9 @@
 import { auth } from "@/auth";
-import Alert from "@/components/Alert";
-import UpdateUserClient from "./page.client";
-import { createAxiosServer } from "@/lib/axiosServer";
+import Alert from "@/components/alert";
+import { createAxiosServer } from "@/lib/axios-server";
+import UserService from "@/services/user-service";
 import { MetadataType } from "@/types/utils/metadata";
-import UserService from "@/services/userService";
+import UpdateUserClient from "./page.client";
 
 export const metadata = {
     title: "MDT - Modifier un utilisateur",

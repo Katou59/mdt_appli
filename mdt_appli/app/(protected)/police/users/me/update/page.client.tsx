@@ -1,14 +1,13 @@
 "use client";
 
-import Page from "@/components/Page";
-import UserUpdate from "@/components/UserUpdate";
-import axiosClient, { getData } from "@/lib/axiosClient";
+import Page from "@/components/page";
+import UserUpdate from "@/components/user-update";
+import axiosClient, { getData } from "@/lib/axios-client";
 import { useAlert } from "@/lib/Contexts/AlertContext";
 import { useUser } from "@/lib/Contexts/UserContext";
 import User from "@/types/class/User";
 import { UserToUpdateType, UserType } from "@/types/db/user";
 import { useRouter } from "next/navigation";
-import React from "react";
 import { toast } from "sonner";
 
 export default function UpdateMeClient() {

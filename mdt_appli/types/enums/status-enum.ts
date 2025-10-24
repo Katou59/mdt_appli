@@ -1,5 +1,5 @@
 // ⚙️ Fichier généré automatiquement — ne pas modifier à la main
-// Dernière génération : 2025-10-24T12:47:38.826Z
+// Dernière génération : 2025-10-24T13:00:16.895Z
 
 export enum StatusType {
   Alive = 1,

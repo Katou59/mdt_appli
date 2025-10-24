@@ -1,4 +1,4 @@
-import { KeyValueType } from "../utils/keyValue";
+import { KeyValueType } from "../utils/key-value";
 import { UserType } from "./user";
 
 export interface CitizenType {

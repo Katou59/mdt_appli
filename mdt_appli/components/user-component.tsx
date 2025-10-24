@@ -1,6 +1,6 @@
 import { UserToUpdateType, UserType } from "@/types/db/user";
-import UserConsult from "./UserConsult";
-import UserUpdate from "./UserUpdate";
+import UserConsult from "./user-consult";
+import UserUpdate from "./user-update";
 
 export default function UserComponent(props: {
     user: UserType;

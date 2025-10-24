@@ -1,6 +1,5 @@
 "use client";
 
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import {
     Table,
     TableBody,
@@ -9,9 +8,10 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import Pagination from "./Pagination";
 import Pager from "@/types/class/Pager";
 import IConverter from "@/types/interfaces/IConverter";
+import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import Pagination from "./pagination";
 
 interface DataTableProps<TEntity extends IConverter<TType>, TType, TData, TValue> {
     pager: Pager<TEntity, TType>;
@@ -70,8 +70,7 @@ export function DataTable<TEntity extends IConverter<TType>, TType, TData, TValu
                                 <TableRow
                                     key={row.id}
                                     onClick={() => onRowClick(row.getValue(String(keyIndex)))}
-                                    className="cursor-pointer"
-                                >
+                                    className="cursor-pointer">
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell key={cell.id} className={isSmall ? "p-1" : ""}>
                                             {flexRender(

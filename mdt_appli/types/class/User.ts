@@ -1,11 +1,11 @@
-import { UserToUpdateType, UserType } from "@/types/db/user";
-import { RoleType } from "@/types/enums/roleType";
-import Rank from "@/types/class/Rank";
 import { jobsTable, ranksTable, rolesTable, usersTable } from "@/db/schema";
+import Rank from "@/types/class/Rank";
+import { UserToUpdateType, UserType } from "@/types/db/user";
+import { RoleType } from "@/types/enums/role-enum";
 import { JobType } from "../db/job";
 import { RankType } from "../db/rank";
 import IConverter from "../interfaces/IConverter";
-import { KeyValueType } from "../utils/keyValue";
+import { KeyValueType } from "../utils/key-value";
 
 export default class User implements IConverter<UserType> {
     id: string;

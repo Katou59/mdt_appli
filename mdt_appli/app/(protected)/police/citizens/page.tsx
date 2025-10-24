@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
-import Alert from "@/components/Alert";
-import CitizenService from "@/services/citizenService";
+import Alert from "@/components/alert";
+import CitizenService from "@/services/citizen-service";
 import CitizensClient from "./page.client";
 
 export const metadata = {

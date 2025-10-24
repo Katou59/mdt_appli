@@ -1,9 +1,9 @@
 "use client";
 
-import Loader from "@/components/Loader";
-import Page from "@/components/Page";
+import Loader from "@/components/loader";
+import Page from "@/components/page";
 import { Separator } from "@/components/ui/separator";
-import axiosClient, { getData } from "@/lib/axiosClient";
+import axiosClient, { getData } from "@/lib/axios-client";
 import { useAlert } from "@/lib/Contexts/AlertContext";
 import { stringToNumber } from "@/lib/converters";
 import PagerClass from "@/types/class/Pager";
@@ -11,11 +11,11 @@ import Rank from "@/types/class/Rank";
 import User from "@/types/class/User";
 import { RankType } from "@/types/db/rank";
 import { UserType } from "@/types/db/user";
-import { PagerType } from "@/types/response/pagerType";
+import { PagerType } from "@/types/response/pager-type";
 import { MetadataType } from "@/types/utils/metadata";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { DataTable } from "../../../../components/DataTable";
+import { DataTable } from "../../../../components/datatable";
 import { columns, UserColumns } from "./columns";
 import SearchUserForm, { SearchUserFormOnSubmitType } from "./form-search-user";
 

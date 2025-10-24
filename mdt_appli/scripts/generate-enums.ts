@@ -5,11 +5,11 @@
  * ⚙️ À lancer avec : npx tsx scripts/generateRoleEnum.ts
  */
 
-import fs from "fs";
-import path from "path";
-import { drizzle } from "drizzle-orm/node-postgres";
 import { bloodTypesTable, gendersTable, rolesTable, statusesTable } from "@/db/schema"; // adapte le chemin selon ton projet
 import { config } from "dotenv";
+import { drizzle } from "drizzle-orm/node-postgres";
+import fs from "fs";
+import path from "path";
 import { Client } from "pg";
 
 config(); // charge le .env
@@ -20,17 +20,26 @@ const client = new Client({
 
 // Liste des enums à générer
 const enums = [
-    { path: "types/enums/roleType.ts", table: rolesTable, name: "role", enumName: "RoleType" },
-    { path: "types/enums/genderType.ts", table: gendersTable, name: "gender", enumName: "GenderType" },
-    { path: "types/enums/bloodTypeType.ts", table: bloodTypesTable, name: "bloodType", enumName: "BloodTypeType" },
+    { path: "types/enums/role-enum.ts", table: rolesTable, name: "role", enumName: "RoleType" },
     {
-        path: "types/enums/statusType.ts",
+        path: "types/enums/gender-enum.ts",
+        table: gendersTable,
+        name: "gender",
+        enumName: "GenderType",
+    },
+    {
+        path: "types/enums/blood-type-enum.ts",
+        table: bloodTypesTable,
+        name: "bloodType",
+        enumName: "BloodTypeType",
+    },
+    {
+        path: "types/enums/status-enum.ts",
         table: statusesTable,
         name: "status",
         enumName: "StatusType",
     },
 ] as const;
-
 
 async function main() {
     // ✅ S'assure que le client PG est connecté avant toute requête

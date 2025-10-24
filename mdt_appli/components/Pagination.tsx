@@ -7,7 +7,7 @@ import {
     PaginationLink,
 } from "@/components/ui/pagination";
 import IConverter from "@/types/interfaces/IConverter";
-import { PagerType } from "@/types/response/pagerType";
+import { PagerType } from "@/types/response/pager-type";
 
 type Props<TEntity extends IConverter<TType>, TType> = {
     pager: PagerType<TType>;
@@ -29,8 +29,7 @@ export default function Pagination<TEntity extends IConverter<TType>, TType>({
                         size="icon"
                         className="rounded-full"
                         disabled={pager.page <= 1}
-                        onClick={() => onPageChange(1)}
-                    >
+                        onClick={() => onPageChange(1)}>
                         <ChevronFirstIcon className="h-4 w-4" />
                     </PaginationLink>
                 </PaginationItem>
@@ -40,8 +39,7 @@ export default function Pagination<TEntity extends IConverter<TType>, TType>({
                         size="icon"
                         className="rounded-full"
                         disabled={pager.page <= 1}
-                        onClick={() => onPageChange(pager.page - 1)}
-                    >
+                        onClick={() => onPageChange(pager.page - 1)}>
                         <ChevronLeftIcon className="h-4 w-4" />
                     </PaginationLink>
                 </PaginationItem>
@@ -58,8 +56,7 @@ export default function Pagination<TEntity extends IConverter<TType>, TType>({
                         size="icon"
                         className="rounded-full"
                         disabled={pager.page >= pager.pageCount}
-                        onClick={() => onPageChange(pager.page + 1)}
-                    >
+                        onClick={() => onPageChange(pager.page + 1)}>
                         <ChevronRightIcon className="h-4 w-4" />
                     </PaginationLink>
                 </PaginationItem>
@@ -69,8 +66,7 @@ export default function Pagination<TEntity extends IConverter<TType>, TType>({
                         size="icon"
                         className="rounded-full"
                         disabled={pager.page >= pager.pageCount}
-                        onClick={() => onPageChange(pager.pageCount)}
-                    >
+                        onClick={() => onPageChange(pager.pageCount)}>
                         <ChevronLastIcon className="h-4 w-4" />
                     </PaginationLink>
                 </PaginationItem>

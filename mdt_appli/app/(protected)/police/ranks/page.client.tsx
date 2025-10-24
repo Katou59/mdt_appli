@@ -1,13 +1,13 @@
 "use client";
 
-import Alert from "@/components/Alert";
-import ItemRank from "@/components/ItemRank";
-import Loader from "@/components/Loader";
-import Page from "@/components/Page";
-import SelectWithLabel from "@/components/SelectWithLabel";
+import Alert from "@/components/alert";
+import ItemRank from "@/components/item-rank";
+import Loader from "@/components/loader";
+import Page from "@/components/page";
+import SelectWithLabel from "@/components/select-label";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
-import axiosClient, { getData } from "@/lib/axiosClient";
+import axiosClient, { getData } from "@/lib/axios-client";
 import { useAlert } from "@/lib/Contexts/AlertContext";
 import { useMetadata } from "@/lib/Contexts/MetadataContext";
 import Job from "@/types/class/Job";

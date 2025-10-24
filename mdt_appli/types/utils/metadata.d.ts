@@ -1,6 +1,6 @@
 import { JobType } from "../db/job";
 import { RankType } from "../db/rank";
-import { KeyValueType } from "./keyValue";
+import { KeyValueType } from "./key-value";
 
 export interface MetadataType {
     jobs: JobType[];

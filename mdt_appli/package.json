@@ -9,7 +9,7 @@
         "build": "next build --turbopack",
         "start": "next start",
         "lint": "eslint",
-        "generate:enums": "tsx scripts/generateEnums.ts"
+        "generate:enums": "tsx scripts/generate-enums.ts"
     },
     "dependencies": {
         "@aws-sdk/client-s3": "^3.913.0",

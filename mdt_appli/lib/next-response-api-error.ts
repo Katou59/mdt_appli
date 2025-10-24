@@ -1,5 +1,5 @@
-import ErrorLogRepository from "@/repositories/errorLogRepository";
-import { HttpStatus } from "@/types/enums/httpStatus";
+import ErrorLogRepository from "@/repositories/error-log-repository";
+import { HttpStatus } from "@/types/enums/http-status-enum";
 import CustomError from "@/types/errors/CustomError";
 import { Session } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";

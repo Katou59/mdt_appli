@@ -1,17 +1,17 @@
 "use client";
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import axiosClient, { getData } from "@/lib/axiosClient";
-import User from "@/types/class/User";
-import Loader from "@/components/Loader";
-import Page from "@/components/Page";
-import { UserToUpdateType, UserType } from "@/types/db/user";
+import Loader from "@/components/loader";
+import Page from "@/components/page";
+import UserUpdate from "@/components/user-update";
+import axiosClient, { getData } from "@/lib/axios-client";
+import { useAlert } from "@/lib/Contexts/AlertContext";
 import { useUser } from "@/lib/Contexts/UserContext";
 import Rank from "@/types/class/Rank";
-import { useAlert } from "@/lib/Contexts/AlertContext";
+import User from "@/types/class/User";
+import { UserToUpdateType, UserType } from "@/types/db/user";
 import { MetadataType } from "@/types/utils/metadata";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import UserUpdate from "@/components/UserUpdate";
 
 type Props = {
     user: UserType;

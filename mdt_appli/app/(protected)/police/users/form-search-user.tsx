@@ -1,6 +1,6 @@
 "use client";
 
-import ButtonGroupForm from "@/components/ButtonGroup";
+import ButtonGroupForm from "@/components/button-group";
 import {
     Form,
     FormControl,
@@ -88,8 +88,7 @@ export default function SearchUserForm({
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(onSubmitInternal)}
-                className="flex flex-col gap-5 items-center"
-            >
+                className="flex flex-col gap-5 items-center">
                 <FormField
                     control={form.control}
                     name="searchField"
@@ -128,16 +127,14 @@ export default function SearchUserForm({
                                             field.onChange(value);
                                             form.setValue("rankId", "");
                                             onJobChange(value);
-                                        }}
-                                    >
+                                        }}>
                                         <SelectTrigger
                                             aria-invalid={fieldState.invalid}
                                             className={`${cn(
                                                 "min-w-[120px]",
                                                 fieldState.invalid &&
                                                     "border-destructive focus:ring-destructive"
-                                            )} w-full`}
-                                        >
+                                            )} w-full`}>
                                             <SelectValue placeholder="Choisir..." />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -174,16 +171,14 @@ export default function SearchUserForm({
                                         }}
                                         disabled={
                                             !form.watch("jobId") || form.watch("jobId") === "none"
-                                        }
-                                    >
+                                        }>
                                         <SelectTrigger
                                             aria-invalid={fieldState.invalid}
                                             className={`${cn(
                                                 "min-w-[120px]",
                                                 fieldState.invalid &&
                                                     "border-destructive focus:ring-destructive"
-                                            )} w-full`}
-                                        >
+                                            )} w-full`}>
                                             <SelectValue placeholder="Choisir..." />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -217,16 +212,14 @@ export default function SearchUserForm({
                                         value={field.value}
                                         onValueChange={(value) => {
                                             field.onChange(value);
-                                        }}
-                                    >
+                                        }}>
                                         <SelectTrigger
                                             aria-invalid={fieldState.invalid}
                                             className={`${cn(
                                                 "min-w-[120px]",
                                                 fieldState.invalid &&
                                                     "border-destructive focus:ring-destructive"
-                                            )} w-full`}
-                                        >
+                                            )} w-full`}>
                                             <SelectValue placeholder="Choisir..." />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -260,16 +253,14 @@ export default function SearchUserForm({
                                         value={field.value}
                                         onValueChange={(value) => {
                                             field.onChange(value);
-                                        }}
-                                    >
+                                        }}>
                                         <SelectTrigger
                                             aria-invalid={fieldState.invalid}
                                             className={`${cn(
                                                 "min-w-[120px]",
                                                 fieldState.invalid &&
                                                     "border-destructive focus:ring-destructive"
-                                            )} w-full`}
-                                        >
+                                            )} w-full`}>
                                             <SelectValue placeholder="Choisir..." />
                                         </SelectTrigger>
                                         <SelectContent>

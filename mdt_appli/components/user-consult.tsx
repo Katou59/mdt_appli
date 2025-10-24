@@ -4,12 +4,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserType } from "@/types/db/user";
 import dayjs from "dayjs";
 
-import React from "react";
-import { Button } from "./ui/button";
-import Link from "next/link";
-import { ItemForm } from "./ItemForm";
-import UserCard from "./UserCard";
 import { useUser } from "@/lib/Contexts/UserContext";
+import Link from "next/link";
+import { ItemForm } from "./item-form";
+import { Button } from "./ui/button";
+import UserCard from "./user-card";
 
 export default function UserConsult({
     userToUpdate,
@@ -30,8 +29,7 @@ export default function UserConsult({
                 <TabsContent value="hrp">
                     <UserCard
                         title="Informations HRP"
-                        description="Informations relatives à l'utilisateur."
-                    >
+                        description="Informations relatives à l'utilisateur.">
                         <ItemForm title="Id Discord" description={userToUpdate.id} />
                         <ItemForm title="Nom Discord" description={userToUpdate.name ?? "Vide"} />
                         <ItemForm
@@ -70,8 +68,7 @@ export default function UserConsult({
                 <TabsContent value="rp">
                     <UserCard
                         title="Informations RP"
-                        description="Informations relatives au personnage."
-                    >
+                        description="Informations relatives au personnage.">
                         <ItemForm
                             title="Nom du personnage"
                             description={userToUpdate.lastName ?? "Vide"}
@@ -102,8 +99,7 @@ export default function UserConsult({
                         <Link
                             href={
                                 updateHref ? updateHref : `/police/users/${userToUpdate.id}/update`
-                            }
-                        >
+                            }>
                             Modifier
                         </Link>
                     </Button>
