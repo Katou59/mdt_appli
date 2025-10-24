@@ -106,6 +106,14 @@ export default class UserService {
             }
             userToUpdate.rank = rank;
             userToUpdate.isDisable = userToUpdateType.isDisable ?? userToUpdate.isDisable;
+
+            if (userToUpdateType.roleId && userToUpdateType.roleId > this.currentUser.role.key) {
+                throw new CustomError(
+                    "Not authorized to change this role",
+                    HttpStatus.UNAUTHORIZED
+                );
+            }
+
             userToUpdate.role = {
                 key: userToUpdateType.roleId!,
                 value: "",

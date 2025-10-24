@@ -72,10 +72,12 @@ export default function UpdateUserClient({ metadata, user: userServer }: Props) 
 
                         setRanks((prev) => ({ ...prev, currentRanks: filteredRanks }));
                     }}
-                    roles={metadata.roles.map((role) => ({
-                        label: role.value,
-                        value: String(role.key),
-                    }))}
+                    roles={metadata.roles
+                        .filter((x) => x.key <= currentUser.role.key)
+                        .map((role) => ({
+                            label: role.value,
+                            value: String(role.key),
+                        }))}
                     onSubmit={onSubmit}
                     onCancel={onCancel}
                 />
