@@ -1,15 +1,15 @@
 "use client";
 
 import Page from "@/components/Page";
-import TableAgents from "./Table";
-import { PagerType } from "@/types/response/pagerType";
-import { UsersForSeachType, UserType } from "@/types/db/user";
-import { useState } from "react";
-import Pager from "@/types/class/Pager";
-import User from "@/types/class/User";
 import axiosClient, { getData } from "@/lib/axiosClient";
 import { useAlert } from "@/lib/Contexts/AlertContext";
-import SearchAgentForm from "./SearchAgentForm";
+import Pager from "@/types/class/Pager";
+import User from "@/types/class/User";
+import { UsersForSeachType, UserType } from "@/types/db/user";
+import { PagerType } from "@/types/response/pagerType";
+import { useState } from "react";
+import SearchAgentForm from "./search-agent-form";
+import TableAgents from "./table";
 
 type Props = {
     pager: PagerType<UserType>;

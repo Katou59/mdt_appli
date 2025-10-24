@@ -33,8 +33,8 @@ import { CSS } from "@dnd-kit/utilities";
 import { CirclePlus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { AddRankFormType } from "./AddRankForm";
-import DialogAddRank from "./DialogAddRank";
+import DialogAddRank from "./dialog-add-rank";
+import { AddRankFormType } from "./form-add-rank";
 
 export default function RanksClient() {
     const { setAlert } = useAlert();
@@ -135,12 +135,10 @@ export default function RanksClient() {
                 <DndContext
                     sensors={sensors}
                     collisionDetection={closestCenter}
-                    onDragEnd={handleDragEnd}
-                >
+                    onDragEnd={handleDragEnd}>
                     <SortableContext
                         items={ranks.map((r) => r.order!)}
-                        strategy={verticalListSortingStrategy}
-                    >
+                        strategy={verticalListSortingStrategy}>
                         <ul className="grid gap-1">
                             {ranks.map((rank) => (
                                 <SortableRankItem key={rank.order} rank={rank} />
@@ -149,8 +147,7 @@ export default function RanksClient() {
                                 <Button
                                     variant={"default"}
                                     className="h-full w-full"
-                                    onClick={() => setIsDialogOpen(true)}
-                                >
+                                    onClick={() => setIsDialogOpen(true)}>
                                     <CirclePlus />
                                 </Button>
                             </li>
@@ -165,8 +162,7 @@ export default function RanksClient() {
                     onClick={() => {
                         const newRanks = getRanks(metadata?.ranks || [], Number(selectedJobId));
                         setRanks(newRanks);
-                    }}
-                >
+                    }}>
                     Annuler
                 </Button>
                 <Button
@@ -190,8 +186,7 @@ export default function RanksClient() {
                         const newRanks = (metadata?.ranks as RankType[]).map((x) => new Rank(x));
                         setRanks(newRanks.filter((x) => x.job?.id === selectedJobId));
                         toast.success("Grades mis à jour");
-                    }}
-                >
+                    }}>
                     Valider
                 </Button>
             </ButtonGroup>

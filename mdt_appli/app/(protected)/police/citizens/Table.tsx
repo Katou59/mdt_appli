@@ -12,7 +12,7 @@ import Citizen from "@/types/class/Citizen";
 import Pager from "@/types/class/Pager";
 import { CitizenType } from "@/types/db/citizen";
 import dayjs from "dayjs";
-import { HoverCardCitizen } from "./HoverCardCitizen";
+import { HoverCardCitizen } from "./hover-card-citizen";
 
 type Props = {
     pager: Pager<Citizen, CitizenType>;

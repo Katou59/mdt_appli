@@ -1,6 +1,5 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import React from "react";
-import AddRankForm, { AddRankFormType } from "./AddRankForm";
+import AddRankForm, { AddRankFormType } from "./form-add-rank";
 
 type Props = {
     isOpen: boolean;

@@ -1,23 +1,23 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { UserType } from "@/types/db/user";
-import { useEffect, useState } from "react";
-import axiosClient, { getData } from "@/lib/axiosClient";
-import User from "@/types/class/User";
-import Rank from "@/types/class/Rank";
-import { PagerType } from "@/types/response/pagerType";
-import PagerClass from "@/types/class/Pager";
-import { RankType } from "@/types/db/rank";
 import Loader from "@/components/Loader";
-import { DataTable } from "../../../../components/DataTable";
-import { columns, UserColumns } from "./columns";
 import Page from "@/components/Page";
-import SearchUserForm, { SearchUserFormOnSubmitType } from "./SearchUserForm";
+import { Separator } from "@/components/ui/separator";
+import axiosClient, { getData } from "@/lib/axiosClient";
 import { useAlert } from "@/lib/Contexts/AlertContext";
 import { stringToNumber } from "@/lib/converters";
-import { Separator } from "@/components/ui/separator";
+import PagerClass from "@/types/class/Pager";
+import Rank from "@/types/class/Rank";
+import User from "@/types/class/User";
+import { RankType } from "@/types/db/rank";
+import { UserType } from "@/types/db/user";
+import { PagerType } from "@/types/response/pagerType";
 import { MetadataType } from "@/types/utils/metadata";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { DataTable } from "../../../../components/DataTable";
+import { columns, UserColumns } from "./columns";
+import SearchUserForm, { SearchUserFormOnSubmitType } from "./form-search-user";
 
 type FilterType = {
     searchTerm: string | undefined;

@@ -2,13 +2,13 @@
 
 import Page from "@/components/Page";
 import axiosClient, { getData } from "@/lib/axiosClient";
+import { useAlert } from "@/lib/Contexts/AlertContext";
 import Rank from "@/types/class/Rank";
 import { UserToCreateType } from "@/types/db/user";
-import React, { useState } from "react";
-import { AddUserForm } from "./AddUserForm";
-import { toast } from "sonner";
-import { useAlert } from "@/lib/Contexts/AlertContext";
 import { MetadataType } from "@/types/utils/metadata";
+import { useState } from "react";
+import { toast } from "sonner";
+import { AddUserForm } from "./form-add-user";
 
 type Props = {
     metadata: MetadataType;
