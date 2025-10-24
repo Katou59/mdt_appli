@@ -14,7 +14,6 @@ export function MetadataProvider({ children }: { children: React.ReactNode }) {
     const [metadata, setMetadata] = useState<MetadataType | undefined>(undefined);
 
     const init = async () => {
-        console.log("refresgh");
         const metadataResponse = await getData(axiosClient.get("/metadata"));
         if (metadataResponse.errorMessage) {
             throw new Error("Erreur lors de la récupération des metadatas");

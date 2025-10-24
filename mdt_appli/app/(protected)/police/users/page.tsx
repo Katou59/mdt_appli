@@ -1,7 +1,6 @@
 import { auth } from "@/auth";
-import { createAxiosServer } from "@/lib/axios-server";
+import MetadataService from "@/services/metadata-service";
 import UserService from "@/services/user-service";
-import { MetadataType } from "@/types/utils/metadata";
 import UsersClient from "./page.client";
 
 export const metadata = {
@@ -22,9 +21,8 @@ export default async function Users() {
             return <UsersClient error="Vous n'êtes pas autorisé" />;
         }
 
-        const axios = await createAxiosServer();
-        const response = await axios.get("/metadata");
-        const metadata = response.data as MetadataType;
+        const metadataService = new MetadataService(userService.currentUser);
+        const metadata = await metadataService.get();
 
         const users = await userService.getList(1, 20);
 

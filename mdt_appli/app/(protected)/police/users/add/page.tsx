@@ -1,8 +1,7 @@
 import { auth } from "@/auth";
 import Alert from "@/components/alert";
-import { createAxiosServer } from "@/lib/axios-server";
+import MetadataService from "@/services/metadata-service";
 import UserService from "@/services/user-service";
-import { MetadataType } from "@/types/utils/metadata";
 import AddUserClient from "./page.client";
 
 export const metadata = {
@@ -18,14 +17,13 @@ export default async function AddUser() {
         }
 
         const userService = await UserService.create(session.user.discordId);
-        const currentUser = await userService.get(session?.user.discordId);
+        const currentUser = userService.currentUser;
         if (!currentUser?.isAdmin) {
             return <Alert type="unauthorized" />;
         }
 
-        const axios = await createAxiosServer();
-        const response = await axios.get("/metadata");
-        const metadata = response.data as MetadataType;
+        const metadataService = new MetadataService(currentUser);
+        const metadata = await metadataService.get();
 
         return <AddUserClient metadata={metadata} />;
     } catch {
