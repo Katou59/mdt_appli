@@ -46,7 +46,11 @@ export default function AgentsClient({ pager: pagerServer }: Props) {
         <Page title="Liste des agents">
             <div className="grid gap-5 w-full">
                 <SearchAgentForm
-                    onCancel={() => {}}
+                    onCancel={async () => {
+                        const newPager = pager.clone();
+                        newPager.page = 1;
+                        setPager(await getPager(pager));
+                    }}
                     onSubmit={async (values) => {
                         try {
                             const newPager = pager.clone();
