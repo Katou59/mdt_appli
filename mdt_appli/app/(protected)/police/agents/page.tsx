@@ -1,6 +1,5 @@
 import { auth } from "@/auth";
 import Alert from "@/components/Alert";
-import { UserRepository } from "@/repositories/userRepository";
 import React from "react";
 import AgentsClient from "./page.client";
 import UserService from "@/services/userService";

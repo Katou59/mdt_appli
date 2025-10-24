@@ -1,5 +1,4 @@
 import UserIdClient from "./page.client";
-import { UserRepository } from "@/repositories/userRepository";
 import Alert from "@/components/Alert";
 import UserService from "@/services/userService";
 import { auth } from "@/auth";

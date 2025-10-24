@@ -4,7 +4,6 @@ import User from "@/types/class/User";
 import { UserToCreateType, UserType } from "@/types/db/user";
 import Pager from "@/types/class/Pager";
 import Repository from "./repository";
-import { id } from "zod/v4/locales";
 
 type FilterType = {
     searchTerm?: string;

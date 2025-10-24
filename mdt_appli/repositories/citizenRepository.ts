@@ -10,14 +10,14 @@ import {
 } from "@/db/schema";
 import Citizen from "@/types/class/Citizen";
 import Pager from "@/types/class/Pager";
+import User from "@/types/class/User";
 import { CitizenToCreateType, CitizenType } from "@/types/db/citizen";
-import { eq, ilike, sql, or, and } from "drizzle-orm";
+import { and, eq, ilike, or, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import Repository from "./repository";
-import User from "@/types/class/User";
 
 export default class CitizenRepository extends Repository {
-    static async GetList(
+    static async getList(
         page: number,
         valuePerPage: number,
         search?: string
@@ -122,7 +122,7 @@ export default class CitizenRepository extends Repository {
         return new Pager(citizens, count, valuePerPage, page);
     }
 
-    public static async Add(citizenToCreate: CitizenToCreateType, user: User): Promise<string> {
+    public static async add(citizenToCreate: CitizenToCreateType, user: User): Promise<string> {
         const [inserted] = await CitizenRepository.db
             .insert(citizensTable)
             .values({ ...citizenToCreate, createdBy: user.id, updatedBy: user.id })
@@ -131,7 +131,7 @@ export default class CitizenRepository extends Repository {
         return inserted.id;
     }
 
-    public static async Get(id: string): Promise<Citizen | null> {
+    public static async get(id: string): Promise<Citizen | null> {
         const updatedByUsers = alias(usersTable, "updated_by_users");
         const updatedByUsersJobs = alias(jobsTable, "updated_by_user_jobs");
         const updatedByUsersRanks = alias(ranksTable, "updated_by_user_ranks");

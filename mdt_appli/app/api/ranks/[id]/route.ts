@@ -1,10 +1,6 @@
 import { auth } from "@/auth";
-import { usersTable } from "@/db/schema";
 import ErrorLogRepository from "@/repositories/errorLogRepository";
-import HistoryRepository from "@/repositories/historyRepository";
 import RankRepository from "@/repositories/rankRepository";
-import { UserRepository } from "@/repositories/userRepository";
-import UserService from "@/services/userService";
 import { HttpStatus } from "@/types/enums/httpStatus";
 import { NextRequest, NextResponse } from "next/server";
 

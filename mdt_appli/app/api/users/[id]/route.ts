@@ -1,13 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
-import { UserRepository } from "@/repositories/userRepository";
 import { auth } from "@/auth";
-import { HttpStatus } from "@/types/enums/httpStatus";
-import ErrorLogRepository from "@/repositories/errorLogRepository";
-import HistoryRepository from "@/repositories/historyRepository";
-import { UserToUpdateType } from "@/types/db/user";
-import RankRepository from "@/repositories/rankRepository";
+import { NextResponseApiError } from "@/lib/NextResponseApiError";
 import UserService from "@/services/userService";
-import CustomError from "@/types/errors/CustomError";
+import { UserToUpdateType } from "@/types/db/user";
+import { HttpStatus } from "@/types/enums/httpStatus";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest, context: { params: Promise<{ id: string }> }) {
     try {
@@ -23,25 +19,7 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
 
         return NextResponse.json(user.toType(), { status: HttpStatus.OK });
     } catch (error) {
-        ErrorLogRepository.Add({
-            error: error,
-            path: request.nextUrl.href,
-            request: null,
-            userId: (await auth())!.user!.discordId!,
-            method: request.method,
-        });
-        if (error instanceof CustomError) {
-            return NextResponse.json({ error: error.message }, { status: error.status });
-        }
-        if (error instanceof Error)
-            return NextResponse.json(
-                { error: error.message },
-                { status: HttpStatus.INTERNAL_SERVER_ERROR }
-            );
-        return NextResponse.json(
-            { error: "Internal server error" },
-            { status: HttpStatus.INTERNAL_SERVER_ERROR }
-        );
+        return await NextResponseApiError(error, request, auth(), null);
     }
 }
 
@@ -64,24 +42,6 @@ export async function PUT(request: NextRequest) {
 
         return NextResponse.json(userUpdated.toType(), { status: HttpStatus.OK });
     } catch (error) {
-        ErrorLogRepository.Add({
-            error: error,
-            path: request.nextUrl.href,
-            request: body,
-            userId: (await auth())!.user!.discordId!,
-            method: request.method,
-        });
-        if (error instanceof CustomError) {
-            return NextResponse.json({ error: error.message }, { status: error.status });
-        }
-        if (error instanceof Error)
-            return NextResponse.json(
-                { error: error.message },
-                { status: HttpStatus.INTERNAL_SERVER_ERROR }
-            );
-        return NextResponse.json(
-            { error: "Internal server error" },
-            { status: HttpStatus.INTERNAL_SERVER_ERROR }
-        );
+        return await NextResponseApiError(error, request, auth(), null);
     }
 }

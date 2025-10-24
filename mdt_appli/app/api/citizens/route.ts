@@ -1,8 +1,6 @@
 import { auth } from "@/auth";
-import CitizenRepository from "@/repositories/citizenRepository";
-import ErrorLogRepository from "@/repositories/errorLogRepository";
-import HistoryRepository from "@/repositories/historyRepository";
-import { UserRepository } from "@/repositories/userRepository";
+import { NextResponseApiError } from "@/lib/NextResponseApiError";
+import CitizenService from "@/services/citizenService";
 import UserService from "@/services/userService";
 import { CitizenToCreateType } from "@/types/db/citizen";
 import { HttpStatus } from "@/types/enums/httpStatus";
@@ -10,6 +8,14 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
     try {
+        const session = await auth();
+        if (!session?.user?.discordId) {
+            return NextResponse.json(
+                { error: "Not authorized" },
+                { status: HttpStatus.UNAUTHORIZED }
+            );
+        }
+
         const { searchParams } = new URL(request.url);
         const page = Number(searchParams.get("page"));
         const itemPerPage = Number(searchParams.get("itemPerPage"));
@@ -19,27 +25,12 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: "Bad Request" }, { status: HttpStatus.BAD_REQUEST });
         }
 
-        const pager = await CitizenRepository.GetList(page, itemPerPage, searchTerm ?? undefined);
+        const citizenService = await CitizenService.create(session.user.discordId);
+        const citizenPager = await citizenService.getList(page, itemPerPage, searchTerm);
 
-        return NextResponse.json(pager.toType());
+        return NextResponse.json(citizenPager.toType());
     } catch (error) {
-        ErrorLogRepository.Add({
-            error: error,
-            path: request.nextUrl.href,
-            request: null,
-            userId: (await auth())!.user!.discordId!,
-            method: request.method,
-        });
-
-        if (error instanceof Error)
-            return NextResponse.json(
-                { error: error.message },
-                { status: HttpStatus.INTERNAL_SERVER_ERROR }
-            );
-        return NextResponse.json(
-            { error: "Internal server error" },
-            { status: HttpStatus.INTERNAL_SERVER_ERROR }
-        );
+        return await NextResponseApiError(error, request, auth(), null);
     }
 }
 
@@ -64,27 +55,11 @@ export async function POST(request: NextRequest) {
         }
 
         const citizenToAddRequest = (await request.json()) as CitizenToCreateType;
-        const newCitizenId = await CitizenRepository.Add(citizenToAddRequest, user);
+        const citizenService = await CitizenService.create(session.user.discordId);
+        const citizenCreated = await citizenService.add(citizenToAddRequest);
 
-        HistoryRepository.Add({
-            action: "create",
-            entityId: newCitizenId,
-            entityType: "citizen",
-            newData: await CitizenRepository.Get(newCitizenId),
-            oldData: null,
-            userId: session!.user!.discordId!,
-        });
-
-        return NextResponse.json({ id: newCitizenId }, { status: HttpStatus.CREATED });
+        return NextResponse.json(citizenCreated.toType(), { status: HttpStatus.CREATED });
     } catch (error) {
-        if (error instanceof Error)
-            return NextResponse.json(
-                { error: error.message },
-                { status: HttpStatus.INTERNAL_SERVER_ERROR }
-            );
-        return NextResponse.json(
-            { error: "Internal server error" },
-            { status: HttpStatus.INTERNAL_SERVER_ERROR }
-        );
+        return await NextResponseApiError(error, request, auth(), null);
     }
 }

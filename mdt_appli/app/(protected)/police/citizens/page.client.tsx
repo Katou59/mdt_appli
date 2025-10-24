@@ -2,13 +2,11 @@
 
 import Page from "@/components/Page";
 import axiosClient, { getData } from "@/lib/axiosClient";
-import { useAlert } from "@/lib/Contexts/AlertContext";
 import Citizen from "@/types/class/Citizen";
 import Pager from "@/types/class/Pager";
 import { CitizenType } from "@/types/db/citizen";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { PagerType } from "@/types/response/pagerType";
-import Loader from "@/components/Loader";
 import { Separator } from "@/components/ui/separator";
 import SearchCitizenForm, { SearchCitizenFormOnSubmitType } from "./SearchCitizenForm";
 import TableCitizens from "./Table";

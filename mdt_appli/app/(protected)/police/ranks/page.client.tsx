@@ -1,40 +1,40 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import axiosClient, { getData } from "@/lib/axiosClient";
-import { RankType } from "@/types/db/rank";
+import Alert from "@/components/Alert";
+import ItemRank from "@/components/ItemRank";
 import Loader from "@/components/Loader";
 import Page from "@/components/Page";
-import { useAlert } from "@/lib/Contexts/AlertContext";
 import SelectWithLabel from "@/components/SelectWithLabel";
-import ItemRank from "@/components/ItemRank";
+import { Button } from "@/components/ui/button";
+import { ButtonGroup } from "@/components/ui/button-group";
+import axiosClient, { getData } from "@/lib/axiosClient";
+import { useAlert } from "@/lib/Contexts/AlertContext";
+import { useMetadata } from "@/lib/Contexts/MetadataContext";
+import Job from "@/types/class/Job";
+import Rank from "@/types/class/Rank";
+import { RankType } from "@/types/db/rank";
 import {
-    DndContext,
     closestCenter,
+    DndContext,
+    DragEndEvent,
     KeyboardSensor,
     PointerSensor,
     useSensor,
     useSensors,
-    DragEndEvent,
 } from "@dnd-kit/core";
 import {
     arrayMove,
     SortableContext,
     sortableKeyboardCoordinates,
-    verticalListSortingStrategy,
     useSortable,
+    verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import Rank from "@/types/class/Rank";
-import { ButtonGroup } from "@/components/ui/button-group";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 import { CSS } from "@dnd-kit/utilities";
 import { CirclePlus } from "lucide-react";
-import DialogAddRank from "./DialogAddRank";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { AddRankFormType } from "./AddRankForm";
-import Job from "@/types/class/Job";
-import { useMetadata } from "@/lib/Contexts/MetadataContext";
-import Alert from "@/components/Alert";
+import DialogAddRank from "./DialogAddRank";
 
 export default function RanksClient() {
     const { setAlert } = useAlert();

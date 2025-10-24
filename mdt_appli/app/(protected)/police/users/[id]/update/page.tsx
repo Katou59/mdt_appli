@@ -1,6 +1,5 @@
 import { auth } from "@/auth";
 import Alert from "@/components/Alert";
-import { UserRepository } from "@/repositories/userRepository";
 import UpdateUserClient from "./page.client";
 import { createAxiosServer } from "@/lib/axiosServer";
 import { MetadataType } from "@/types/utils/metadata";

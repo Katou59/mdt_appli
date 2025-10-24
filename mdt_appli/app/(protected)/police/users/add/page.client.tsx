@@ -1,16 +1,10 @@
 "use client";
 
-import Loader from "@/components/Loader";
 import Page from "@/components/Page";
 import axiosClient, { getData } from "@/lib/axiosClient";
-import { useUser } from "@/lib/Contexts/UserContext";
-import Job from "@/types/class/Job";
 import Rank from "@/types/class/Rank";
-import { JobType } from "@/types/db/job";
-import { RankType } from "@/types/db/rank";
 import { UserToCreateType } from "@/types/db/user";
-import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { AddUserForm } from "./AddUserForm";
 import { toast } from "sonner";
 import { useAlert } from "@/lib/Contexts/AlertContext";

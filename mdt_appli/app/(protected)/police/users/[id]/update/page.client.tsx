@@ -8,7 +8,6 @@ import Page from "@/components/Page";
 import { UserToUpdateType, UserType } from "@/types/db/user";
 import { useUser } from "@/lib/Contexts/UserContext";
 import Rank from "@/types/class/Rank";
-import Job from "@/types/class/Job";
 import { useAlert } from "@/lib/Contexts/AlertContext";
 import { MetadataType } from "@/types/utils/metadata";
 import { toast } from "sonner";

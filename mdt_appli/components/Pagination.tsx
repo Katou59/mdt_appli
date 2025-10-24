@@ -6,7 +6,6 @@ import {
     PaginationItem,
     PaginationLink,
 } from "@/components/ui/pagination";
-import Pager from "@/types/class/Pager";
 import IConverter from "@/types/interfaces/IConverter";
 import { PagerType } from "@/types/response/pagerType";
 

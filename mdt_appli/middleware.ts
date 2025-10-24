@@ -7,7 +7,6 @@ export const config = {
 
 import { auth } from "@/auth";
 import { NextRequest, NextResponse } from "next/server";
-import { UserRepository } from "@/repositories/userRepository";
 import UserService from "./services/userService";
 
 // Liste des routes API nécessitant des droits d'admin spécifiques

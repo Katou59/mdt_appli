@@ -1,6 +1,5 @@
 import NextAuth from "next-auth";
 import Discord from "next-auth/providers/discord";
-import { UserRepository } from "@/repositories/userRepository";
 import UserService from "@/services/userService";
 
 const auth = NextAuth({

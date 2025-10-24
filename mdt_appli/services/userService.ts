@@ -5,7 +5,6 @@ import User from "@/types/class/User";
 import { UserToCreateType, UserToUpdateType } from "@/types/db/user";
 import { HttpStatus } from "@/types/enums/httpStatus";
 import CustomError from "@/types/errors/CustomError";
-import { file } from "zod";
 
 type FilterType = {
     searchTerm?: string;
@@ -16,7 +15,7 @@ type FilterType = {
 };
 
 export default class UserService {
-    private readonly currentUser: User;
+    public readonly currentUser: User;
 
     constructor(currentUser: User) {
         this.currentUser = currentUser;
@@ -46,6 +45,11 @@ export default class UserService {
     }
 
     public async add(userToAdd: UserToCreateType): Promise<User> {
+        const existingUser = await UserRepository.get(userToAdd.id);
+        if (existingUser) {
+            throw new CustomError("Conflict", HttpStatus.CONFLICT);
+        }
+
         const userCreatedId = await UserRepository.add(userToAdd);
 
         const userCreated = await this.get(userCreatedId);

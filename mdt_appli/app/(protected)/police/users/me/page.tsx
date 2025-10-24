@@ -2,8 +2,6 @@ import { auth } from "@/auth";
 import Alert from "@/components/Alert";
 import Page from "@/components/Page";
 import UserConsult from "@/components/UserConsult";
-import { useUser } from "@/lib/Contexts/UserContext";
-import { UserRepository } from "@/repositories/userRepository";
 import UserService from "@/services/userService";
 
 export const metadata = {
