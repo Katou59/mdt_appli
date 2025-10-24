@@ -32,6 +32,7 @@ export default function AgentsClient({ pager: pagerServer }: Props) {
 
     async function onPageChange(page: number) {
         try {
+            throw new Error("jm le kk");
             const newPager = pager.clone();
             newPager.page = page;
             setPager(await getPager(newPager));

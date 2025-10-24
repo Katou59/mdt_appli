@@ -1,7 +1,7 @@
 "use client";
 
 import { useAlert } from "@/lib/Contexts/AlertContext";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 
 type Props = {
     title?: string;
@@ -11,7 +11,7 @@ type Props = {
 
 export default function Alert({
     title = "Erreur",
-    descrition = "Une erreur est survenue",
+    descrition: description = "Une erreur est survenue",
     type,
 }: Props) {
     const { setAlert } = useAlert();
@@ -29,10 +29,10 @@ export default function Alert({
                     return;
             }
         }
-        if (title || descrition) {
-            setAlert({ title, description: descrition });
+        if (title || description) {
+            setAlert({ title, description: description });
         }
-    }, [type, title, descrition, setAlert]);
+    }, [type, title, description, setAlert]);
 
     return <></>;
 }

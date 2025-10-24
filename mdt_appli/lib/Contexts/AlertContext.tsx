@@ -3,7 +3,7 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { CircleX } from "lucide-react";
-import { createContext, useState, Dispatch, SetStateAction, useContext } from "react";
+import { createContext, Dispatch, SetStateAction, useContext, useState } from "react";
 
 type AlertContextType = {
     alert: { title?: string; description?: string } | null;
@@ -31,8 +31,7 @@ export function AlertProvider({ children }: { children: React.ReactNode }) {
                     <Button
                         variant="outline"
                         className="hover:text-destructive"
-                        onClick={() => setAlert(null)}
-                    >
+                        onClick={() => setAlert(null)}>
                         Ok
                     </Button>
                 </Alert>
