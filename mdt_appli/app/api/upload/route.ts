@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import { s3 } from "@/lib/minio";
-import { NextResponseApiError } from "@/lib/NextResponseApiError";
+import { nextResponseApiError } from "@/lib/nextResponseApiError";
 import { HttpStatus } from "@/types/enums/httpStatus";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { NextRequest, NextResponse } from "next/server";
@@ -39,6 +39,6 @@ export async function POST(request: NextRequest) {
             { status: HttpStatus.CREATED }
         );
     } catch (err) {
-        return await NextResponseApiError(err, request, auth(), null);
+        return await nextResponseApiError(err, request, auth(), null);
     }
 }

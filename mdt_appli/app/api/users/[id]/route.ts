@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { NextResponseApiError } from "@/lib/NextResponseApiError";
+import { nextResponseApiError } from "@/lib/nextResponseApiError";
 import UserService from "@/services/userService";
 import { UserToUpdateType } from "@/types/db/user";
 import { HttpStatus } from "@/types/enums/httpStatus";
@@ -19,7 +19,7 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
 
         return NextResponse.json(user.toType(), { status: HttpStatus.OK });
     } catch (error) {
-        return await NextResponseApiError(error, request, auth(), null);
+        return await nextResponseApiError(error, request, auth(), null);
     }
 }
 
@@ -42,6 +42,6 @@ export async function PUT(request: NextRequest) {
 
         return NextResponse.json(userUpdated.toType(), { status: HttpStatus.OK });
     } catch (error) {
-        return await NextResponseApiError(error, request, auth(), null);
+        return await nextResponseApiError(error, request, auth(), null);
     }
 }

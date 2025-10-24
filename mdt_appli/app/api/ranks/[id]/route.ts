@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { NextResponseApiError } from "@/lib/NextResponseApiError";
+import { nextResponseApiError } from "@/lib/nextResponseApiError";
 import RankService from "@/services/rankService";
 import { HttpStatus } from "@/types/enums/httpStatus";
 import { NextRequest, NextResponse } from "next/server";
@@ -24,6 +24,6 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
 
         return NextResponse.json(ranks.map((x) => x.toRankType()));
     } catch (error) {
-        return NextResponseApiError(error, request, auth(), null);
+        return nextResponseApiError(error, request, auth(), null);
     }
 }

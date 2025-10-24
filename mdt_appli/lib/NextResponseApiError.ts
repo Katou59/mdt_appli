@@ -4,7 +4,7 @@ import CustomError from "@/types/errors/CustomError";
 import { Session } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function NextResponseApiError(
+export async function nextResponseApiError(
     error: unknown,
     request: NextRequest,
     auth: Promise<Session | null>,

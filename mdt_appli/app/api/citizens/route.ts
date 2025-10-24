@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { NextResponseApiError } from "@/lib/NextResponseApiError";
+import { nextResponseApiError } from "@/lib/nextResponseApiError";
 import CitizenService from "@/services/citizenService";
 import UserService from "@/services/userService";
 import { CitizenToCreateType } from "@/types/db/citizen";
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
 
         return NextResponse.json(citizenPager.toType());
     } catch (error) {
-        return await NextResponseApiError(error, request, auth(), null);
+        return await nextResponseApiError(error, request, auth(), null);
     }
 }
 
@@ -60,6 +60,6 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json(citizenCreated.toType(), { status: HttpStatus.CREATED });
     } catch (error) {
-        return await NextResponseApiError(error, request, auth(), null);
+        return await nextResponseApiError(error, request, auth(), null);
     }
 }

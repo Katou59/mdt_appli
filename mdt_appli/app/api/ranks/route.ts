@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { NextResponseApiError } from "@/lib/NextResponseApiError";
+import { nextResponseApiError } from "@/lib/nextResponseApiError";
 import RankService from "@/services/rankService";
 import Rank from "@/types/class/Rank";
 import { RankType } from "@/types/db/rank";
@@ -24,6 +24,6 @@ export async function PUT(request: NextRequest) {
 
         return NextResponse.json(newRanks.map((x) => x.toRankType()));
     } catch (error) {
-        return NextResponseApiError(error, request, auth(), body);
+        return nextResponseApiError(error, request, auth(), body);
     }
 }
