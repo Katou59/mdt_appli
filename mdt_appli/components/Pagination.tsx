@@ -6,7 +6,6 @@ import {
     PaginationItem,
     PaginationLink,
 } from "@/components/ui/pagination";
-import IConverter from "@/types/interfaces/IConverter";
 import { PagerType } from "@/types/response/pager-type";
 
 type Props<TType> = {
@@ -14,10 +13,7 @@ type Props<TType> = {
     onPageChange: (newPage: number) => void;
 };
 
-export default function Pagination<TEntity extends IConverter<TType>, TType>({
-    pager,
-    onPageChange,
-}: Props<TType>) {
+export default function Pagination<TType>({ pager, onPageChange }: Props<TType>) {
     if (!pager.pageCount || pager.pageCount <= 1) return <></>;
 
     return (
