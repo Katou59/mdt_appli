@@ -13,19 +13,24 @@ import UserCard from "./user-card";
 export default function UserConsult({
     userToUpdate,
     updateHref,
+    onlyRp,
 }: {
     userToUpdate: UserType;
     updateHref?: string;
+    onlyRp?: boolean;
 }) {
     const { user } = useUser();
+    console.log(onlyRp);
 
     return (
         <div className="flex w-full max-w-lg flex-col gap-2">
-            <Tabs defaultValue="hrp">
-                <TabsList>
-                    <TabsTrigger value="hrp">Informations HRP</TabsTrigger>
-                    <TabsTrigger value="rp">Informations RP</TabsTrigger>
-                </TabsList>
+            <Tabs defaultValue={onlyRp ? "rp" : "hrp"}>
+                {!onlyRp && (
+                    <TabsList>
+                        <TabsTrigger value="hrp">Informations HRP</TabsTrigger>
+                        <TabsTrigger value="rp">Informations RP</TabsTrigger>
+                    </TabsList>
+                )}
                 <TabsContent value="hrp">
                     <UserCard
                         title="Informations HRP"
@@ -69,14 +74,8 @@ export default function UserConsult({
                     <UserCard
                         title="Informations RP"
                         description="Informations relatives au personnage.">
-                        <ItemForm
-                            title="Nom du personnage"
-                            description={userToUpdate.lastName ?? "Vide"}
-                        />
-                        <ItemForm
-                            title="Prénom du personnage"
-                            description={userToUpdate.firstName ?? "Vide"}
-                        />
+                        <ItemForm title="Nom" description={userToUpdate.lastName ?? "Vide"} />
+                        <ItemForm title="Prénom" description={userToUpdate.firstName ?? "Vide"} />
                         <ItemForm
                             title="Matricule"
                             description={userToUpdate.number ? String(userToUpdate.number) : "Vide"}

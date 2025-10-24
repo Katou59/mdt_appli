@@ -3,6 +3,11 @@ import Alert from "@/components/alert";
 import UserService from "@/services/user-service";
 import AgentsClient from "./page.client";
 
+export const metadata = {
+    title: "MDT - Liste des agents",
+    description: "Liste des agents.",
+};
+
 export default async function Agents() {
     try {
         const session = await auth();
@@ -11,7 +16,7 @@ export default async function Agents() {
         }
 
         const userService = await UserService.create(session.user.discordId);
-        const currentUser = await userService.get(session.user.discordId);
+        const currentUser = userService.currentUser;
         if (!currentUser?.id) {
             return <Alert type="unauthorized" />;
         }
