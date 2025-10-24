@@ -1,11 +1,11 @@
 import { jobsTable, ranksTable, usersTable } from "@/db/schema";
-import { eq, sql } from "drizzle-orm";
-import { RankType } from "@/types/db/rank";
 import Rank from "@/types/class/Rank";
+import { RankType } from "@/types/db/rank";
+import { eq, sql } from "drizzle-orm";
 import Repository from "./repository";
 
 export default class RankRepository extends Repository {
-    static async GetList(jobId?: number): Promise<Rank[]> {
+    static async getList(jobId?: number): Promise<Rank[]> {
         const query = RankRepository.db
             .select({
                 id: ranksTable.id,
@@ -71,7 +71,7 @@ export default class RankRepository extends Repository {
         await RankRepository.db.delete(ranksTable).where(eq(ranksTable.id, id));
     }
 
-    public static async Get(id: number) {
+    public static async get(id: number) {
         const rankDb = await RankRepository.db
             .select({
                 id: ranksTable.id,

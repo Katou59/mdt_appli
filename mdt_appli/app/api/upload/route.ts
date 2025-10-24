@@ -1,7 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
-import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { auth } from "@/auth";
 import { s3 } from "@/lib/minio";
+import { NextResponseApiError } from "@/lib/NextResponseApiError";
 import { HttpStatus } from "@/types/enums/httpStatus";
+import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
     try {
@@ -37,7 +39,6 @@ export async function POST(request: NextRequest) {
             { status: HttpStatus.CREATED }
         );
     } catch (err) {
-        console.error(err);
-        return NextResponse.json({ error: "Erreur upload" }, { status: 500 });
+        return await NextResponseApiError(err, request, auth(), null);
     }
 }

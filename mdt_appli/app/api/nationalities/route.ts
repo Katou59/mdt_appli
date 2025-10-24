@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
     try {
-        return NextResponse.json(await NationalityRepository.GetList(), { status: HttpStatus.OK });
+        return NextResponse.json(await NationalityRepository.getList(), { status: HttpStatus.OK });
     } catch (error) {
         ErrorLogRepository.Add({
             error: error,

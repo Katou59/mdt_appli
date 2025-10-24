@@ -1,37 +1,29 @@
 import { auth } from "@/auth";
-import ErrorLogRepository from "@/repositories/errorLogRepository";
-import RankRepository from "@/repositories/rankRepository";
+import { NextResponseApiError } from "@/lib/NextResponseApiError";
+import RankService from "@/services/rankService";
 import { HttpStatus } from "@/types/enums/httpStatus";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest, context: { params: Promise<{ id: string }> }) {
     try {
+        const session = await auth();
+        if (!session?.user?.discordId) {
+            return NextResponse.json(
+                { error: "Unauthorized" },
+                { status: HttpStatus.UNAUTHORIZED }
+            );
+        }
         const { id } = await context.params;
 
-        if (!id || !Number(id)) {
+        if (!id || isNaN(Number(id))) {
             return NextResponse.json({ error: "Bad Request" }, { status: 400 });
         }
 
-        const ranks = await RankRepository.GetList(Number(id));
+        const rankService = await RankService.create(session.user.discordId);
+        const ranks = await rankService.getList(Number(id));
 
         return NextResponse.json(ranks.map((x) => x.toRankType()));
     } catch (error) {
-        ErrorLogRepository.Add({
-            error: error,
-            path: request.nextUrl.href,
-            request: null,
-            userId: (await auth())!.user!.discordId!,
-            method: request.method,
-        });
-
-        if (error instanceof Error)
-            return NextResponse.json(
-                { error: error.message },
-                { status: HttpStatus.INTERNAL_SERVER_ERROR }
-            );
-        return NextResponse.json(
-            { error: "Internal server error" },
-            { status: HttpStatus.INTERNAL_SERVER_ERROR }
-        );
+        return NextResponseApiError(error, request, auth(), null);
     }
 }

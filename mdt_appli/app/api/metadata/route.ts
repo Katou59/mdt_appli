@@ -4,22 +4,33 @@ import ErrorLogRepository from "@/repositories/errorLogRepository";
 import GenderRepository from "@/repositories/genderRepository";
 import JobRepository from "@/repositories/jobRepository";
 import NationalityRepository from "@/repositories/nationalityRepository";
-import RankRepository from "@/repositories/rankRepository";
 import RoleRepository from "@/repositories/roleRepository";
 import StatusRepository from "@/repositories/statusRepository";
+import RankService from "@/services/rankService";
 import { HttpStatus } from "@/types/enums/httpStatus";
 import { MetadataType } from "@/types/utils/metadata";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
     try {
-        const jobs = await JobRepository.GetList();
-        const ranks = await RankRepository.GetList();
-        const roles = await RoleRepository.GetList();
-        const nationalities = await NationalityRepository.GetList();
-        const genders = await GenderRepository.GetList();
-        const bloodTypes = await BloodTypeRepository.GetList();
-        const statuses = await StatusRepository.GetList();
+        const session = await auth();
+        if (!session?.user?.discordId) {
+            return NextResponse.json(
+                { error: "Unauthorized" },
+                { status: HttpStatus.UNAUTHORIZED }
+            );
+        }
+
+        const discordId = session.user.discordId;
+        const rankService = await RankService.create(discordId);
+
+        const jobs = await JobRepository.getList();
+        const ranks = await rankService.getList();
+        const roles = await RoleRepository.getList();
+        const nationalities = await NationalityRepository.getList();
+        const genders = await GenderRepository.getList();
+        const bloodTypes = await BloodTypeRepository.getList();
+        const statuses = await StatusRepository.getList();
 
         const results: MetadataType = {
             jobs,
@@ -28,7 +39,7 @@ export async function GET(request: NextRequest) {
             nationalities,
             genders,
             bloodTypes,
-            statuses
+            statuses,
         };
         return NextResponse.json(results, { status: HttpStatus.OK });
     } catch (error) {

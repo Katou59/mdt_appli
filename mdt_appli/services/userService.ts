@@ -1,10 +1,10 @@
 import HistoryRepository from "@/repositories/historyRepository";
-import RankRepository from "@/repositories/rankRepository";
 import { UserRepository } from "@/repositories/userRepository";
 import User from "@/types/class/User";
 import { UserToCreateType, UserToUpdateType } from "@/types/db/user";
 import { HttpStatus } from "@/types/enums/httpStatus";
 import CustomError from "@/types/errors/CustomError";
+import RankService from "./rankService";
 
 type FilterType = {
     searchTerm?: string;
@@ -95,8 +95,12 @@ export default class UserService {
         userToUpdate.update(userToUpdateType);
 
         if (this.currentUser?.isAdmin) {
-            const ranks = await RankRepository.GetList();
-            const rank = ranks.find((r) => r.id === userToUpdateType.rankId);
+            if (!userToUpdateType.rankId) {
+                throw new CustomError("Bad request", HttpStatus.BAD_REQUEST);
+            }
+
+            const rankService = new RankService(this.currentUser);
+            const rank = await rankService.get(userToUpdateType.rankId);
             if (!rank) {
                 throw new CustomError("Rank not found", HttpStatus.NOT_FOUND);
             }

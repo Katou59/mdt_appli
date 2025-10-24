@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
     try {
-        return NextResponse.json(await JobRepository.GetList());
+        return NextResponse.json(await JobRepository.getList());
     } catch (error) {
         ErrorLogRepository.Add({
             error: error,
