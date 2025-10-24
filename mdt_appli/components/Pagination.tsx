@@ -9,7 +9,7 @@ import {
 import IConverter from "@/types/interfaces/IConverter";
 import { PagerType } from "@/types/response/pager-type";
 
-type Props<TEntity extends IConverter<TType>, TType> = {
+type Props<TType> = {
     pager: PagerType<TType>;
     onPageChange: (newPage: number) => void;
 };
@@ -17,7 +17,7 @@ type Props<TEntity extends IConverter<TType>, TType> = {
 export default function Pagination<TEntity extends IConverter<TType>, TType>({
     pager,
     onPageChange,
-}: Props<TEntity, TType>) {
+}: Props<TType>) {
     if (!pager.pageCount || pager.pageCount <= 1) return <></>;
 
     return (

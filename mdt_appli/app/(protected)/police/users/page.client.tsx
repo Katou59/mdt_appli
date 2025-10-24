@@ -9,7 +9,6 @@ import { stringToNumber } from "@/lib/converters";
 import PagerClass from "@/types/class/Pager";
 import Rank from "@/types/class/Rank";
 import User from "@/types/class/User";
-import { RankType } from "@/types/db/rank";
 import { UserType } from "@/types/db/user";
 import { PagerType } from "@/types/response/pager-type";
 import { MetadataType } from "@/types/utils/metadata";
@@ -212,15 +211,6 @@ async function getPager(pager: PagerClass<User, UserType>, filter: FilterType) {
         pagerData.itemPerPage,
         pagerData.page
     );
-}
-
-async function getRanks(jobId: number): Promise<Rank[]> {
-    const ranksResult = await getData(axiosClient.get(`/ranks/${jobId}`));
-    if (ranksResult.errorMessage) throw new Error(ranksResult.errorMessage);
-
-    const results = ranksResult.data as RankType[];
-
-    return results.map((r) => new Rank(r));
 }
 
 function getRows(users: User[]): UserColumns[] {
