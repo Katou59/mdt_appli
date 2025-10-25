@@ -10,7 +10,7 @@ import { CitizenToCreateType } from "@/types/db/citizen";
 import { UploadResponseType } from "@/types/response/upload-response-type";
 import React, { useState } from "react";
 import { toast } from "sonner";
-import AddCitizenForm from "./AddCitizenForm";
+import AddCitizenForm from "./add-citizen-form";
 
 export default function AddCitizenClient() {
     const [imageFile, setImageFile] = useState<File | null>(null);

@@ -2,6 +2,8 @@
 
 import CitizenBlock from "@/components/citizen-block";
 import Page from "@/components/page";
+import ShowImageDialog from "@/components/show-image-dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { booleanToString } from "@/lib/converters";
 import Citizen from "@/types/class/Citizen";
 import { CitizenType } from "@/types/db/citizen";
@@ -12,58 +14,29 @@ type Props = {
     citizen: CitizenType;
 };
 
-const items = [
-    {
-        id: "identity",
-        title: "Identité",
-        items: [
-            { id: "lastName", label: "Nom" },
-            { id: "firstName", label: "Prénom" },
-            { id: "birthDate", label: "Date de naissance" },
-            { id: "birthPlace", label: "Lieu de naissance" },
-            { id: "origin", label: "Nationalité" },
-            { id: "gender", label: "Sexe" },
-        ],
-    },
-    {
-        id: "physic",
-        title: "Caractéristiques physiques",
-        items: [
-            { id: "height", label: "Taille (cm)" },
-            { id: "weight", label: "Poids (kg)" },
-            { id: "eyeColor", label: "Couleur des yeux" },
-            { id: "hairColor", label: "Couleur des cheveux" },
-            { id: "bloodType", label: "Groupe sanguin" },
-            { id: "hasTattoo", label: "Présence de tatouages" },
-        ],
-    },
-    {
-        id: "contact",
-        title: "Informations de contact",
-        items: [
-            { id: "address", label: "Adresse" },
-            { id: "city", label: "Ville" },
-            { id: "phoneNumber", label: "Numéro de téléphone" },
-        ],
-    },
-    {
-        id: "other",
-        title: "Autres",
-        items: [
-            { id: "job", label: "Métier" },
-            { id: "isWanted", label: "Est recherché" },
-            { id: "status", label: "Statut" },
-            { id: "description", label: "Informations complémentaires" },
-        ],
-    },
-];
-
 export default function CitizenIdClient({ citizen: citizenServer }: Props) {
     const [citizen] = useState<Citizen>(new Citizen(citizenServer));
-    console.log(citizen);
+
     return (
         <Page title={`Détails de ${citizen.fullName}`}>
             <div className="grid gap-5 w-full">
+                <div className="flex justify-center">
+                    <Avatar className="rounded-sm w-50 h-50">
+                        {citizen.photoUrl && (
+                            <ShowImageDialog url={citizen.photoUrl}>
+                                <AvatarImage
+                                    src={citizen.photoUrl ?? undefined}
+                                    alt="Hallie Richards"
+                                    className="rounded-sm"
+                                />
+                            </ShowImageDialog>
+                        )}
+                        <AvatarFallback className="text-6xl">
+                            {citizen.firstName[0].toUpperCase()}
+                            {citizen.lastName[0].toLocaleUpperCase()}
+                        </AvatarFallback>
+                    </Avatar>
+                </div>
                 <CitizenBlock
                     title="Identité"
                     items={[

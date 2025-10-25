@@ -128,7 +128,12 @@ export default class CitizenRepository extends Repository {
     public static async add(citizenToCreate: CitizenToCreateType, user: User): Promise<string> {
         const [inserted] = await CitizenRepository.db
             .insert(citizensTable)
-            .values({ ...citizenToCreate, createdBy: user.id, updatedBy: user.id })
+            .values({
+                ...citizenToCreate,
+                createdBy: user.id,
+                updatedBy: user.id,
+                photoId: citizenToCreate.photoUrl,
+            })
             .returning({ id: citizensTable.id });
 
         return inserted.id;
