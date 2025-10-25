@@ -3,6 +3,7 @@ import {
     citizensTable,
     gendersTable,
     jobsTable,
+    nationalitiesTable,
     ranksTable,
     rolesTable,
     statusesTable,
@@ -41,6 +42,7 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
     birthPlace: string | null;
     height: number | null;
     weight: number | null;
+    nationality: KeyValueType<number, string> | null;
 
     constructor(citizen: CitizenType) {
         this.id = citizen.id;
@@ -69,6 +71,7 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
         this.birthPlace = citizen.birthPlace;
         this.height = citizen.height;
         this.weight = citizen.weight;
+        this.nationality = citizen.nationality;
     }
 
     static async getFromDb(
@@ -83,7 +86,8 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
         updatedByDb: typeof usersTable.$inferSelect,
         updatedByRankDb: typeof ranksTable.$inferSelect,
         updatedByJobDb: typeof jobsTable.$inferSelect,
-        updatedByRoleDb: typeof rolesTable.$inferSelect
+        updatedByRoleDb: typeof rolesTable.$inferSelect,
+        nationalityDb: typeof nationalitiesTable.$inferSelect
     ): Promise<Citizen> {
         const createdBy = User.getFromDb(
             createdByDb,
@@ -124,6 +128,9 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
             birthPlace: citizenDb.birthPlace,
             height: citizenDb.height,
             weight: citizenDb.weight,
+            nationality: nationalityDb
+                ? { key: nationalityDb.id, value: nationalityDb.name }
+                : null,
         };
 
         return new Citizen(citizenType);
@@ -156,6 +163,7 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
             birthPlace: this.birthPlace,
             height: this.height,
             weight: this.weight,
+            nationality: this.nationality,
         };
     }
 }

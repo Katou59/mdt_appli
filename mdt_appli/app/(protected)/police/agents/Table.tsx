@@ -24,6 +24,9 @@ export default function TableAgents({ pager, onPageChange }: Props) {
 
     return (
         <div className="w-full grid gap-5">
+            <div className="text-center opacity-50 text-sm">
+                {pager.itemCount} agent{pager.itemCount > 1 ? "s" : ""}
+            </div>
             <div className="[&>div]:rounded-sm [&>div]:border">
                 <Table>
                     <TableHeader>

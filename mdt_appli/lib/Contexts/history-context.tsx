@@ -15,7 +15,6 @@ export function HistoryProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         setHistories((prev) => {
-            console.log("histories : ", { ...prev, pathname });
             if ([...prev].pop() === pathname) {
                 return [...prev];
             }

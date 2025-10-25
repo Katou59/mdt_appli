@@ -27,6 +27,7 @@ export interface CitizenType {
     origin: string | null;
     height: number | null;
     weight: number | null;
+    nationality: KeyValueType<number, string> | null;
 }
 
 export interface CitizenToCreateType {

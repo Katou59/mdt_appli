@@ -3,7 +3,7 @@ import { MetadataType } from "@/types/utils/metadata";
 import BloodTypeService from "./blood-type-service";
 import GenderService from "./gender-service";
 import JobService from "./job-service";
-import NationalityService from "./nationality-service copy";
+import NationalityService from "./nationality-service";
 import RankService from "./ranks-service";
 import RoleService from "./role-service";
 import StatusService from "./status-service";

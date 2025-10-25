@@ -3,6 +3,7 @@ import {
     citizensTable,
     gendersTable,
     jobsTable,
+    nationalitiesTable,
     ranksTable,
     rolesTable,
     statusesTable,
@@ -41,7 +42,8 @@ export default class CitizenRepository extends Repository {
             .leftJoin(updatedByUsers, eq(updatedByUsers.id, citizensTable.updatedBy))
             .leftJoin(updatedByUsersJobs, eq(updatedByUsersJobs.id, updatedByUsers.jobId))
             .leftJoin(updatedByUsersRanks, eq(updatedByUsersRanks.id, updatedByUsers.rankId))
-            .leftJoin(updatedByUsersRoles, eq(updatedByUsersRoles.id, updatedByUsers.roleId));
+            .leftJoin(updatedByUsersRoles, eq(updatedByUsersRoles.id, updatedByUsers.roleId))
+            .leftJoin(nationalitiesTable, eq(citizensTable.nationalityId, nationalitiesTable.id));
         if (search && /^[0-9]+$/.test(search.replace(/\s+/g, ""))) {
             query.where(
                 ilike(
@@ -112,7 +114,8 @@ export default class CitizenRepository extends Repository {
                     dbCitizen.updated_by_users!,
                     dbCitizen.updated_by_user_ranks!,
                     dbCitizen.updated_by_user_jobs!,
-                    dbCitizen.updated_by_user_roles!
+                    dbCitizen.updated_by_user_roles!,
+                    dbCitizen.nationalities!
                 )
             )
         );
@@ -151,6 +154,7 @@ export default class CitizenRepository extends Repository {
             .leftJoin(updatedByUsersJobs, eq(updatedByUsersJobs.id, updatedByUsers.jobId))
             .leftJoin(updatedByUsersRanks, eq(updatedByUsersRanks.id, updatedByUsers.rankId))
             .leftJoin(updatedByUsersRoles, eq(updatedByUsersRoles.id, updatedByUsers.roleId))
+            .leftJoin(nationalitiesTable, eq(citizensTable.nationalityId, nationalitiesTable.id))
             .where(eq(citizensTable.id, id));
 
         const userDb = (await query)[0];
@@ -168,7 +172,8 @@ export default class CitizenRepository extends Repository {
             userDb.updated_by_users!,
             userDb.updated_by_user_ranks!,
             userDb.updated_by_user_jobs!,
-            userDb.updated_by_user_roles!
+            userDb.updated_by_user_roles!,
+            userDb.nationalities!
         );
 
         return user;
