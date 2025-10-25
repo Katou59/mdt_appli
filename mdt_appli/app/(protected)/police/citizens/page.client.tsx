@@ -35,7 +35,6 @@ export default function CitizensClient({ pager: pagerServer }: Props) {
             <div className="grid w-full">
                 <SearchCitizenForm
                     onSubmit={async (values: SearchCitizenFormOnSubmitType) => {
-                        console.log(values);
                         const newPager = new Pager<Citizen, CitizenType>([], 0, 20, 1);
                         setPager(await getPager(newPager, { searchTerm: values.searchField }));
                         setFilter((prev) => ({ ...prev, searchTerm: values.searchField }));

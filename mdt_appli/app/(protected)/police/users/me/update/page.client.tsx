@@ -3,8 +3,8 @@
 import Page from "@/components/page";
 import UserUpdate from "@/components/user-update";
 import axiosClient, { getData } from "@/lib/axios-client";
-import { useAlert } from "@/lib/Contexts/AlertContext";
-import { useUser } from "@/lib/Contexts/UserContext";
+import { useAlert } from "@/lib/Contexts/alert-context";
+import { useUser } from "@/lib/Contexts/user-context";
 import User from "@/types/class/User";
 import { UserToUpdateType, UserType } from "@/types/db/user";
 import { useRouter } from "next/navigation";

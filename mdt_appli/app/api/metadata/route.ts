@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import ErrorLogRepository from "@/repositories/error-log-repository";
+import { nextResponseApiError } from "@/lib/next-response-api-error";
 import MetadataService from "@/services/metadata-service";
 import { HttpStatus } from "@/types/enums/http-status-enum";
 import { NextRequest, NextResponse } from "next/server";
@@ -14,29 +14,11 @@ export async function GET(request: NextRequest) {
             );
         }
 
-        const result = await MetadataService.create(session.user.discordId);
+        const metadataService = await MetadataService.create(session.user.discordId);
+        const result = await metadataService.get();
 
         return NextResponse.json(result, { status: HttpStatus.OK });
     } catch (error) {
-        ErrorLogRepository.Add({
-            error: error,
-            path: request.nextUrl.href,
-            request: null,
-            userId: (await auth())!.user!.discordId!,
-            method: request.method,
-        });
-        console.error(error);
-
-        if (error instanceof Error) {
-            return NextResponse.json(
-                { error: error.message },
-                { status: HttpStatus.INTERNAL_SERVER_ERROR }
-            );
-        }
-        return NextResponse.json(
-            { error: "Internal server error" },
-            { status: HttpStatus.INTERNAL_SERVER_ERROR }
-        );
-        return;
+        return nextResponseApiError(error, request, auth(), null);
     }
 }

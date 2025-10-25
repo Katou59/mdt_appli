@@ -2,7 +2,7 @@
 
 import Page from "@/components/page";
 import axiosClient, { getData } from "@/lib/axios-client";
-import { useAlert } from "@/lib/Contexts/AlertContext";
+import { useAlert } from "@/lib/Contexts/alert-context";
 import Rank from "@/types/class/Rank";
 import { UserToCreateType } from "@/types/db/user";
 import { MetadataType } from "@/types/utils/metadata";

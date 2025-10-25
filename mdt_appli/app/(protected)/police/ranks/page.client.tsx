@@ -8,8 +8,8 @@ import SelectWithLabel from "@/components/select-label";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import axiosClient, { getData } from "@/lib/axios-client";
-import { useAlert } from "@/lib/Contexts/AlertContext";
-import { useMetadata } from "@/lib/Contexts/MetadataContext";
+import { useAlert } from "@/lib/Contexts/alert-context";
+import { useMetadata } from "@/lib/Contexts/metadata-context";
 import Job from "@/types/class/Job";
 import Rank from "@/types/class/Rank";
 import { RankType } from "@/types/db/rank";
@@ -54,7 +54,6 @@ export default function RanksClient() {
         if (!metadata) return;
 
         let selectedJobIdValue = selectedJobId;
-        console.log(selectedJobIdValue);
         if (!selectedJobIdValue) {
             selectedJobIdValue = metadata.jobs[0].id ?? 0;
         }

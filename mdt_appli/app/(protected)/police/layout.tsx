@@ -2,9 +2,10 @@ import { auth } from "@/auth";
 import Alert from "@/components/alert";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { AlertProvider } from "@/lib/Contexts/AlertContext";
-import { MetadataProvider } from "@/lib/Contexts/MetadataContext";
-import { UserProvider } from "@/lib/Contexts/UserContext";
+import { AlertProvider } from "@/lib/Contexts/alert-context";
+import { HistoryProvider } from "@/lib/Contexts/history-context";
+import { MetadataProvider } from "@/lib/Contexts/metadata-context";
+import { UserProvider } from "@/lib/Contexts/user-context";
 import UserService from "@/services/user-service";
 import { SessionProvider } from "next-auth/react";
 import { redirect } from "next/navigation";
@@ -25,18 +26,20 @@ export default async function ProtectedLayout({
 
     return (
         <SessionProvider>
-            <MetadataProvider>
-                <UserProvider initialUser={user.toType()}>
-                    <SidebarProvider>
-                        <AppSidebar isAdmin={user.isAdmin} />
-                        <SidebarInset>
-                            <div className="flex flex-1 flex-col gap-4 p-4 pt-0 h-full">
-                                <AlertProvider>{children}</AlertProvider>
-                            </div>
-                        </SidebarInset>
-                    </SidebarProvider>
-                </UserProvider>
-            </MetadataProvider>
+            <HistoryProvider>
+                <MetadataProvider>
+                    <UserProvider initialUser={user.toType()}>
+                        <SidebarProvider>
+                            <AppSidebar isAdmin={user.isAdmin} />
+                            <SidebarInset>
+                                <div className="flex flex-1 flex-col gap-4 p-4 pt-0 h-full">
+                                    <AlertProvider>{children}</AlertProvider>
+                                </div>
+                            </SidebarInset>
+                        </SidebarProvider>
+                    </UserProvider>
+                </MetadataProvider>
+            </HistoryProvider>
         </SessionProvider>
     );
 }

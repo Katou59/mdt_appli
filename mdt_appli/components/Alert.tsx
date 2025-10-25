@@ -1,6 +1,6 @@
 "use client";
 
-import { useAlert } from "@/lib/Contexts/AlertContext";
+import { useAlert } from "@/lib/Contexts/alert-context";
 import { useEffect } from "react";
 
 type Props = {

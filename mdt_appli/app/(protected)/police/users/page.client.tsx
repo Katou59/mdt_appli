@@ -4,7 +4,7 @@ import Loader from "@/components/loader";
 import Page from "@/components/page";
 import { Separator } from "@/components/ui/separator";
 import axiosClient, { getData } from "@/lib/axios-client";
-import { useAlert } from "@/lib/Contexts/AlertContext";
+import { useAlert } from "@/lib/Contexts/alert-context";
 import { stringToNumber } from "@/lib/converters";
 import PagerClass from "@/types/class/Pager";
 import Rank from "@/types/class/Rank";

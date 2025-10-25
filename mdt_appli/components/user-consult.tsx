@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserType } from "@/types/db/user";
 import dayjs from "dayjs";
 
-import { useUser } from "@/lib/Contexts/UserContext";
+import { useUser } from "@/lib/Contexts/user-context";
 import Link from "next/link";
 import { ItemForm } from "./item-form";
 import { Button } from "./ui/button";
@@ -20,7 +20,6 @@ export default function UserConsult({
     onlyRp?: boolean;
 }) {
     const { user } = useUser();
-    console.log(onlyRp);
 
     return (
         <div className="flex w-full max-w-lg flex-col gap-2">

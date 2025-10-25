@@ -2,7 +2,7 @@
 
 import Page from "@/components/page";
 import axiosClient, { getData } from "@/lib/axios-client";
-import { useAlert } from "@/lib/Contexts/AlertContext";
+import { useAlert } from "@/lib/Contexts/alert-context";
 import Pager from "@/types/class/Pager";
 import User from "@/types/class/User";
 import { UsersForSeachType, UserType } from "@/types/db/user";
