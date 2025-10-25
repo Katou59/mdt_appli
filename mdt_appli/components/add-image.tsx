@@ -1,5 +1,7 @@
+import { CircleX } from "lucide-react";
 import Image from "next/image";
 import React from "react";
+import ShowImageDialog from "./show-image-dialog";
 
 export default function AddImage(props: {
     image: string | null;
@@ -13,46 +15,14 @@ export default function AddImage(props: {
                 <div
                     onPaste={props.onPaste}
                     tabIndex={0}
-                    className="w-full h-[200px] border-2 border-dashed flex items-center justify-center cursor-pointer rounded-xl"
-                >
+                    className="w-full h-[200px] border-2 border-dashed flex items-center justify-center cursor-pointer rounded-xl">
                     {props.title ? props.title : "Colle une image ici"}
                 </div>
             ) : (
                 <>
                     <div className="flex items-center justify-center">
-                        <div
-                            className="relative group inline-block rounded-xl overflow-hidden hover:cursor-pointer border-1"
-                            onClick={() => {
-                                const modal = document.getElementById(
-                                    "showImage"
-                                ) as HTMLDialogElement | null;
-                                modal?.showModal();
-                            }}
-                        >
+                        <ShowImageDialog url={props.image}>
                             <div className="w-[200px] h-[200px] relative">
-                                <Image
-                                    src={props.image}
-                                    alt="Citizen Image"
-                                    fill
-                                    className="object-contain rounded-xl"
-                                />
-                            </div>
-                            <button
-                                type="button"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    props.delete();
-                                }}
-                                className="btn btn-error btn-sm absolute top-2 right-2 rounded-full"
-                                title="Supprimer l'image"
-                            >
-                                X
-                            </button>
-                        </div>
-                    </div>
-                    <dialog id="showImage" className="modal">
-                        <div className="modal-box max-w-[800px] p-0 bg-base-100">
-                            <div className="relative w-full h-[500px] flex justify-center items-center">
                                 <Image
                                     src={props.image}
                                     alt="Citizen Image"
@@ -61,20 +31,17 @@ export default function AddImage(props: {
                                 />
                                 <button
                                     type="button"
-                                    onClick={() =>
-                                        (
-                                            document.getElementById(
-                                                "my_modal_1"
-                                            ) as HTMLDialogElement
-                                        )?.close()
-                                    }
-                                    className="btn btn-error btn-circle absolute top-4 right-4"
-                                >
-                                    ✕
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        props.delete();
+                                    }}
+                                    className="absolute top-2 right-2 rounded-full p-1"
+                                    title="Supprimer l'image">
+                                    <CircleX className="w-8 h-8 text-error hover:cursor-pointer rounded-full hover:scale-105 duration-200" />
                                 </button>
                             </div>
-                        </div>
-                    </dialog>
+                        </ShowImageDialog>
+                    </div>
                 </>
             )}
         </div>
