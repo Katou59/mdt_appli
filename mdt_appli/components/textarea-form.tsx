@@ -23,7 +23,7 @@ export function TextareaForm<T extends object>({
                         {fieldState.error ? <FormMessage /> : <FormLabel>{label}</FormLabel>}
                     </div>
                     <FormControl>
-                        <Textarea placeholder={placeHolder} {...field} />
+                        <Textarea className="text-justify" placeholder={placeHolder} {...field} />
                     </FormControl>
                 </FormItem>
             )}

@@ -42,6 +42,6 @@ export async function PUT(request: NextRequest) {
 
         return NextResponse.json(userUpdated.toType(), { status: HttpStatus.OK });
     } catch (error) {
-        return await nextResponseApiError(error, request, auth(), null);
+        return await nextResponseApiError(error, request, auth(), body);
     }
 }

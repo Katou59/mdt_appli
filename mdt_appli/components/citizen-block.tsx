@@ -4,6 +4,7 @@ type Props = {
 };
 
 export default function CitizenBlock({ title, items }: Props) {
+    console.log(title, items);
     return (
         <div className="rounded p-2 grid gap-2">
             <h2 className="text-xl text-primary">{title}</h2>
@@ -11,7 +12,7 @@ export default function CitizenBlock({ title, items }: Props) {
                 {items.map((x) => (
                     <div key={x.label} className={x.colSpan ? `col-span-${x.colSpan}` : ""}>
                         <h3 className="font-bold text-lg text-gray-500">{x.label}</h3>
-                        <div>{x.value ?? "Inconnu"}</div>
+                        <p className="text-justify whitespace-pre-line">{x.value ?? "Inconnu"}</p>
                     </div>
                 ))}
             </div>

@@ -12,7 +12,7 @@ import {
 import Citizen from "@/types/class/Citizen";
 import Pager from "@/types/class/Pager";
 import User from "@/types/class/User";
-import { CitizenToCreateType, CitizenType } from "@/types/db/citizen";
+import { CitizenToCreateType, CitizenToUpdateType, CitizenType } from "@/types/db/citizen";
 import { and, eq, ilike, or, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import Repository from "./repository";
@@ -182,5 +182,35 @@ export default class CitizenRepository extends Repository {
         );
 
         return user;
+    }
+
+    public static async update(citizenToUpdate: CitizenToUpdateType, currentUser: User) {
+        await CitizenRepository.db
+            .update(citizensTable)
+            .set({
+                firstName: citizenToUpdate.firstName,
+                lastName: citizenToUpdate.lastName,
+                birthDate: citizenToUpdate.birthDate,
+                phoneNumber: citizenToUpdate.phoneNumber,
+                nationalityId: citizenToUpdate.nationalityId,
+                genderId: citizenToUpdate.genderId,
+                statusId: citizenToUpdate.statusId,
+                bloodTypeId: citizenToUpdate.bloodTypeId,
+                // photoId: citizenToUpdate.photoUrl ?? (citizenToUpdate as any).photoId ?? null, TODO gérer ca
+                updatedBy: currentUser.id,
+                updatedAt: new Date(),
+                address: citizenToUpdate.address,
+                birthPlace: citizenToUpdate.birthPlace,
+                city: citizenToUpdate.city,
+                description: citizenToUpdate.description,
+                eyeColor: citizenToUpdate.eyeColor,
+                hairColor: citizenToUpdate.hairColor,
+                hasTattoo: citizenToUpdate.hasTattoo,
+                height: citizenToUpdate.height,
+                weight: citizenToUpdate.weight,
+                isWanted: citizenToUpdate.isWanted,
+                job: citizenToUpdate.job,
+            })
+            .where(eq(citizensTable.id, citizenToUpdate.id));
     }
 }

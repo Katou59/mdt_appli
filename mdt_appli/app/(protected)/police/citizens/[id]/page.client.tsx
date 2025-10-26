@@ -4,10 +4,12 @@ import CitizenBlock from "@/components/citizen-block";
 import Page from "@/components/page";
 import ShowImageDialog from "@/components/show-image-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { booleanToString } from "@/lib/converters";
 import Citizen from "@/types/class/Citizen";
 import { CitizenType } from "@/types/db/citizen";
 import dayjs from "dayjs";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 type Props = {
@@ -16,6 +18,7 @@ type Props = {
 
 export default function CitizenIdClient({ citizen: citizenServer }: Props) {
     const [citizen] = useState<Citizen>(new Citizen(citizenServer));
+    const router = useRouter();
 
     return (
         <Page title={`Détails de ${citizen.fullName}`}>
@@ -95,6 +98,14 @@ export default function CitizenIdClient({ citizen: citizenServer }: Props) {
                         },
                     ]}
                 />
+                <div className="flex justify-center">
+                    <Button
+                        className="px-5"
+                        variant={"default"}
+                        onClick={() => router.push(`/police/citizens/${citizen.id}/update`)}>
+                        Modifier
+                    </Button>
+                </div>
             </div>
         </Page>
     );

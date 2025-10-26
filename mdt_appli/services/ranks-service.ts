@@ -37,7 +37,7 @@ export default class RankService {
 
         const results = await RankRepository.getList();
 
-        HistoryRepository.Add({
+        HistoryRepository.add({
             action: "update",
             entityId: null,
             entityType: "rank",

@@ -53,3 +53,7 @@ export interface CitizenToCreateType {
     weight: number | null;
     nationalityId: number | null;
 }
+
+export interface CitizenToUpdateType extends CitizenToCreateType {
+    id: string;
+}

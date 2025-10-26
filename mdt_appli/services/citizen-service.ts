@@ -2,7 +2,7 @@ import CitizenRepository from "@/repositories/citizen-repository";
 import HistoryRepository from "@/repositories/history-repository";
 import Citizen from "@/types/class/Citizen";
 import User from "@/types/class/User";
-import { CitizenToCreateType } from "@/types/db/citizen";
+import { CitizenToCreateType, CitizenToUpdateType } from "@/types/db/citizen";
 import { HttpStatus } from "@/types/enums/http-status-enum";
 import CustomError from "@/types/errors/CustomError";
 import UserService from "./user-service";
@@ -24,7 +24,7 @@ export default class CitizenService {
     public async add(citizenToAdd: CitizenToCreateType) {
         const newCitizenId = await CitizenRepository.add(citizenToAdd, this.currentUser);
 
-        HistoryRepository.Add({
+        HistoryRepository.add({
             action: "create",
             entityId: newCitizenId,
             entityType: "citizen",
@@ -43,5 +43,27 @@ export default class CitizenService {
         }
 
         return citizen;
+    }
+
+    public async update(citizenToUpdate: CitizenToUpdateType): Promise<Citizen> {
+        const existedCitizen = await CitizenRepository.get(citizenToUpdate.id);
+        if (!existedCitizen) {
+            throw new CustomError("Not found", HttpStatus.NOT_FOUND);
+        }
+
+        await CitizenRepository.update(citizenToUpdate, this.currentUser);
+
+        const result = await this.get(citizenToUpdate.id);
+
+        HistoryRepository.add({
+            action: "update",
+            entityId: citizenToUpdate.id,
+            entityType: "citizen",
+            newData: result,
+            oldData: existedCitizen,
+            userId: this.currentUser.id,
+        });
+
+        return result;
     }
 }

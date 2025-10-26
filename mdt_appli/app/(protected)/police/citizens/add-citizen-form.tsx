@@ -6,7 +6,7 @@ import { RadioGroupForm } from "@/components/radio-group-form";
 import { SelectForm } from "@/components/select-form";
 import { TextareaForm } from "@/components/textarea-form";
 import { Form } from "@/components/ui/form";
-import { CitizenToCreateType } from "@/types/db/citizen";
+import { CitizenToCreateType, CitizenType } from "@/types/db/citizen";
 import { KeyValueType } from "@/types/utils/key-value";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -81,34 +81,39 @@ export default function AddCitizenForm({
     bloodTypes,
     statuses,
     onSubmit,
+    onCancel,
+    citizen,
 }: {
     nationalities: KeyValueType[];
     genders: KeyValueType[];
     bloodTypes: KeyValueType[];
     statuses: KeyValueType[];
     onSubmit: (values: CitizenToCreateType) => Promise<boolean>;
+    citizen?: CitizenType;
+    onCancel?: () => void;
 }) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            lastName: "",
-            firstName: "",
-            birthPlace: "",
-            bloodTypeId: "",
-            eyeColor: "",
-            genderId: "",
-            hairColor: "",
-            height: "",
-            nationalityId: "",
-            weight: "",
-            birthDate: "",
-            hasTattoo: "false",
-            address: "",
-            city: "",
-            phoneNumber: "",
-            isWanted: "false",
-            job: "",
-            description: "",
+            lastName: citizen?.lastName ?? "",
+            firstName: citizen?.firstName ?? "",
+            birthPlace: citizen?.birthPlace ?? "",
+            bloodTypeId: citizen?.bloodType?.key ? String(citizen?.bloodType?.key) : "",
+            eyeColor: citizen?.eyeColor ?? "",
+            genderId: citizen?.gender?.key ? String(citizen?.gender?.key) : "",
+            hairColor: citizen?.hairColor ?? "",
+            height: citizen?.height ? String(citizen?.height) : "",
+            nationalityId: citizen?.nationality?.key ? String(citizen?.nationality?.key) : "",
+            weight: citizen?.weight ? String(citizen?.weight) : "",
+            birthDate: citizen?.birthDate ?? "",
+            hasTattoo: citizen?.hasTattoo ? "true" : "false",
+            address: citizen?.address ?? "",
+            city: citizen?.city ?? "",
+            phoneNumber: citizen?.phoneNumber ?? "",
+            isWanted: citizen?.isWanted ? "true" : "false",
+            job: citizen?.job ?? "",
+            description: citizen?.description ?? "",
+            statusId: citizen?.status?.key ? String(citizen.status.key) : "",
         },
         mode: "onSubmit",
         reValidateMode: "onChange",
@@ -243,6 +248,7 @@ export default function AddCitizenForm({
                         onCancel={() => {
                             form.reset();
                             form.clearErrors();
+                            onCancel?.();
                         }}
                     />
                 </div>

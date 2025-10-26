@@ -60,7 +60,7 @@ export default class UserService {
             );
         }
 
-        HistoryRepository.Add({
+        HistoryRepository.add({
             action: "create",
             entityId: userCreated?.id ?? null,
             entityType: "user",
@@ -130,7 +130,7 @@ export default class UserService {
 
         const userUpdated = await this.get(userToUpdate.id);
 
-        HistoryRepository.Add({
+        HistoryRepository.add({
             action: "update",
             entityId: userUpdated?.id ?? null,
             entityType: "user",
