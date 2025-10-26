@@ -128,3 +128,19 @@ export const errorLogsTable = pgTable("error_logs", {
     error: jsonb(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
+
+export const finesTable = pgTable("fines", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    type: varchar("type", { enum: ["infraction", "misdemeanor", "felony", "other"] }).notNull(),
+    label: varchar("label", { length: 100 }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    createdBy: varchar("created_by", { length: 50 })
+        .references(() => usersTable.id)
+        .notNull(),
+    amount: integer("amount").notNull(),
+    minimumAmount: integer("minimum_amount").notNull(),
+    maximumAmount: integer("maximum_amount").notNull(),
+    jailTime: integer("jail_time").notNull(),
+    minimumJailTime: integer("minimum_jail_time").notNull(),
+    maximumJailTime: integer("maximum_jail_time").notNull(),
+});

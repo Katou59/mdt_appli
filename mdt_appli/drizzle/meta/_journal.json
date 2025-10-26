@@ -127,6 +127,41 @@
       "when": 1761146096649,
       "tag": "0017_jittery_power_pack",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1761504755196,
+      "tag": "0018_powerful_hawkeye",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1761505721595,
+      "tag": "0019_low_pete_wisdom",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1761505873702,
+      "tag": "0020_careless_hercules",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1761505899893,
+      "tag": "0021_hesitant_kitty_pryde",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1761511335460,
+      "tag": "0022_eminent_scourge",
+      "breakpoints": true
     }
   ]
 }

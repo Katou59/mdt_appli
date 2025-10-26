@@ -1,0 +1,1 @@
+ALTER TABLE "fines" RENAME COLUMN "minimal_amount" TO "minimul_amount";

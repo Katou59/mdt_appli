@@ -1,0 +1,9 @@
+"id","name","enum_label"
+1,A+,APositive
+2,A-,ANegative
+3,B+,BPositive
+4,B-,BNegative
+5,O+,OPositive
+6,O-,ONegative
+7,AB+,ABPositive
+8,AB-,ABNegative
