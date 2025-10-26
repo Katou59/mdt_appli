@@ -5,15 +5,24 @@ import ShowImageDialog from "./show-image-dialog";
 
 export default function AddImage(props: {
     image: string | null;
-    onPaste: (event: React.ClipboardEvent<HTMLDivElement>) => void;
+    onPaste: (file: File) => void;
     delete: () => void;
     title?: string;
 }) {
+    const handlePaste = async (e: React.ClipboardEvent) => {
+        const item = Array.from(e.clipboardData.items).find((i) => i.type.startsWith("image/"));
+        if (!item) return;
+        const file = item.getAsFile();
+        if (file) {
+            props.onPaste(file);
+        }
+    };
+
     return (
         <div className="w-full">
             {!props.image ? (
                 <div
-                    onPaste={props.onPaste}
+                    onPaste={handlePaste}
                     tabIndex={0}
                     className="w-full h-[200px] border-2 border-dashed flex items-center justify-center cursor-pointer rounded-xl">
                     {props.title ? props.title : "Colle une image ici"}

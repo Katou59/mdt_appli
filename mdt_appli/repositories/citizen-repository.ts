@@ -196,7 +196,7 @@ export default class CitizenRepository extends Repository {
                 genderId: citizenToUpdate.genderId,
                 statusId: citizenToUpdate.statusId,
                 bloodTypeId: citizenToUpdate.bloodTypeId,
-                // photoId: citizenToUpdate.photoUrl ?? (citizenToUpdate as any).photoId ?? null, TODO gérer ca
+                photoId: citizenToUpdate.photoUrl ?? citizenToUpdate.photoUrl ?? null,
                 updatedBy: currentUser.id,
                 updatedAt: new Date(),
                 address: citizenToUpdate.address,

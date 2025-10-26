@@ -1,12 +1,15 @@
 "use client";
 
+import AddImage from "@/components/add-image";
 import Page from "@/components/page";
 import axiosClient, { getData } from "@/lib/axios-client";
 import { useAlert } from "@/lib/Contexts/alert-context";
+import { uploadImage } from "@/lib/upload-image";
 import Citizen from "@/types/class/Citizen";
 import { CitizenToCreateType, CitizenToUpdateType, CitizenType } from "@/types/db/citizen";
 import { MetadataType } from "@/types/utils/metadata";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { toast } from "sonner";
 import AddCitizenForm from "../../add-citizen-form";
 
@@ -19,8 +22,16 @@ export default function UpdateCitizenClient({ citizen: citizenServer, metadata }
     const citizen = new Citizen(citizenServer);
     const { setAlert } = useAlert();
     const router = useRouter();
+    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [image, setImage] = useState<string | null>(citizen.photoUrl ?? null);
 
     async function onSubmit(value: CitizenToCreateType): Promise<boolean> {
+        let photoUrl: string | null =
+            citizen.photoUrl === image ? citizen.getPhotoIdFromUrl() : null;
+        if (!photoUrl && image && imageFile) {
+            photoUrl = await uploadImage(imageFile);
+        }
+
         const citizenUpdated = {
             address: value.address,
             birthDate: value.birthDate,
@@ -48,7 +59,7 @@ export default function UpdateCitizenClient({ citizen: citizenServer, metadata }
             nationalityId: value.nationalityId,
             originId: value.originId,
             statusId: value.statusId,
-            photoUrl: value.photoUrl ?? citizen.photoUrl ?? null,
+            photoUrl: photoUrl,
         } as CitizenToUpdateType;
 
         const resultResponse = await getData<CitizenType>(
@@ -71,6 +82,18 @@ export default function UpdateCitizenClient({ citizen: citizenServer, metadata }
 
     return (
         <Page title={`Modification de ${citizen.fullName}`}>
+            <AddImage
+                image={image}
+                delete={() => {
+                    setImageFile(null);
+                    setImage(null);
+                }}
+                onPaste={(file) => {
+                    setImageFile(file);
+                    const url = URL.createObjectURL(file);
+                    setImage(url);
+                }}
+            />
             <AddCitizenForm
                 citizen={citizen}
                 nationalities={metadata.nationalities.map((x) => ({

@@ -166,4 +166,16 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
             nationality: this.nationality,
         };
     }
+
+    public getPhotoIdFromUrl(): string | null {
+        if (!this.photoUrl) return null;
+
+        const splitUrl = this.photoUrl.split("?");
+        if (!splitUrl?.[0]) return null;
+
+        const splitId = splitUrl[0].split("/mdt/");
+        if (!splitId?.[1]) return null;
+
+        return splitId[1];
+    }
 }

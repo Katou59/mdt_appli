@@ -6,9 +6,9 @@ import Page from "@/components/page";
 import axiosClient, { getData } from "@/lib/axios-client";
 import { useAlert } from "@/lib/Contexts/alert-context";
 import { useMetadata } from "@/lib/Contexts/metadata-context";
+import { uploadImage } from "@/lib/upload-image";
 import { CitizenToCreateType } from "@/types/db/citizen";
-import { UploadResponseType } from "@/types/response/upload-response-type";
-import React, { useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import AddCitizenForm from "../add-citizen-form";
 
@@ -21,22 +21,15 @@ export default function AddCitizenClient() {
 
     if (!metadata) return <Loader />;
 
-    const handlePaste = async (e: React.ClipboardEvent) => {
-        const item = Array.from(e.clipboardData.items).find((i) => i.type.startsWith("image/"));
-        if (!item) return;
-        const file = item.getAsFile();
-        if (file) {
-            setImageFile(file);
-            const url = URL.createObjectURL(file);
-            setImage(url);
-        }
-    };
-
     return (
         <Page title="Ajouter un citoyen">
             <AddImage
+                onPaste={(file) => {
+                    setImageFile(file);
+                    const url = URL.createObjectURL(file);
+                    setImage(url);
+                }}
                 image={image}
-                onPaste={handlePaste}
                 delete={() => setImage(null)}
                 title="Collez une image de profil"
             />
@@ -55,32 +48,7 @@ export default function AddCitizenClient() {
                     value: x.value,
                 }))}
                 onSubmit={async (values: CitizenToCreateType): Promise<boolean> => {
-                    let url: string | null = null;
-
-                    if (imageFile) {
-                        const formData = new FormData();
-                        formData.append("file", imageFile);
-                        const res = await getData(
-                            axiosClient.post("/upload", formData, {
-                                headers: {
-                                    "Content-Type": "multipart/form-data",
-                                },
-                            })
-                        );
-
-                        if (res.errorMessage) {
-                            setAlert({
-                                title: "Erreur",
-                                description: "Impossible de sauvegarder l'image",
-                            });
-                            return false;
-                        }
-
-                        const data = res.data as UploadResponseType;
-                        url = data.url;
-                    }
-
-                    values.photoUrl = url;
+                    values.photoUrl = imageFile ? await uploadImage(imageFile) : null;
                     const result = await getData(axiosClient.post("/citizens", values));
 
                     if (result.errorMessage) {
