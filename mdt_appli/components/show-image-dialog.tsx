@@ -1,7 +1,6 @@
 "use client";
 
 import { DialogTitle, DialogTrigger } from "@radix-ui/react-dialog";
-import { Avatar, AvatarImage } from "./ui/avatar";
 import { Dialog, DialogContent } from "./ui/dialog";
 
 type Props = {
@@ -11,14 +10,10 @@ type Props = {
 export default function ShowImageDialog({ children, url }: Props) {
     return (
         <Dialog>
-            <DialogTrigger asChild>
-                <div className="hover:cursor-pointer">{children}</div>
-            </DialogTrigger>
-            <DialogContent className="data-[state=open]:!zoom-in-0 data-[state=open]:duration-600 sm:w-2/3 sm:h-3/4 h-full w-full p-5">
-                <DialogTitle></DialogTitle>
-                <Avatar className="rounded-sm w-auto h-auto p-0">
-                    <AvatarImage src={url} alt="Image profil" className="rounded-sm" />
-                </Avatar>
+            <DialogTrigger asChild>{children}</DialogTrigger>
+            <DialogContent className="bg-transparent fixed !left-0 !top-0 !translate-x-0 !translate-y-0 !m-0 !p-20 !w-screen !h-screen !max-w-none !max-h-none !rounded-none !border-0 overflow-hidden flex items-center justify-center">
+                <DialogTitle />
+                <img src={url} className="max-w-full max-h-full object-contain" alt="image" />{" "}
             </DialogContent>
         </Dialog>
     );
