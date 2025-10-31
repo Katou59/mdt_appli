@@ -144,3 +144,15 @@ export const finesTable = pgTable("fines", {
     minimumJailTime: integer("minimum_jail_time").notNull(),
     maximumJailTime: integer("maximum_jail_time").notNull(),
 });
+
+export const citizenFinesTable = pgTable("citizen_fines", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    citizenId: uuid("citizen_id").references(() => citizensTable.id).notNull(),
+    fineId: uuid("fine_id").references(() => finesTable.id).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    createdBy: varchar("created_by", { length: 50 })
+        .references(() => usersTable.id)
+        .notNull(),
+    amount: integer("amount"),
+    jailTime: integer("jail_time"),
+});
