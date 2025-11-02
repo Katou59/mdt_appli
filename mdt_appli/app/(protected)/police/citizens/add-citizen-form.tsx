@@ -2,6 +2,7 @@
 
 import ButtonGroupForm from "@/components/button-group";
 import { InputForm } from "@/components/input-form";
+import { InputNumber } from "@/components/input-number";
 import { RadioGroupForm } from "@/components/radio-group-form";
 import { SelectForm } from "@/components/select-form";
 import { TextareaForm } from "@/components/textarea-form";
@@ -32,14 +33,14 @@ const formSchema = z.object({
     nationalityId: z.string().optional(),
     genderId: z.string().optional(),
     height: z
-        .string()
+        .number()
         .optional()
         .refine(
             (val) => !val || (!isNaN(Number(val)) && Number(val) <= 300),
             "La taille doit être inférieur ou égal à 300"
         ),
     weight: z
-        .string()
+        .number()
         .optional()
         .refine(
             (val) => !val || (!isNaN(Number(val)) && Number(val) <= 300),
@@ -102,9 +103,9 @@ export default function AddCitizenForm({
             eyeColor: citizen?.eyeColor ?? "",
             genderId: citizen?.gender?.key ? String(citizen?.gender?.key) : "",
             hairColor: citizen?.hairColor ?? "",
-            height: citizen?.height ? String(citizen?.height) : "",
+            height: citizen?.height ? citizen.height : undefined,
             nationalityId: citizen?.nationality?.key ? String(citizen?.nationality?.key) : "",
-            weight: citizen?.weight ? String(citizen?.weight) : "",
+            weight: citizen?.weight ? citizen?.weight : undefined,
             birthDate: citizen?.birthDate ?? "",
             hasTattoo: citizen?.hasTattoo ? "true" : "false",
             address: citizen?.address ?? "",
@@ -183,7 +184,20 @@ export default function AddCitizenForm({
                 </div>
                 <h2 className="text-xl text-primary w-full">Caractéristiques physiques</h2>
                 <div className="grid grid-cols-2 w-full gap-5">
-                    <InputForm form={form} label="Taille" name="height" placeHolder="Taille (cm)" />
+                    <InputNumber
+                        form={form}
+                        label="Taille (cm)"
+                        name="height"
+                        placeHolder="Taille (cm)"
+                        min={0}
+                    />
+                    <InputNumber
+                        form={form}
+                        label="Poids (kg)"
+                        name="weight"
+                        placeHolder="Poids (kg)"
+                        min={0}
+                    />
                     <InputForm form={form} label="Poids" name="weight" placeHolder="Poids (kg)" />
                     <InputForm
                         form={form}

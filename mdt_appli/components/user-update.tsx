@@ -7,6 +7,7 @@ import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import ButtonGroupForm from "./button-group";
+import { InputNumber } from "./input-number";
 import { ItemForm } from "./item-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
 import { Input } from "./ui/input";
@@ -260,27 +261,12 @@ export default function UserUpdate({
                                     </FormItem>
                                 )}
                             />
-                            <FormField
-                                control={form.control}
+                            <InputNumber
+                                form={form}
                                 name="number"
-                                render={({ field, fieldState }) => (
-                                    <FormItem>
-                                        <div className="h-5">
-                                            {fieldState.error ? (
-                                                <FormMessage />
-                                            ) : (
-                                                <FormLabel>Matricule</FormLabel>
-                                            )}
-                                        </div>
-                                        <FormControl>
-                                            <Input
-                                                type="number"
-                                                placeholder="Matricule"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                    </FormItem>
-                                )}
+                                label="Matricule"
+                                min={0}
+                                placeHolder="Matricule"
                             />
                             <FormField
                                 control={form.control}

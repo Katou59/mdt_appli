@@ -1,5 +1,5 @@
 // ⚙️ Fichier généré automatiquement — ne pas modifier à la main
-// Dernière génération : 2025-11-02T15:58:42.041Z
+// Dernière génération : 2025-11-02T20:40:06.098Z
 
 export enum RoleType {
   User = 0,
