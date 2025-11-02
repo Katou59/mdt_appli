@@ -54,6 +54,18 @@ export default function CitizenIdClient({ citizen: citizenServer }: Props) {
                         { label: "Lieu de naissance", value: citizen.birthPlace ?? undefined },
                         { label: "Nationalité", value: citizen.nationality?.value ?? undefined },
                         { label: "Sexe", value: citizen.gender?.value ?? undefined },
+                        {
+                            label: "Créé par",
+                            value: `${citizen.createdBy.fullNameNumber} le ${dayjs(
+                                citizen.createdAt
+                            ).format("DD/MM/YYYY HH:mm:ss")}`,
+                        },
+                        {
+                            label: "Modifié par",
+                            value: `${citizen.updatedBy.fullNameNumber} le ${dayjs(
+                                citizen.updatedAt
+                            ).format("DD/MM/YYYY HH:mm:ss")}`,
+                        },
                     ]}
                 />
                 <CitizenBlock

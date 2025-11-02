@@ -23,6 +23,7 @@ export default class User implements IConverter<UserType> {
     role: KeyValueType<number, string>;
     isAdmin: boolean;
     fullName: string | null;
+    fullNameNumber: string | null;
 
     constructor(data: UserType) {
         this.id = data.id;
@@ -42,6 +43,7 @@ export default class User implements IConverter<UserType> {
         this.isAdmin = data.role.key === RoleType.Admin || data.role.key === RoleType.SuperAdmin;
         this.fullName =
             this.firstName && this.lastName ? `${this.firstName} ${this.lastName}` : null;
+        this.fullNameNumber = `${this.number} | ${this.fullName}`;
     }
 
     static getFromType(type: UserType): User {
