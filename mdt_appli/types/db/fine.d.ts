@@ -1,8 +1,9 @@
+import { FineType as FineTypeEnum } from "../enums/fine-enum";
 import { UserType } from "./user";
 
 export interface FineType {
     id: string;
-    type: ["infraction", "misdemeanor", "felony", "other"];
+    type: FineTypeEnum;
     label: string;
     createdAt: Date;
     createdBy: UserType;

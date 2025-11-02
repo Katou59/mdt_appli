@@ -13,6 +13,7 @@ import { getSignedFileUrl } from "@/lib/minio";
 import { CitizenType } from "../db/citizen";
 import IConverter from "../interfaces/IConverter";
 import { KeyValueType } from "../utils/key-value";
+import CitizenFine from "./CitizenFine";
 import User from "./User";
 
 export default class Citizen implements CitizenType, IConverter<CitizenType> {
@@ -43,6 +44,7 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
     height: number | null;
     weight: number | null;
     nationality: KeyValueType<number, string> | null;
+    citizenFines?: CitizenFine[];
 
     constructor(citizen: CitizenType) {
         this.id = citizen.id;
@@ -72,6 +74,7 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
         this.height = citizen.height;
         this.weight = citizen.weight;
         this.nationality = citizen.nationality;
+        this.citizenFines = citizen.citizenFines?.map((x) => new CitizenFine(x));
     }
 
     static async getFromDb(
@@ -87,7 +90,8 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
         updatedByRankDb: typeof ranksTable.$inferSelect,
         updatedByJobDb: typeof jobsTable.$inferSelect,
         updatedByRoleDb: typeof rolesTable.$inferSelect,
-        nationalityDb: typeof nationalitiesTable.$inferSelect
+        nationalityDb: typeof nationalitiesTable.$inferSelect,
+        citizenFines?: CitizenFine[]
     ): Promise<Citizen> {
         const createdBy = User.getFromDb(
             createdByDb,
@@ -131,6 +135,7 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
             nationality: nationalityDb
                 ? { key: nationalityDb.id, value: nationalityDb.name }
                 : null,
+            citizenFines: citizenFines,
         };
 
         return new Citizen(citizenType);
@@ -164,6 +169,7 @@ export default class Citizen implements CitizenType, IConverter<CitizenType> {
             height: this.height,
             weight: this.weight,
             nationality: this.nationality,
+            citizenFines: this.citizenFines?.map((x) => x.toType()),
         };
     }
 

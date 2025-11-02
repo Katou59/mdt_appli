@@ -1,4 +1,5 @@
 import { KeyValueType } from "../utils/key-value";
+import { CitizenFineType } from "./citizen-fine";
 import { UserType } from "./user";
 
 export interface CitizenType {
@@ -28,6 +29,7 @@ export interface CitizenType {
     height: number | null;
     weight: number | null;
     nationality: KeyValueType<number, string> | null;
+    citizenFines?: CitizenFineType[];
 }
 
 export interface CitizenToCreateType {

@@ -1,6 +1,8 @@
 import {
     bloodTypesTable,
+    citizenFinesTable,
     citizensTable,
+    finesTable,
     gendersTable,
     jobsTable,
     nationalitiesTable,
@@ -10,6 +12,7 @@ import {
     usersTable,
 } from "@/db/schema";
 import Citizen from "@/types/class/Citizen";
+import CitizenFine from "@/types/class/CitizenFine";
 import Pager from "@/types/class/Pager";
 import User from "@/types/class/User";
 import { CitizenToCreateType, CitizenToUpdateType, CitizenType } from "@/types/db/citizen";
@@ -140,13 +143,27 @@ export default class CitizenRepository extends Repository {
     }
 
     public static async get(id: string): Promise<Citizen | null> {
-        const updatedByUsers = alias(usersTable, "updated_by_users");
-        const updatedByUsersJobs = alias(jobsTable, "updated_by_user_jobs");
-        const updatedByUsersRanks = alias(ranksTable, "updated_by_user_ranks");
-        const updatedByUsersRoles = alias(rolesTable, "updated_by_user_roles");
+        const updatedByUserTable = alias(usersTable, "updated_by_user");
+        const updatedByUserJobTable = alias(jobsTable, "updated_by_user_job");
+        const updatedByUserRankTable = alias(ranksTable, "updated_by_user_rank");
+        const updatedByUserRoleTable = alias(rolesTable, "updated_by_user_role");
 
-        const query = CitizenRepository.db
-            .select()
+        const citizenQuery = CitizenRepository.db
+            .select({
+                citizen: citizensTable,
+                gender: gendersTable,
+                status: statusesTable,
+                bloodType: bloodTypesTable,
+                nationality: nationalitiesTable,
+                createdByUser: usersTable,
+                createdByJob: jobsTable,
+                createdByRank: ranksTable,
+                createdByRole: rolesTable,
+                updatedByUser: updatedByUserTable,
+                updatedByJob: updatedByUserJobTable,
+                updatedByRank: updatedByUserRankTable,
+                updatedByRole: updatedByUserRoleTable,
+            })
             .from(citizensTable)
             .leftJoin(bloodTypesTable, eq(bloodTypesTable.id, citizensTable.bloodTypeId))
             .leftJoin(statusesTable, eq(statusesTable.id, citizensTable.statusId))
@@ -155,30 +172,91 @@ export default class CitizenRepository extends Repository {
             .leftJoin(jobsTable, eq(jobsTable.id, usersTable.jobId))
             .leftJoin(ranksTable, eq(ranksTable.id, usersTable.rankId))
             .leftJoin(rolesTable, eq(rolesTable.id, usersTable.roleId))
-            .leftJoin(updatedByUsers, eq(updatedByUsers.id, citizensTable.updatedBy))
-            .leftJoin(updatedByUsersJobs, eq(updatedByUsersJobs.id, updatedByUsers.jobId))
-            .leftJoin(updatedByUsersRanks, eq(updatedByUsersRanks.id, updatedByUsers.rankId))
-            .leftJoin(updatedByUsersRoles, eq(updatedByUsersRoles.id, updatedByUsers.roleId))
+            .leftJoin(updatedByUserTable, eq(updatedByUserTable.id, citizensTable.updatedBy))
+            .leftJoin(
+                updatedByUserRankTable,
+                eq(updatedByUserRankTable.id, updatedByUserTable.rankId)
+            )
+            .leftJoin(updatedByUserJobTable, eq(updatedByUserJobTable.id, updatedByUserTable.jobId))
+            .leftJoin(
+                updatedByUserRoleTable,
+                eq(updatedByUserRoleTable.id, updatedByUserTable.roleId)
+            )
             .leftJoin(nationalitiesTable, eq(citizensTable.nationalityId, nationalitiesTable.id))
-            .where(eq(citizensTable.id, id));
+            .where(eq(citizensTable.id, id))
+            .limit(1);
 
-        const userDb = (await query)[0];
+        const userDb = (await citizenQuery)[0];
         if (!userDb) return null;
 
-        const user = Citizen.getFromDb(
-            userDb.citizens,
-            userDb.genders,
-            userDb.statuses,
-            userDb.blood_types,
-            userDb.users!,
-            userDb.ranks!,
-            userDb.jobs!,
-            userDb.roles!,
-            userDb.updated_by_users!,
-            userDb.updated_by_user_ranks!,
-            userDb.updated_by_user_jobs!,
-            userDb.updated_by_user_roles!,
-            userDb.nationalities!
+        const fineCreatedByTable = alias(usersTable, "fine_created_by");
+        const fineCreatedByJobTable = alias(jobsTable, "fine_created_by_job");
+        const fineCreatedByRankTable = alias(ranksTable, "fine_created_by_rank");
+        const fineCreatedByRoleTable = alias(rolesTable, "fine_created_by_role");
+
+        const finesQuery = CitizenRepository.db
+            .select({
+                citizenFine: citizenFinesTable,
+                createdBy: usersTable,
+                createdByJob: jobsTable,
+                createdByRank: ranksTable,
+                createdByRole: rolesTable,
+                fine: finesTable,
+                fineCreatedBy: fineCreatedByTable,
+                fineCreatedByJob: fineCreatedByJobTable,
+                fineCreatedByRank: fineCreatedByRankTable,
+                fineCreatedByRole: fineCreatedByRoleTable,
+            })
+            .from(citizenFinesTable)
+            .leftJoin(usersTable, eq(usersTable.id, citizenFinesTable.createdBy))
+            .leftJoin(jobsTable, eq(usersTable.jobId, jobsTable.id))
+            .leftJoin(ranksTable, eq(usersTable.rankId, ranksTable.id))
+            .leftJoin(rolesTable, eq(usersTable.roleId, rolesTable.id))
+            .leftJoin(finesTable, eq(citizenFinesTable.fineId, finesTable.id))
+            .leftJoin(fineCreatedByTable, eq(fineCreatedByTable.id, finesTable.createdBy))
+            .leftJoin(fineCreatedByJobTable, eq(fineCreatedByTable.jobId, fineCreatedByJobTable.id))
+            .leftJoin(
+                fineCreatedByRankTable,
+                eq(fineCreatedByTable.rankId, fineCreatedByRankTable.id)
+            )
+            .leftJoin(
+                fineCreatedByRoleTable,
+                eq(fineCreatedByTable.roleId, fineCreatedByRoleTable.id)
+            )
+            .where(eq(citizenFinesTable.citizenId, id));
+
+        const finesDb = await finesQuery;
+
+        const citizenFines = finesDb.map((fine) =>
+            CitizenFine.getFomDb(
+                fine.citizenFine,
+                fine.createdBy!,
+                fine.createdByJob!,
+                fine.createdByRank!,
+                fine.createdByRole!,
+                fine.fine!,
+                fine.fineCreatedBy!,
+                fine.fineCreatedByJob!,
+                fine.fineCreatedByRank!,
+                fine.fineCreatedByRole!
+            )
+        );
+
+        const user = await Citizen.getFromDb(
+            userDb.citizen,
+            userDb.gender,
+            userDb.status,
+            userDb.bloodType,
+            userDb.createdByUser!,
+            userDb.createdByRank!,
+            userDb.createdByJob!,
+            userDb.createdByRole!,
+            userDb.updatedByUser!,
+            userDb.updatedByRank!,
+            userDb.updatedByJob!,
+            userDb.updatedByRole!,
+            userDb.nationality!,
+            citizenFines
         );
 
         return user;

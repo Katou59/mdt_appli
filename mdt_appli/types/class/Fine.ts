@@ -1,11 +1,12 @@
 import { finesTable, jobsTable, ranksTable, rolesTable, usersTable } from "@/db/schema";
 import { FineType } from "../db/fine";
+import { FineType as FineTypeEnum } from "../enums/fine-enum";
 import IConverter from "../interfaces/IConverter";
 import User from "./User";
 
 export default class Fine implements IConverter<FineType>, FineType {
     id: string;
-    type: ["infraction", "misdemeanor", "felony", "other"];
+    type: FineTypeEnum;
     label: string;
     createdAt: Date;
     createdBy: User;
@@ -69,7 +70,7 @@ export default class Fine implements IConverter<FineType>, FineType {
             maximumJailTime: fineDb.maximumJailTime,
             minimumAmount: fineDb.minimumAmount,
             minimumJailTime: fineDb.minimumJailTime,
-            type: fineDb.type as unknown as ["infraction", "misdemeanor", "felony", "other"],
+            type: fineDb.type as FineTypeEnum,
             createdBy: createdBy!,
         });
     }
