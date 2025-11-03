@@ -66,4 +66,8 @@ export default class CitizenService {
 
         return result;
     }
+
+    public async getCount(): Promise<number> {
+        return await CitizenRepository.getCount();
+    }
 }

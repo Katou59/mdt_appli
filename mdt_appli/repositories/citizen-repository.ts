@@ -291,4 +291,14 @@ export default class CitizenRepository extends Repository {
             })
             .where(eq(citizensTable.id, citizenToUpdate.id));
     }
+
+    public static async getCount(): Promise<number> {
+        const [{ count }] = await CitizenRepository.db
+            .select({
+                count: sql<number>`count(*)`,
+            })
+            .from(citizensTable);
+
+        return count;
+    }
 }

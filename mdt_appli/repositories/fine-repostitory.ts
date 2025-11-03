@@ -1,6 +1,13 @@
-import { finesTable, jobsTable, ranksTable, rolesTable, usersTable } from "@/db/schema";
+import {
+    citizenFinesTable,
+    finesTable,
+    jobsTable,
+    ranksTable,
+    rolesTable,
+    usersTable,
+} from "@/db/schema";
 import Fine from "@/types/class/Fine";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import Repository from "./repository";
 
 export default class FineRepository extends Repository {
@@ -16,5 +23,15 @@ export default class FineRepository extends Repository {
         return resultsDb.map((result) =>
             Fine.getFromDb(result.fines, result.users!, result.jobs!, result.ranks!, result.roles!)
         );
+    }
+
+    public static async getCount(): Promise<number> {
+        const [{ count }] = await FineRepository.db
+            .select({
+                count: sql<number>`count(*)`,
+            })
+            .from(citizenFinesTable);
+
+        return count;
     }
 }

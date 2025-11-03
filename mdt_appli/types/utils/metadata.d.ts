@@ -12,4 +12,7 @@ export interface MetadataType {
     bloodTypes: KeyValueType<number, string>[];
     statuses: KeyValueType<number, string>[];
     fines: FineType[];
+    userCount: number;
+    citizenCount: number;
+    citizenFineCount: number;
 }

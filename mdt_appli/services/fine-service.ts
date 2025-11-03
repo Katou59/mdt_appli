@@ -11,4 +11,8 @@ export default class FineService {
     public async getList() {
         return await FineRepository.getList();
     }
+
+    public async getCount(): Promise<number> {
+        return await FineRepository.getCount();
+    }
 }

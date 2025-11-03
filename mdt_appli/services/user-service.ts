@@ -141,4 +141,8 @@ export default class UserService {
 
         return userUpdated;
     }
+
+    public async getCount(jobId: number): Promise<number> {
+        return await UserRepository.getCount(jobId);
+    }
 }
