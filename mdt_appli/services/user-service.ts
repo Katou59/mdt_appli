@@ -5,6 +5,7 @@ import { UserToCreateType, UserToUpdateType } from "@/types/db/user";
 import { HttpStatus } from "@/types/enums/http-status-enum";
 import CustomError from "@/types/errors/CustomError";
 import RankService from "./ranks-service";
+import ServiceBase from "./service-base";
 
 type FilterType = {
     searchTerm?: string;
@@ -14,18 +15,9 @@ type FilterType = {
     roleId?: number;
 };
 
-export default class UserService {
-    public readonly currentUser: User;
-
+export default class UserService extends ServiceBase {
     constructor(currentUser: User) {
-        this.currentUser = currentUser;
-    }
-
-    public static async create(currenUserId: string) {
-        const user = await UserRepository.get(currenUserId);
-        if (!user) throw new CustomError("Invalid user", HttpStatus.NOT_FOUND);
-
-        return new UserService(user);
+        super(currentUser);
     }
 
     public async getList(page: number, itemPerPage: number, filter?: FilterType) {

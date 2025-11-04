@@ -1,10 +1,10 @@
 import GenderRepository from "@/repositories/gender-repository";
 import User from "@/types/class/User";
+import ServiceBase from "./service-base";
 
-export default class GenderService {
-    public readonly currentUser;
+export default class GenderService extends ServiceBase {
     constructor(currentUser: User) {
-        this.currentUser = currentUser;
+        super(currentUser);
     }
 
     public async getList() {

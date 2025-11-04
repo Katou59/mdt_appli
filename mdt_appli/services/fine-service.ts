@@ -1,11 +1,10 @@
 import FineRepository from "@/repositories/fine-repostitory";
 import User from "@/types/class/User";
+import ServiceBase from "./service-base";
 
-export default class FineService {
-    private readonly currentUser: User;
-
+export default class FineService extends ServiceBase {
     constructor(currentUser: User) {
-        this.currentUser = currentUser;
+        super(currentUser);
     }
 
     public async getList() {

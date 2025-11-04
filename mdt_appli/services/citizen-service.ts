@@ -5,16 +5,11 @@ import User from "@/types/class/User";
 import { CitizenToCreateType, CitizenToUpdateType } from "@/types/db/citizen";
 import { HttpStatus } from "@/types/enums/http-status-enum";
 import CustomError from "@/types/errors/CustomError";
-import UserService from "./user-service";
+import ServiceBase from "./service-base";
 
-export default class CitizenService {
-    public readonly currentUser;
+export default class CitizenService extends ServiceBase {
     constructor(currentUser: User) {
-        this.currentUser = currentUser;
-    }
-
-    public static async create(currentUserId: string) {
-        return new CitizenService((await UserService.create(currentUserId)).currentUser);
+        super(currentUser);
     }
 
     public async getList(page: number, itemPerPage: number, searchTerm: string | null) {

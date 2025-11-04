@@ -1,10 +1,10 @@
 import StatusRepository from "@/repositories/status-repository";
 import User from "@/types/class/User";
+import ServiceBase from "./service-base";
 
-export default class StatusService {
-    public readonly currentUser;
+export default class StatusService extends ServiceBase {
     constructor(currentUser: User) {
-        this.currentUser = currentUser;
+        super(currentUser);
     }
 
     public async getList() {

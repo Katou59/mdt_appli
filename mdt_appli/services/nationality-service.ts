@@ -1,10 +1,10 @@
 import NationalityRepository from "@/repositories/nationality-repository";
 import User from "@/types/class/User";
+import ServiceBase from "./service-base";
 
-export default class NationalityService {
-    public readonly currentUser;
+export default class NationalityService extends ServiceBase {
     constructor(currentUser: User) {
-        this.currentUser = currentUser;
+        super(currentUser);
     }
 
     public async getList() {

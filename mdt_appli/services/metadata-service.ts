@@ -1,25 +1,18 @@
 import User from "@/types/class/User";
 import { MetadataType } from "@/types/utils/metadata";
 import BloodTypeService from "./blood-type-service";
-import CitizenService from "./citizen-service";
 import FineService from "./fine-service";
 import GenderService from "./gender-service";
 import JobService from "./job-service";
 import NationalityService from "./nationality-service";
 import RankService from "./ranks-service";
 import RoleService from "./role-service";
+import ServiceBase from "./service-base";
 import StatusService from "./status-service";
-import UserService from "./user-service";
 
-export default class MetadataService {
-    public readonly currentUser;
+export default class MetadataService extends ServiceBase {
     constructor(currentUser: User) {
-        this.currentUser = currentUser;
-    }
-
-    public static async create(currentUserId: string) {
-        const userService = await UserService.create(currentUserId);
-        return new MetadataService(userService.currentUser);
+        super(currentUser);
     }
 
     public async get() {
@@ -31,34 +24,18 @@ export default class MetadataService {
         const bloodTypeService = new BloodTypeService(this.currentUser);
         const statusService = new StatusService(this.currentUser);
         const fineService = new FineService(this.currentUser);
-        const userService = new UserService(this.currentUser);
-        const citizenService = new CitizenService(this.currentUser);
 
-        const [
-            jobs,
-            ranks,
-            roles,
-            nationalities,
-            genders,
-            bloodTypes,
-            statuses,
-            fines,
-            userCount,
-            citizenCount,
-            citizenFineCount,
-        ] = await Promise.all([
-            jobService.getList(),
-            rankService.getList(),
-            roleService.getList(),
-            nationalityService.getList(),
-            genderService.getList(),
-            bloodTypeService.getList(),
-            statusService.getList(),
-            fineService.getList(),
-            userService.getCount(1),
-            citizenService.getCount(),
-            fineService.getCount(),
-        ]);
+        const [jobs, ranks, roles, nationalities, genders, bloodTypes, statuses, fines] =
+            await Promise.all([
+                jobService.getList(),
+                rankService.getList(),
+                roleService.getList(),
+                nationalityService.getList(),
+                genderService.getList(),
+                bloodTypeService.getList(),
+                statusService.getList(),
+                fineService.getList(),
+            ]);
 
         const results: MetadataType = {
             jobs: jobs.map((x) => x.toJobType()),
@@ -69,9 +46,6 @@ export default class MetadataService {
             bloodTypes,
             statuses,
             fines: fines.map((x) => x.toType()),
-            userCount,
-            citizenCount,
-            citizenFineCount,
         };
 
         return results;

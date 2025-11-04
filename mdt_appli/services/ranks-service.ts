@@ -4,17 +4,11 @@ import Rank from "@/types/class/Rank";
 import User from "@/types/class/User";
 import { HttpStatus } from "@/types/enums/http-status-enum";
 import CustomError from "@/types/errors/CustomError";
-import UserService from "./user-service";
+import ServiceBase from "./service-base";
 
-export default class RankService {
-    public readonly currentUser;
+export default class RankService extends ServiceBase {
     constructor(currentUser: User) {
-        this.currentUser = currentUser;
-    }
-
-    public static async create(userId: string) {
-        const userService = await UserService.create(userId);
-        return new RankService(userService.currentUser);
+        super(currentUser);
     }
 
     public async getList(jobId?: number) {
