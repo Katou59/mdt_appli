@@ -1,7 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { stringToNumber } from "@/lib/converters";
 import { cn } from "@/lib/utils";
-import { UserToUpdateType, UserType } from "@/types/db/user";
+import { UserToUpdateType, UserType } from "@/types/commons/user";
 import { zodResolver } from "@hookform/resolvers/zod";
 import dayjs from "dayjs";
 import { useForm } from "react-hook-form";

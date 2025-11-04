@@ -1,9 +1,9 @@
 import { jobsTable, ranksTable, rolesTable, usersTable } from "@/db/schema";
 import Rank from "@/types/class/Rank";
-import { UserToUpdateType, UserType } from "@/types/db/user";
+import { UserToUpdateType, UserType } from "@/types/commons/user";
 import { RoleType } from "@/types/enums/role-enum";
-import { JobType } from "../db/job";
-import { RankType } from "../db/rank";
+import { JobType } from "../commons/job";
+import { RankType } from "../commons/rank";
 import IConverter from "../interfaces/IConverter";
 import { KeyValueType } from "../utils/key-value";
 

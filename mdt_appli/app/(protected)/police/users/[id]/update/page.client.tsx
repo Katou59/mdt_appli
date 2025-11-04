@@ -7,7 +7,7 @@ import { useAlert } from "@/lib/Contexts/alert-context";
 import { useUser } from "@/lib/Contexts/user-context";
 import Rank from "@/types/class/Rank";
 import User from "@/types/class/User";
-import { UserToUpdateType, UserType } from "@/types/db/user";
+import { UserToUpdateType, UserType } from "@/types/commons/user";
 import { MetadataType } from "@/types/utils/metadata";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";

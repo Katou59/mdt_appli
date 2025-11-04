@@ -7,7 +7,7 @@ import { RadioGroupForm } from "@/components/radio-group-form";
 import { SelectForm } from "@/components/select-form";
 import { TextareaForm } from "@/components/textarea-form";
 import { Form } from "@/components/ui/form";
-import { CitizenToCreateType, CitizenType } from "@/types/db/citizen";
+import { CitizenToCreateType, CitizenType } from "@/types/commons/citizen";
 import { KeyValueType } from "@/types/utils/key-value";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";

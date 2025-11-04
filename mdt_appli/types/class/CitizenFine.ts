@@ -6,7 +6,7 @@ import {
     rolesTable,
     usersTable,
 } from "@/db/schema";
-import { CitizenFineType } from "../db/citizen-fine";
+import { CitizenFineType } from "../commons/citizen-fine";
 import IConverter from "../interfaces/IConverter";
 import Fine from "./Fine";
 import User from "./User";

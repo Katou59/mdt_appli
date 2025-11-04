@@ -1,7 +1,7 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UserType } from "@/types/db/user";
+import { UserType } from "@/types/commons/user";
 import dayjs from "dayjs";
 
 import { useUser } from "@/lib/Contexts/user-context";

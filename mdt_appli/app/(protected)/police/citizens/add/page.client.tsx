@@ -7,7 +7,7 @@ import axiosClient, { getData } from "@/lib/axios-client";
 import { useAlert } from "@/lib/Contexts/alert-context";
 import { useMetadata } from "@/lib/Contexts/metadata-context";
 import { uploadImage } from "@/lib/upload-image";
-import { CitizenToCreateType } from "@/types/db/citizen";
+import { CitizenToCreateType } from "@/types/commons/citizen";
 import { useState } from "react";
 import { toast } from "sonner";
 import AddCitizenForm from "../add-citizen-form";

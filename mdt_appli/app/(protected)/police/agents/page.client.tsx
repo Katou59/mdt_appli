@@ -6,7 +6,7 @@ import axiosClient, { getData } from "@/lib/axios-client";
 import { useAlert } from "@/lib/Contexts/alert-context";
 import Pager from "@/types/class/Pager";
 import User from "@/types/class/User";
-import { UsersForSeachType, UserType } from "@/types/db/user";
+import { UsersForSeachType, UserType } from "@/types/commons/user";
 import { PagerType } from "@/types/response/pager-type";
 import { useState } from "react";
 import SearchAgentForm from "./search-agent-form";

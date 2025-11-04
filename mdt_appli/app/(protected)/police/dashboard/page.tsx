@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import Alert from "@/components/alert";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import MetadataService from "@/services/metadata-service";
+import StatService from "@/services/stat-service";
 
 export const metadata = {
     title: "MDT - Accueil",
@@ -18,11 +18,15 @@ export default async function Dashboard() {
         if (!session?.user?.discordId) {
             return <Alert type="unauthorized" />;
         }
-        const metadataService = await MetadataService.create(session.user.discordId);
-        const metadata = await metadataService.get();
-        userCount = metadata.userCount;
-        citizenCount = metadata.citizenCount;
-        citizenFineCount = metadata.citizenFineCount;
+
+        const statService = await StatService.create(session.user.discordId);
+        if (!statService.currentUser.rank?.job?.id) return <Alert />;
+
+        const stat = await statService.get(statService.currentUser.rank.job.id);
+
+        userCount = stat.userCount;
+        citizenCount = stat.citizenCount;
+        citizenFineCount = stat.citizenFineCount;
     } catch {
         return <Alert />;
     }

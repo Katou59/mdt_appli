@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { nextResponseApiError } from "@/lib/next-response-api-error";
 import CitizenService from "@/services/citizen-service";
 import UserService from "@/services/user-service";
-import { CitizenToCreateType } from "@/types/db/citizen";
+import { CitizenToCreateType } from "@/types/commons/citizen";
 import { HttpStatus } from "@/types/enums/http-status-enum";
 import { NextRequest, NextResponse } from "next/server";
 

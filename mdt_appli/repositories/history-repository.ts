@@ -1,5 +1,5 @@
 import { historiesTable } from "@/db/schema";
-import { HistoryToAddType } from "@/types/db/history";
+import { HistoryToAddType } from "@/types/commons/history";
 import Repository from "./repository";
 
 export default class HistoryRepository extends Repository {

@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { booleanToString } from "@/lib/converters";
 import Citizen from "@/types/class/Citizen";
-import { CitizenType } from "@/types/db/citizen";
+import { CitizenType } from "@/types/commons/citizen";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

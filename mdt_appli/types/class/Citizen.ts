@@ -10,7 +10,7 @@ import {
     usersTable,
 } from "@/db/schema";
 import { getSignedFileUrl } from "@/lib/minio";
-import { CitizenType } from "../db/citizen";
+import { CitizenType } from "../commons/citizen";
 import IConverter from "../interfaces/IConverter";
 import { KeyValueType } from "../utils/key-value";
 import CitizenFine from "./CitizenFine";

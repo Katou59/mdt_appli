@@ -15,7 +15,7 @@ import Citizen from "@/types/class/Citizen";
 import CitizenFine from "@/types/class/CitizenFine";
 import Pager from "@/types/class/Pager";
 import User from "@/types/class/User";
-import { CitizenToCreateType, CitizenToUpdateType, CitizenType } from "@/types/db/citizen";
+import { CitizenToCreateType, CitizenToUpdateType, CitizenType } from "@/types/commons/citizen";
 import { and, eq, ilike, or, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import Repository from "./repository";

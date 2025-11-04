@@ -6,7 +6,7 @@ import axiosClient, { getData } from "@/lib/axios-client";
 import { useAlert } from "@/lib/Contexts/alert-context";
 import { uploadImage } from "@/lib/upload-image";
 import Citizen from "@/types/class/Citizen";
-import { CitizenToCreateType, CitizenToUpdateType, CitizenType } from "@/types/db/citizen";
+import { CitizenToCreateType, CitizenToUpdateType, CitizenType } from "@/types/commons/citizen";
 import { MetadataType } from "@/types/utils/metadata";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

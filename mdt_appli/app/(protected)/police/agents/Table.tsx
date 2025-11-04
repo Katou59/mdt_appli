@@ -10,7 +10,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import User from "@/types/class/User";
-import { UserType } from "@/types/db/user";
+import { UserType } from "@/types/commons/user";
 import { PagerType } from "@/types/response/pager-type";
 import { useRouter } from "next/navigation";
 

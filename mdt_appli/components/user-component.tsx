@@ -1,4 +1,4 @@
-import { UserToUpdateType, UserType } from "@/types/db/user";
+import { UserToUpdateType, UserType } from "@/types/commons/user";
 import UserConsult from "./user-consult";
 import UserUpdate from "./user-update";
 

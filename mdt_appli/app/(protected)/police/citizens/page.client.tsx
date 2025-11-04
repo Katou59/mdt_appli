@@ -5,7 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import axiosClient, { getData } from "@/lib/axios-client";
 import Citizen from "@/types/class/Citizen";
 import Pager from "@/types/class/Pager";
-import { CitizenType } from "@/types/db/citizen";
+import { CitizenType } from "@/types/commons/citizen";
 import { PagerType } from "@/types/response/pager-type";
 import { useState } from "react";
 import SearchCitizenForm, { SearchCitizenFormOnSubmitType } from "./form-search-citizen";

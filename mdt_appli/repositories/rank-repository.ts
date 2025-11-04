@@ -1,6 +1,6 @@
 import { jobsTable, ranksTable, usersTable } from "@/db/schema";
 import Rank from "@/types/class/Rank";
-import { RankType } from "@/types/db/rank";
+import { RankType } from "@/types/commons/rank";
 import { eq, sql } from "drizzle-orm";
 import Repository from "./repository";
 

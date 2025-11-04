@@ -1,7 +1,7 @@
 import { jobsTable, ranksTable, rolesTable, usersTable } from "@/db/schema";
 import Pager from "@/types/class/Pager";
 import User from "@/types/class/User";
-import { UserToCreateType, UserType } from "@/types/db/user";
+import { UserToCreateType, UserType } from "@/types/commons/user";
 import { and, eq, ilike, or, sql } from "drizzle-orm";
 import Repository from "./repository";
 

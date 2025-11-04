@@ -1,5 +1,5 @@
 import { errorLogsTable } from "@/db/schema";
-import { ErrorLogToAddType } from "@/types/db/error-log";
+import { ErrorLogToAddType } from "@/types/commons/error-log";
 import Repository from "./repository";
 
 export default class ErrorLogRepository extends Repository {

@@ -1,7 +1,7 @@
 import HistoryRepository from "@/repositories/history-repository";
 import { UserRepository } from "@/repositories/user-repository";
 import User from "@/types/class/User";
-import { UserToCreateType, UserToUpdateType } from "@/types/db/user";
+import { UserToCreateType, UserToUpdateType } from "@/types/commons/user";
 import { HttpStatus } from "@/types/enums/http-status-enum";
 import CustomError from "@/types/errors/CustomError";
 import RankService from "./ranks-service";

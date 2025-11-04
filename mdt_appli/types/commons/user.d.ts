@@ -1,4 +1,4 @@
-import { RankType } from "@/types/db/rank";
+import { RankType } from "@/types/commons/rank";
 import { KeyValueType } from "../utils/key-value";
 
 export interface UserType {

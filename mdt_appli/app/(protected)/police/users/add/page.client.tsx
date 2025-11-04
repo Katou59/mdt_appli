@@ -4,7 +4,7 @@ import Page from "@/components/page";
 import axiosClient, { getData } from "@/lib/axios-client";
 import { useAlert } from "@/lib/Contexts/alert-context";
 import Rank from "@/types/class/Rank";
-import { UserToCreateType } from "@/types/db/user";
+import { UserToCreateType } from "@/types/commons/user";
 import { MetadataType } from "@/types/utils/metadata";
 import { useState } from "react";
 import { toast } from "sonner";

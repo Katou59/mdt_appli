@@ -1,4 +1,4 @@
-import {JobType} from "@/types/db/job";
+import { JobType } from "@/types/commons/job";
 
 export default class Job {
     id: number | null;

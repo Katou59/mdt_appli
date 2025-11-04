@@ -1,5 +1,5 @@
 import { finesTable, jobsTable, ranksTable, rolesTable, usersTable } from "@/db/schema";
-import { FineType } from "../db/fine";
+import { FineType } from "../commons/fine";
 import { FineType as FineTypeEnum } from "../enums/fine-enum";
 import IConverter from "../interfaces/IConverter";
 import User from "./User";

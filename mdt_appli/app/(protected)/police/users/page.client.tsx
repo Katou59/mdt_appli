@@ -9,7 +9,7 @@ import { stringToNumber } from "@/lib/converters";
 import PagerClass from "@/types/class/Pager";
 import Rank from "@/types/class/Rank";
 import User from "@/types/class/User";
-import { UserType } from "@/types/db/user";
+import { UserType } from "@/types/commons/user";
 import { PagerType } from "@/types/response/pager-type";
 import { MetadataType } from "@/types/utils/metadata";
 import { useRouter } from "next/navigation";

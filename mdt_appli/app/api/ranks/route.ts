@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { nextResponseApiError } from "@/lib/next-response-api-error";
 import RankService from "@/services/ranks-service";
 import Rank from "@/types/class/Rank";
-import { RankType } from "@/types/db/rank";
+import { RankType } from "@/types/commons/rank";
 import { HttpStatus } from "@/types/enums/http-status-enum";
 import { NextRequest, NextResponse } from "next/server";
 

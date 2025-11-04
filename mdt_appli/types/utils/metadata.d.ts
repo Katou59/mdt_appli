@@ -1,6 +1,6 @@
-import { FineType } from "../db/fine";
-import { JobType } from "../db/job";
-import { RankType } from "../db/rank";
+import { FineType } from "../commons/fine";
+import { JobType } from "../commons/job";
+import { RankType } from "../commons/rank";
 import { KeyValueType } from "./key-value";
 
 export interface MetadataType {

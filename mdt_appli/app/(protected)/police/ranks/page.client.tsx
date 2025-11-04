@@ -12,7 +12,7 @@ import { useAlert } from "@/lib/Contexts/alert-context";
 import { useMetadata } from "@/lib/Contexts/metadata-context";
 import Job from "@/types/class/Job";
 import Rank from "@/types/class/Rank";
-import { RankType } from "@/types/db/rank";
+import { RankType } from "@/types/commons/rank";
 import {
     closestCenter,
     DndContext,
