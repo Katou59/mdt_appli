@@ -2,7 +2,7 @@ import { jobsTable, ranksTable, rolesTable, usersTable } from "@/db/schema";
 import Pager from "@/types/class/Pager";
 import User from "@/types/class/User";
 import { UserToCreateType, UserType } from "@/types/commons/user";
-import { and, eq, ilike, or, sql } from "drizzle-orm";
+import { and, eq, gte, ilike, lt, or, sql } from "drizzle-orm";
 import Repository from "./repository";
 
 type FilterType = {
@@ -142,6 +142,22 @@ export class UserRepository extends Repository {
             })
             .from(usersTable)
             .where(and(eq(usersTable.jobId, jobId), eq(usersTable.isDisable, false)));
+
+        return count;
+    }
+
+    public static async getCountCreatedToday(jobId: number): Promise<number> {
+        const [{ count }] = await UserRepository.db
+            .select({ count: sql<number>`count(*)` })
+            .from(usersTable)
+            .where(
+                and(
+                    gte(usersTable.createdAt, sql`CURRENT_DATE`),
+                    lt(usersTable.createdAt, sql`CURRENT_DATE + INTERVAL '1 day'`),
+                    eq(usersTable.jobId, jobId),
+                    eq(usersTable.isDisable, false)
+                )
+            );
 
         return count;
     }

@@ -16,7 +16,7 @@ import CitizenFine from "@/types/class/CitizenFine";
 import Pager from "@/types/class/Pager";
 import User from "@/types/class/User";
 import { CitizenToCreateType, CitizenToUpdateType, CitizenType } from "@/types/commons/citizen";
-import { and, eq, ilike, or, sql } from "drizzle-orm";
+import { and, eq, gte, ilike, lt, or, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import Repository from "./repository";
 
@@ -298,6 +298,20 @@ export default class CitizenRepository extends Repository {
                 count: sql<number>`count(*)`,
             })
             .from(citizensTable);
+
+        return count;
+    }
+
+    public static async getCountCreatedToday(): Promise<number> {
+        const [{ count }] = await CitizenRepository.db
+            .select({ count: sql<number>`count(*)` })
+            .from(citizensTable)
+            .where(
+                and(
+                    gte(citizensTable.createdAt, sql`CURRENT_DATE`),
+                    lt(citizensTable.createdAt, sql`CURRENT_DATE + INTERVAL '1 day'`)
+                )
+            );
 
         return count;
     }

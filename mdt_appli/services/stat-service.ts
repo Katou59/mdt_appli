@@ -1,5 +1,5 @@
 import User from "@/types/class/User";
-import { StatType } from "@/types/commons/stat";
+import { StatType } from "@/types/response/stat-type";
 import CitizenService from "./citizen-service";
 import FineService from "./fine-service";
 import ServiceBase from "./service-base";
@@ -15,15 +15,20 @@ export default class StatService extends ServiceBase {
         const citizenService = new CitizenService(this.currentUser);
         const fineService = new FineService(this.currentUser);
 
-        const [userCount, citizenCount, fineCount] = await Promise.all([
-            userService.getCount(jobId),
-            citizenService.getCount(),
-            fineService.getCount(),
-        ]);
+        const [userCount, citizenCount, fineCount, userCountToday, citizenCountToday] =
+            await Promise.all([
+                userService.getCount(jobId),
+                citizenService.getCount(),
+                fineService.getCount(),
+                userService.getCountCreatedToday(jobId),
+                citizenService.getCountCreatedToday(),
+            ]);
+
+        console.log(userCountToday);
 
         return {
-            userCount: userCount,
-            citizenCount: citizenCount,
+            user: { count: userCount, countToday: userCountToday },
+            citizen: { count: citizenCount, countToday: citizenCountToday },
             citizenFineCount: fineCount,
         };
     }

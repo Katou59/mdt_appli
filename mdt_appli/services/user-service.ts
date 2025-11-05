@@ -137,4 +137,8 @@ export default class UserService extends ServiceBase {
     public async getCount(jobId: number): Promise<number> {
         return await UserRepository.getCount(jobId);
     }
+
+    public async getCountCreatedToday(jobId: number): Promise<number> {
+        return await UserRepository.getCountCreatedToday(jobId);
+    }
 }

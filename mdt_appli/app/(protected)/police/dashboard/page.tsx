@@ -1,7 +1,10 @@
 import { auth } from "@/auth";
 import Alert from "@/components/alert";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardAction, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import StatService from "@/services/stat-service";
+import { StatType } from "@/types/response/stat-type";
+import { IconEqual, IconTrendingUp } from "@tabler/icons-react";
 
 export const metadata = {
     title: "MDT - Accueil",
@@ -9,9 +12,7 @@ export const metadata = {
 };
 
 export default async function Dashboard() {
-    let userCount = 0;
-    let citizenCount = 0;
-    let citizenFineCount = 0;
+    let stats: StatType | null = null;
 
     try {
         const session = await auth();
@@ -23,39 +24,55 @@ export default async function Dashboard() {
         if (!statService.currentUser.rank?.job?.id) return <Alert />;
 
         const stat = await statService.get(statService.currentUser.rank.job.id);
-
-        userCount = stat.userCount;
-        citizenCount = stat.citizenCount;
-        citizenFineCount = stat.citizenFineCount;
+        stats = stat;
     } catch {
         return <Alert />;
     }
     return (
         <div className="grid grid-cols-3 gap-5 mt-5">
-            <Card className="@container/card">
-                <CardHeader>
-                    <CardDescription>Agents</CardDescription>
-                    <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-                        {userCount}
-                    </CardTitle>
-                </CardHeader>
-            </Card>
-            <Card className="@container/card">
-                <CardHeader>
-                    <CardDescription>Citoyens</CardDescription>
-                    <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-                        {citizenCount}
-                    </CardTitle>
-                </CardHeader>
-            </Card>
-            <Card className="@container/card">
-                <CardHeader>
-                    <CardDescription>Amendes</CardDescription>
-                    <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-                        {citizenFineCount}
-                    </CardTitle>
-                </CardHeader>
-            </Card>
+            <CardCustom
+                title="Agents"
+                count={stats.user.count}
+                countToday={stats.user.countToday}
+            />
+            <CardCustom
+                title="Citoyens"
+                count={stats.citizen.count}
+                countToday={stats.citizen.countToday}
+            />
+            <CardCustom title="Amendes" count={stats.citizenFineCount} countToday={0} />
         </div>
+    );
+}
+
+function CardCustom({
+    title,
+    count,
+    countToday,
+}: {
+    title: string;
+    count: number;
+    countToday: number;
+}) {
+    return (
+        <Card className="@container/card">
+            <CardHeader>
+                <CardDescription>{title}</CardDescription>
+                <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+                    {count}
+                </CardTitle>
+                <CardAction>
+                    {countToday > 0 ? (
+                        <Badge variant="outline" className="text-success">
+                            <IconTrendingUp />+ {countToday}
+                        </Badge>
+                    ) : (
+                        <Badge variant="outline" className="text-error">
+                            <IconEqual /> {countToday}
+                        </Badge>
+                    )}
+                </CardAction>
+            </CardHeader>
+        </Card>
     );
 }

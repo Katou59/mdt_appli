@@ -65,4 +65,8 @@ export default class CitizenService extends ServiceBase {
     public async getCount(): Promise<number> {
         return await CitizenRepository.getCount();
     }
+
+    public async getCountCreatedToday(): Promise<number> {
+        return CitizenRepository.getCountCreatedToday();
+    }
 }
