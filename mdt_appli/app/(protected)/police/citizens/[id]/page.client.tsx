@@ -24,7 +24,7 @@ export default function CitizenIdClient({ citizen: citizenServer }: Props) {
         <Page title={`Détails de ${citizen.fullName}`}>
             <div className="grid gap-5 w-full">
                 <div className="flex justify-center">
-                    <Avatar className="rounded-sm w-50 h-50">
+                    <Avatar className="rounded-sm w-50 h-50 cursor-pointer">
                         {citizen.photoUrl && (
                             <ShowImageDialog url={citizen.photoUrl}>
                                 <AvatarImage
