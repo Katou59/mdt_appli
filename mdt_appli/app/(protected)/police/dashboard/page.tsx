@@ -1,10 +1,8 @@
 import { auth } from "@/auth";
 import Alert from "@/components/alert";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardAction, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import StatService from "@/services/stat-service";
 import { StatType } from "@/types/response/stat-type";
-import { IconEqual, IconTrendingUp } from "@tabler/icons-react";
+import { DashboardCard } from "./dashboard-card";
 
 export const metadata = {
     title: "MDT - Accueil",
@@ -30,49 +28,17 @@ export default async function Dashboard() {
     }
     return (
         <div className="grid grid-cols-3 gap-5 mt-5">
-            <CardCustom
+            <DashboardCard
                 title="Agents"
                 count={stats.user.count}
                 countToday={stats.user.countToday}
             />
-            <CardCustom
+            <DashboardCard
                 title="Citoyens"
                 count={stats.citizen.count}
                 countToday={stats.citizen.countToday}
             />
-            <CardCustom title="Amendes" count={stats.citizenFineCount} countToday={0} />
+            <DashboardCard title="Amendes" count={stats.citizenFineCount} countToday={0} />
         </div>
-    );
-}
-
-function CardCustom({
-    title,
-    count,
-    countToday,
-}: {
-    title: string;
-    count: number;
-    countToday: number;
-}) {
-    return (
-        <Card className="@container/card">
-            <CardHeader>
-                <CardDescription>{title}</CardDescription>
-                <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-                    {count}
-                </CardTitle>
-                <CardAction>
-                    {countToday > 0 ? (
-                        <Badge variant="outline" className="text-success">
-                            <IconTrendingUp />+ {countToday}
-                        </Badge>
-                    ) : (
-                        <Badge variant="outline" className="text-error">
-                            <IconEqual /> {countToday}
-                        </Badge>
-                    )}
-                </CardAction>
-            </CardHeader>
-        </Card>
     );
 }
